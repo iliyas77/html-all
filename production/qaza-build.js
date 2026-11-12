@@ -6,7 +6,8 @@ const { execSync } = require('child_process');
 const rootDir = path.resolve(__dirname, '..');
 const qazaDir = path.join(rootDir, 'qaza');
 const htmlPath = path.join(qazaDir, 'qaza.html');
-const cssPath = path.join(rootDir, 'shared', 'css', 'style.css');
+const sharedCssPath = path.join(rootDir, 'shared', 'style.css');
+const qazaCssPath = path.join(qazaDir, 'css', 'qaza.css');
 const jsPath = path.join(qazaDir, 'app.js');
 const outPath = path.join(qazaDir, 'production.html');
 
@@ -16,8 +17,12 @@ if (!fs.existsSync(htmlPath)) {
   console.error(`Error: Cannot find ${htmlPath}`);
   process.exit(1);
 }
-if (!fs.existsSync(cssPath)) {
-  console.error(`Error: Cannot find ${cssPath}`);
+if (!fs.existsSync(sharedCssPath)) {
+  console.error(`Error: Cannot find ${sharedCssPath}`);
+  process.exit(1);
+}
+if (!fs.existsSync(qazaCssPath)) {
+  console.error(`Error: Cannot find ${qazaCssPath}`);
   process.exit(1);
 }
 if (!fs.existsSync(jsPath)) {
@@ -26,13 +31,16 @@ if (!fs.existsSync(jsPath)) {
 }
 
 // Minify CSS
-let cssMin;
+let sharedCssMin = '';
+let qazaCssMin = '';
 try {
-  cssMin = execSync(`npx esbuild "${cssPath}" --minify`, { encoding: 'utf8' }).trim();
+  sharedCssMin = execSync(`npx esbuild "${sharedCssPath}" --minify`, { encoding: 'utf8' }).trim();
+  qazaCssMin = execSync(`npx esbuild "${qazaCssPath}" --minify`, { encoding: 'utf8' }).trim();
 } catch (e) {
   console.error('Error minifying CSS:', e.message);
   process.exit(1);
 }
+const cssMin = [sharedCssMin, qazaCssMin].filter(Boolean).join('\n');
 
 // Minify JS
 let jsMin;
@@ -48,6 +56,7 @@ let html = fs.readFileSync(htmlPath, 'utf8');
 
 // Inline minified CSS
 html = html.replace(/<link\s+rel=["']stylesheet["']\s+href=["'][^"']*style\.css["']\s*\/?>/i, `<style>${cssMin}</style>`);
+html = html.replace(/<link\s+rel=["']stylesheet["']\s+href=["'][^"']*qaza\.css["']\s*\/?>\s*/i, '');
 
 // Inline minified JS
 html = html.replace(/<script\s+src=["']app\.js["']\s*><\/script>/i, `<script>${jsMin}</script>`);
@@ -62,4 +71,3 @@ const output = lines.join('\n') + '\n';
 fs.writeFileSync(outPath, output, 'utf8');
 const sizeKb = (Buffer.byteLength(output) / 1024).toFixed(1);
 console.log(`✅ Production build created: ${outPath} (${sizeKb} KB)`);
-

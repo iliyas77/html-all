@@ -1,0 +1,396 @@
+/* ==========================================================================
+   Qaza-Specific Styles
+   Layouts, prayer status styles, prayer cards, and visual customizations
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Prayer Cards & Interactive Statuses
+   -------------------------------------------------------------------------- */
+.prayer-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .95rem 1rem;
+  border: 2px solid var(--border-grey);
+  border-radius: .75rem;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: all .15s;
+  margin-bottom: .5rem;
+}
+
+.prayer-item:last-child {
+  margin-bottom: 0;
+}
+
+.prayer-item:hover {
+  border-color: #a7d5c4;
+  background: var(--light-green);
+}
+
+.prayer-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--dark-green);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.prayer-icon {
+  font-size: 1.15rem;
+  color: #64748b;
+  flex-shrink: 0;
+  width: 1.4rem;
+  text-align: center;
+  transition: color .15s;
+}
+
+/* Checked state */
+.prayer-item.is-checked {
+  border-color: var(--dark-green);
+  background: var(--light-green);
+  box-shadow: 0 0 0 3px rgba(9, 78, 58, .1);
+}
+
+.prayer-item.is-checked .prayer-icon {
+  color: var(--dark-green);
+}
+
+/* Missing state */
+.prayer-item.is-missing {
+  border-color: var(--danger-red);
+  background: #fef2f2;
+}
+
+.prayer-item.is-missing:hover {
+  background: #fee2e2;
+}
+
+.prayer-item.is-missing .prayer-icon {
+  color: var(--danger-red);
+}
+
+.prayer-item.is-missing input[type="checkbox"] {
+  accent-color: var(--danger-red);
+}
+
+/* Upcoming state */
+.prayer-item.is-upcoming {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: .6;
+}
+
+.prayer-item.is-upcoming:hover {
+  border-color: var(--border-grey);
+  background: #fff;
+}
+
+.prayer-item.is-upcoming input[type="checkbox"] {
+  cursor: not-allowed;
+  opacity: .55;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. Activity Log / Prayer History Icons
+   -------------------------------------------------------------------------- */
+.history-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.05rem;
+}
+
+.history-icon.check {
+  background: var(--light-green);
+  color: var(--dark-green);
+}
+
+.history-icon.uncheck {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.history-icon.complete {
+  background: var(--dark-green);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   3. Qaza Calendar Prayer Status Overrides
+   -------------------------------------------------------------------------- */
+.cal-cell.partial {
+  background: var(--light-green);
+  color: var(--dark-green);
+  font-weight: 700;
+}
+
+.cal-cell.partial:hover {
+  background: #c8e6c9;
+  transform: scale(1.06);
+}
+
+.cal-cell.complete {
+  background: var(--dark-green);
+  color: #fff;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(255, 255, 255, .85);
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(9, 78, 58, .3);
+}
+
+.cal-cell.complete:hover {
+  background: #063924;
+  transform: scale(1.06);
+}
+
+.cal-cell.today.complete {
+  box-shadow: inset 0 0 0 2px #fff, 0 2px 6px rgba(9, 78, 58, .3);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   4. Qaza Screen Layouts & Bottom Sheet Specifics
+   -------------------------------------------------------------------------- */
+#settingsSheet.offcanvas-bottom,
+#calendarSheet.offcanvas-bottom {
+  height: 90vh !important;
+  max-height: 90vh !important;
+  min-height: 90vh !important;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#settingsSheet .offcanvas-body,
+#currentPrayerDateSheet .offcanvas-body,
+#qazaDateSheet .offcanvas-body,
+#locationTimeSheet .offcanvas-body,
+#calendarSheet .offcanvas-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------------------------------
+   5. Shared DayCard Component Styles
+   -------------------------------------------------------------------------- */
+.day-card {
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  border: 1px solid var(--border-grey) !important;
+}
+
+.day-card.is-clickable {
+  cursor: pointer;
+}
+
+.day-card.is-clickable:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .05) !important;
+}
+
+.day-card.is-clickable:active {
+  transform: scale(.99);
+}
+
+.day-card.is-highlighted {
+  border-color: var(--dark-green) !important;
+  box-shadow: 0 0 0 2px rgba(9, 78, 58, .2) !important;
+}
+
+/* Disabled DayCard state */
+.day-card.is-disabled {
+  opacity: .55;
+  background: #f8fafc !important;
+  border-color: var(--border-grey) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none;
+}
+
+.day-card.is-disabled * {
+  pointer-events: none !important;
+}
+
+/* Locked DayCard state */
+.day-card.is-locked {
+  opacity: .5;
+  background: #f8fafc !important;
+  border-color: var(--border-grey) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none;
+}
+
+.day-card.is-locked * {
+  pointer-events: none !important;
+}
+
+/* DayCard Group Header Badges */
+.badge-missed {
+  background: #fee2e2 !important;
+  color: var(--danger-red) !important;
+  border: 1px solid #fecaca;
+}
+
+.badge-upcoming {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  border: 1px solid var(--border-grey);
+}
+
+.badge-done {
+  background: var(--light-green) !important;
+  color: var(--dark-green) !important;
+  border: 1px solid #c8e6c9;
+}
+
+/* --------------------------------------------------------------------------
+   6. Prayer Grid on Today Screen (3 columns on phones)
+   -------------------------------------------------------------------------- */
+:root {
+  --today-grid-cols: 3;
+}
+
+.prayer-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--today-grid-cols, 3), 1fr);
+  gap: .5rem;
+  width: 100%;
+  justify-content: start;
+}
+
+.prayer-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: .75rem .35rem;
+  border: 2px solid var(--border-grey);
+  border-radius: .75rem;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: all .15s ease;
+  min-height: 88px;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+  outline: none;
+}
+
+.prayer-tile:hover {
+  border-color: #a7d5c4;
+  background: var(--light-green);
+}
+
+.prayer-tile:active {
+  transform: scale(0.97);
+}
+
+.prayer-tile:focus-visible {
+  outline: 2px solid var(--dark-green);
+  outline-offset: 2px;
+}
+
+.prayer-tile:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.prayer-tile-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-bottom: .25rem;
+  color: #64748b;
+  transition: color .15s ease;
+}
+
+.prayer-tile-name {
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .005em;
+  color: #1e293b;
+  line-height: 1.2;
+  margin-bottom: .25rem;
+}
+
+.prayer-tile-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Checked / Done State */
+.prayer-tile.is-checked {
+  border-color: var(--dark-green);
+  background: var(--light-green);
+  box-shadow: 0 0 0 2px rgba(9, 78, 58, .12);
+}
+
+.prayer-tile.is-checked .prayer-tile-icon {
+  color: var(--dark-green);
+}
+
+.prayer-tile.is-checked .prayer-tile-status {
+  color: var(--dark-green);
+}
+
+/* Missing State */
+.prayer-tile.is-missing {
+  border-color: var(--danger-red);
+  background: #fef2f2;
+}
+
+.prayer-tile.is-missing:hover {
+  background: #fee2e2;
+}
+
+.prayer-tile.is-missing .prayer-tile-icon {
+  color: var(--danger-red);
+}
+
+.prayer-tile.is-missing .prayer-tile-status {
+  color: var(--danger-red);
+}
+
+/* Upcoming State */
+.prayer-tile.is-upcoming {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: .6;
+  border-color: var(--border-grey);
+  background: #f8fafc;
+}
+
+.prayer-tile.is-upcoming:hover {
+  border-color: var(--border-grey);
+  background: #f8fafc;
+}
+
+.prayer-tile.is-upcoming .prayer-tile-icon {
+  color: #94a3b8;
+}
+
+.prayer-tile.is-upcoming .prayer-tile-status {
+  color: #64748b;
+}
+

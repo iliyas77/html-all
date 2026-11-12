@@ -1,0 +1,389 @@
+/* ==========================================================================
+   Shared Styles — Core Application Design System
+   Reusable across all application modules and plugins
+   ========================================================================== */
+
+/* Design Tokens */
+:root {
+  --dark-green: #094E3A;
+  --light-green: #E8F5E9;
+  --border-grey: #E0E0E0;
+  --danger-red: #dc2626;
+  --bs-primary: #094E3A;
+  --bs-primary-rgb: 9, 78, 58;
+  --bs-success: #094E3A;
+  --bs-success-rgb: 9, 78, 58;
+}
+
+/* Base Styles & Typography */
+* {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: #fafafa;
+  min-height: 100vh;
+  padding-bottom: 72px;
+  -webkit-font-smoothing: antialiased;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+/* Header & Navigation Bar */
+.app-header {
+  background: #fff;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-grey);
+}
+
+.app-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  min-height: 44px;
+}
+
+.navbar-brand {
+  color: var(--dark-green) !important;
+}
+
+/* Buttons & Icon Buttons */
+.icon-btn {
+  background: transparent;
+  border: 0;
+  padding: .45rem;
+  border-radius: .55rem;
+  color: var(--dark-green);
+  font-size: 1.15rem;
+  transition: background .15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.icon-btn:hover {
+  background: var(--light-green);
+}
+
+.icon-btn-danger {
+  color: var(--danger-red);
+}
+
+.icon-btn-danger:hover {
+  background: #fef2f2;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid #eef2f6;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, .03);
+  z-index: 1030;
+  margin: 0;
+  padding: 0;
+}
+
+.bottom-nav-inner {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.nav-btn {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 6px 0 4px;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: color .15s ease, transform .12s ease;
+  text-decoration: none;
+}
+
+.nav-btn:active {
+  transform: scale(.92);
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--dark-green);
+  outline-offset: -2px;
+}
+
+.nav-btn .nav-indicator {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: transparent;
+  transition: all .2s ease;
+  transform: scaleX(0);
+}
+
+.nav-btn.active .nav-indicator {
+  background: var(--dark-green);
+  transform: scaleX(1);
+}
+
+.nav-btn .bi {
+  font-size: 1.35rem;
+  line-height: 1;
+  margin-bottom: 3px;
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), color .15s ease;
+}
+
+.nav-btn .nav-label {
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  line-height: 1;
+  transition: color .15s ease, font-weight .15s ease;
+}
+
+.nav-btn:hover {
+  color: var(--dark-green);
+}
+
+.nav-btn.active {
+  color: var(--dark-green);
+}
+
+.nav-btn.active .bi {
+  transform: scale(1.08);
+}
+
+.nav-btn.active .nav-label {
+  font-weight: 700;
+}
+
+/* Toast Notification */
+.toast-notif {
+  position: fixed;
+  left: 50%;
+  bottom: 76px;
+  transform: translate(-50%, 30px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s;
+  z-index: 2000;
+  background: var(--dark-green);
+  color: #fff;
+  padding: .85rem 1.75rem;
+  border-radius: 999px;
+  font-size: .95rem;
+  font-weight: 700;
+  text-align: center;
+  max-width: calc(100% - 2rem);
+  box-shadow: 0 10px 30px rgba(9, 78, 58, .4);
+}
+
+.toast-notif.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: .5rem;
+  height: 64px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Progress Fill Utility */
+.progress-fill {
+  transition: width .55s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Bottom Sheets (Generic 90vh) */
+.offcanvas-bottom {
+  height: 90vh !important;
+  max-height: 90vh !important;
+  min-height: 90vh !important;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.offcanvas-bottom .offcanvas-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* Segmented Subtabs */
+.subtab-container {
+  display: flex;
+  gap: .25rem;
+  padding: .3rem;
+  border-radius: .85rem;
+  background: var(--light-green);
+  margin-bottom: 1rem;
+}
+
+.subtab-btn {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: .65rem .25rem;
+  border-radius: .6rem;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--dark-green);
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+
+.subtab-btn:hover {
+  background: rgba(9, 78, 58, .06);
+}
+
+.subtab-btn.active {
+  background: var(--dark-green);
+  color: #fff;
+}
+
+.subtab-btn.active.subtab-danger {
+  background: var(--danger-red);
+  color: #fff;
+}
+
+.subtab-btn .subtab-badge {
+  font-size: .68rem;
+  padding: .15rem .45rem;
+  border-radius: 999px;
+  background: rgba(9, 78, 58, .14);
+  color: var(--dark-green);
+  font-weight: 800;
+  min-width: 1.4rem;
+  text-align: center;
+}
+
+.subtab-btn.active .subtab-badge {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+
+.subtab-btn .subtab-badge.danger {
+  background: #fee2e2;
+  color: var(--danger-red);
+}
+
+.subtab-btn.active .subtab-badge.danger {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+
+/* Forms & Dialog Elements */
+.form-control,
+.form-select {
+  font-size: .95rem;
+  padding: .7rem .9rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--dark-green);
+  box-shadow: 0 0 0 .2rem rgba(9, 78, 58, .15);
+}
+
+.form-label {
+  font-size: .72rem !important;
+}
+
+.form-text {
+  font-size: .78rem;
+}
+
+.alert {
+  font-size: .88rem;
+}
+
+/* Calendar Grid & Base Cells */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-wd {
+  text-align: center;
+  font-size: .7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  padding: .4rem 0;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .88rem;
+  font-weight: 600;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+  transition: all .13s;
+  position: relative;
+  min-height: 38px;
+}
+
+.cal-cell.empty {
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal-cell.out-of-range:not(.today) {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  font-weight: 500;
+  opacity: .85;
+}
+
+.cal-cell.today {
+  box-shadow: inset 0 0 0 2px var(--dark-green);
+  color: var(--dark-green);
+  font-weight: 800;
+  background: #fff;
+}
+
+.cal-cell:not(.empty):not(.out-of-range):not(.complete):not(.partial):hover {
+  background: #cbd5e1;
+  transform: scale(1.06);
+}
+
