@@ -10,20 +10,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="../shared/css/style.css">
 </head>
 <body>
 
 <nav class="navbar app-header sticky-top py-2">
   <div class="container" style="max-width:480px">
-    <div class="brand-group">
-      <span class="navbar-brand" data-bind="text: tabTitle">Today</span>
-      <span class="brand-date" data-bind="visible: showDateInHeader, text: headerDateLabel"></span>
+    <div class="d-flex flex-column lh-sm flex-grow-1 min-w-0">
+      <span class="navbar-brand p-0 m-0 fw-bold fs-5" style="color:var(--dark-green)!important;line-height:1.15" data-bind="text: tabTitle">Today</span>
+      <span class="text-secondary fw-semibold text-truncate small" style="font-size:.72rem" data-bind="visible: showDateInHeader, text: headerDateLabel"></span>
     </div>
     <div class="d-flex gap-1 flex-shrink-0">
-      <!-- Today: Missing prayers icon -->
-      <button class="icon-btn icon-btn-danger" data-bind="visible: activeTab()==='today', click: openMissingSheet" aria-label="Missing prayers">
-        <i class="bi bi-exclamation-triangle-fill"></i>
+      <!-- Today: Missed prayers icon -->
+      <button class="icon-btn" data-bind="visible: activeTab()==='today', click: openMissingSheet" aria-label="Missed prayers" title="Missed Prayers">
+        <i class="bi bi-clock-history"></i>
       </button>
       <!-- Qaza: Calendar icon -->
       <button class="icon-btn" data-bind="visible: activeTab()==='qaza', click: openCalendar" aria-label="Calendar">
@@ -77,8 +78,8 @@
               <label class="prayer-item is-missing" data-bind="css: { 'is-checked': checkedObs }">
                 <input type="checkbox" data-bind="checked: checkedObs">
                 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-                <span class="prayer-name" data-bind="text: label"></span>
-                <span class="time-chip" data-bind="text: timeLabel"></span>
+                <span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+                <span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
               </label>
             </div>
             <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().missing.length === 0">No missed prayers — well done.</p>
@@ -89,8 +90,8 @@
               <label class="prayer-item is-upcoming">
                 <input type="checkbox" data-bind="checked: checkedObs, disable: true">
                 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-                <span class="prayer-name" data-bind="text: label"></span>
-                <span class="time-chip" data-bind="text: timeLabel"></span>
+                <span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+                <span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
               </label>
             </div>
             <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().upcoming.length === 0">All prayers have started.</p>
@@ -104,14 +105,30 @@
               <label class="prayer-item" data-bind="css: { 'is-checked': checkedObs }">
                 <input type="checkbox" data-bind="checked: checkedObs">
                 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-                <span class="prayer-name" data-bind="text: label"></span>
-                <span class="time-chip" data-bind="text: timeLabel"></span>
+                <span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+                <span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
               </label>
             </div>
             <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().done.length === 0">Nothing checked off yet.</p>
           </div>
         </div>
       </div>
+
+      <!-- Missed Prayers Button -->
+      <button type="button" class="btn w-100 p-3 rounded-4 mb-3 d-flex align-items-center justify-content-between shadow-sm bg-white"
+              style="border:1px solid var(--border-grey)!important;color:#1e293b"
+              data-bind="click: openMissingSheet">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:38px;height:38px;background:var(--light-green);color:var(--dark-green);font-size:1.05rem">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="text-start">
+            <div class="fw-bold" style="font-size:.95rem">Missed Prayers</div>
+            <div class="text-secondary" style="font-size:.76rem">View day-wise prayer status from Current Prayers</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-secondary" style="font-size:.85rem"></i>
+      </button>
     </div>
   </section>
 
@@ -135,7 +152,7 @@
             <label class="prayer-item is-missing" data-bind="css: { 'is-checked': checkedObs }">
               <input type="checkbox" data-bind="checked: checkedObs">
               <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-              <span class="prayer-name" data-bind="text: label"></span>
+              <span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
             </label>
           </div>
           <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: yesterdayGroups().notComplete.length === 0">All prayers complete.</p>
@@ -146,7 +163,7 @@
             <label class="prayer-item" data-bind="css: { 'is-checked': checkedObs }">
               <input type="checkbox" data-bind="checked: checkedObs">
               <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-              <span class="prayer-name" data-bind="text: label"></span>
+              <span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
             </label>
           </div>
           <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: yesterdayGroups().complete.length === 0">Nothing checked off yet.</p>
@@ -160,7 +177,7 @@
   <!-- ======== HISTORY ======== -->
   <section data-bind="visible: activeTab() === 'history'">
     <div class="d-flex flex-column gap-2" data-bind="foreach: filteredHistory">
-      <div class="history-row">
+      <div class="bg-white border rounded-3 p-3 d-flex align-items-center justify-content-between gap-2 shadow-none" style="border-color:var(--border-grey)!important">
         <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
           <div class="history-icon" data-bind="css: iconClass">
             <i data-bind="attr: {class: 'bi ' + icon}"></i>
@@ -189,21 +206,21 @@
       <div class="card-body">
         <div class="row g-2 mb-4">
           <div class="col-4">
-            <div class="stat-card" style="background:#f8fafc;border-color:var(--border-grey)">
-              <span class="stat-value text-dark" data-bind="text: stats().total.toLocaleString()">0</span>
-              <span class="stat-label text-secondary">Target</span>
+            <div class="rounded-3 p-3 text-center border" style="background:#f8fafc;border-color:var(--border-grey)!important">
+              <span class="d-block fw-bold fs-4 text-dark" style="font-variant-numeric:tabular-nums" data-bind="text: stats().total.toLocaleString()">0</span>
+              <span class="d-block fw-bold text-secondary text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Target</span>
             </div>
           </div>
           <div class="col-4">
-            <div class="stat-card" style="background:var(--light-green);border-color:#c8e6c9">
-              <span class="stat-value" style="color:var(--dark-green)" data-bind="text: stats().completed.toLocaleString()">0</span>
-              <span class="stat-label" style="color:var(--dark-green)">Cleared</span>
+            <div class="rounded-3 p-3 text-center border" style="background:var(--light-green);border-color:#c8e6c9!important">
+              <span class="d-block fw-bold fs-4" style="color:var(--dark-green);font-variant-numeric:tabular-nums" data-bind="text: stats().completed.toLocaleString()">0</span>
+              <span class="d-block fw-bold text-uppercase mt-1" style="color:var(--dark-green);font-size:.68rem;letter-spacing:.06em">Cleared</span>
             </div>
           </div>
           <div class="col-4">
-            <div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-              <span class="stat-value" style="color:var(--danger-red)" data-bind="text: stats().remaining.toLocaleString()">0</span>
-              <span class="stat-label" style="color:var(--danger-red)">Left</span>
+            <div class="rounded-3 p-3 text-center border" style="background:#fef2f2;border-color:#fecaca!important">
+              <span class="d-block fw-bold fs-4 text-danger" style="font-variant-numeric:tabular-nums" data-bind="text: stats().remaining.toLocaleString()">0</span>
+              <span class="d-block fw-bold text-danger text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Left</span>
             </div>
           </div>
         </div>
@@ -224,7 +241,7 @@
       <div class="card-body">
         <h6 class="fw-bold text-dark mb-3" style="font-size:1rem">Detailed Breakdown</h6>
         <div data-bind="foreach: breakdown">
-          <div class="breakdown-row">
+          <div class="d-flex justify-content-between py-2 border-bottom" style="font-size:.88rem;border-color:var(--border-grey)!important">
             <span class="text-secondary" data-bind="text: label"></span>
             <span class="fw-bold" data-bind="text: value, style: { color: color }"></span>
           </div>
@@ -269,29 +286,161 @@
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="settingsSheet"
      style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
   <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
-    <h5 class="offcanvas-title fw-bold" style="color:var(--dark-green);font-size:1.2rem">Settings</h5>
+    <h5 class="offcanvas-title fw-bold" style="color:var(--dark-green);font-size:1.2rem">
+      <i class="fa-solid fa-gear me-2"></i>Settings
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-  <div class="offcanvas-body">
-    <div class="mb-3">
-      <label class="form-label text-uppercase text-secondary fw-bold">Qaza Start Date</label>
-      <input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
-      <div class="form-text">From this date up to yesterday — the Qaza target is calculated automatically.</div>
+  <div class="offcanvas-body p-3">
+    <div class="list-group list-group-flush rounded-4 border overflow-hidden shadow-sm" style="border-color:var(--border-grey)!important">
+      <!-- 1. Current Prayer Starting Date -->
+      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
+              style="border-color:var(--border-grey)!important" data-bind="click: openCurrentPrayerDateSheet">
+        <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+            <i class="fa-solid fa-calendar-day"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Current Prayer Starting Date</div>
+            <div class="text-secondary text-truncate small" data-bind="text: currentStartLabel"></div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+      </button>
+
+      <!-- 2. Qaza Start Prayer Date -->
+      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
+              style="border-color:var(--border-grey)!important" data-bind="click: openQazaDateSheet">
+        <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+            <i class="fa-solid fa-moon"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Qaza Start Prayer Date</div>
+            <div class="text-secondary text-truncate small" data-bind="text: qazaStartLabel"></div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+      </button>
+
+      <!-- 3. Location & Time -->
+      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3"
+              data-bind="click: openLocationTimeSheet">
+        <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Location &amp; Time</div>
+            <div class="text-secondary text-truncate small" data-bind="text: locationTimeLabel"></div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 1. CURRENT PRAYER STARTING DATE SHEET (90%) ======== -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="currentPrayerDateSheet"
+     style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+  <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+        <i class="fa-solid fa-arrow-left fs-5"></i>
+      </button>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Current Prayer Starting Date</h5>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
+      <div class="mb-3">
+        <label class="form-label text-uppercase text-secondary fw-bold">Select Starting Date</label>
+        <input type="date" class="form-control fw-semibold" data-bind="value: pendingCurrentStartDate, attr: { max: todayDate }">
+        <div class="form-text mt-2">
+          Tracking for daily current prayers will be managed from this date through today.
+        </div>
+      </div>
+      <div class="p-2 rounded-2" style="background:#fef2f2;border:1px solid #fee2e2">
+        <div class="small fw-semibold text-danger">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i>Saving will rebuild and reset current prayers tracking from this selected date through today.
+        </div>
+      </div>
     </div>
 
-    <button class="btn btn-save w-100 fw-bold py-3 mb-4" data-bind="click: saveSettings">Save Settings</button>
+    <button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveCurrentPrayerStartDate">
+      Save Current Prayer Date
+    </button>
+  </div>
+</div>
 
-    <div class="mb-3">
-      <label class="form-label text-uppercase text-secondary fw-bold">City / District</label>
-      <select class="form-select fw-semibold" data-bind="value: pendingCity, options: cities"></select>
-      <div class="form-text">Andhra Pradesh districts included.</div>
+<!-- ======== 2. QAZA START PRAYER DATE SHEET (90%) ======== -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="qazaDateSheet"
+     style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+  <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+        <i class="fa-solid fa-arrow-left fs-5"></i>
+      </button>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Qaza Start Prayer Date</h5>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
+      <div class="mb-3">
+        <label class="form-label text-uppercase text-secondary fw-bold">Select Qaza Start Date</label>
+        <input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
+        <div class="form-text mt-2">
+          The Qaza target is calculated automatically from this start date up to yesterday.
+        </div>
+      </div>
+      <div class="p-2 rounded-2" style="background:#f8fafc;border:1px solid var(--border-grey)">
+        <div class="small fw-semibold text-secondary">
+          <i class="fa-solid fa-circle-info me-1"></i>Changing this recalculates your overall Qaza target days and progress percentage.
+        </div>
+      </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label text-uppercase text-secondary fw-bold">Prayer Times API URL</label>
-      <input type="text" class="form-control fw-semibold" data-bind="value: pendingApiUrl" placeholder="https://api.aladhan.com/v1/timingsByCity/...">
-      <div class="form-text">Leave blank to use the default AlAdhan URL.</div>
+    <button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveQazaStartDate">
+      Save Qaza Start Date
+    </button>
+  </div>
+</div>
+
+<!-- ======== 3. LOCATION & TIME SHEET (90%) ======== -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="locationTimeSheet"
+     style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+  <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+        <i class="fa-solid fa-arrow-left fs-5"></i>
+      </button>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Location &amp; Time</h5>
     </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
+      <div class="mb-3">
+        <label class="form-label text-uppercase text-secondary fw-bold">City / District</label>
+        <select class="form-select fw-semibold" data-bind="value: pendingCity, options: cities"></select>
+        <div class="form-text mt-1">Andhra Pradesh districts included.</div>
+      </div>
+      <div>
+        <label class="form-label text-uppercase text-secondary fw-bold">Prayer Times API URL</label>
+        <input type="text" class="form-control fw-semibold" data-bind="value: pendingApiUrl" placeholder="https://api.aladhan.com/v1/timingsByCity/...">
+        <div class="form-text mt-1">Leave blank to use default AlAdhan timings for selected city.</div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveLocationTime">
+      Save Location &amp; Time
+    </button>
   </div>
 </div>
 
@@ -364,95 +513,47 @@
   </div>
 </div>
 
-<!-- ======== MISSING PRAYERS SHEET (90%) ======== -->
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="missingSheet"
+<!-- ======== MISSED PRAYERS BOTTOM SHEET (90%) ======== -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="missingPrayersSheet"
      style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
   <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
-    <h5 class="offcanvas-title fw-bold" style="color:var(--danger-red);font-size:1.2rem">
-      <i class="bi bi-exclamation-triangle-fill me-1"></i>Missing Prayers
-    </h5>
+    <div class="d-flex align-items-center gap-2">
+      <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+           style="width:38px;height:38px;background:var(--light-green);color:var(--dark-green);font-size:1.05rem">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">
+        Missed Prayers
+      </h5>
+    </div>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
-  <div class="offcanvas-body">
-
-    <!-- Today's summary -->
-    <div class="missing-section">
-      <div class="missing-section-title">Today · <span data-bind="text: todayShortLabel"></span></div>
-      <div class="mb-3">
-        <span class="summary-pill passed"><i class="bi bi-clock"></i> Passed <strong data-bind="text: todaySummary().passed"></strong></span>
-        <span class="summary-pill completed"><i class="bi bi-check2"></i> Completed <strong data-bind="text: todaySummary().completed"></strong></span>
-        <span class="summary-pill missing"><i class="bi bi-x"></i> Missing <strong data-bind="text: todaySummary().missing"></strong></span>
-        <span class="summary-pill passed"><i class="bi bi-hourglass"></i> Upcoming <strong data-bind="text: todaySummary().upcoming"></strong></span>
-      </div>
-
-      <div data-bind="visible: todayGroups().missing.length > 0">
-        <div class="d-flex flex-column" data-bind="foreach: todayGroups().missing">
-          <div class="missing-day-row">
-            <div class="d-flex align-items-center gap-2">
-              <i data-bind="attr: {class: 'bi ' + icon}" style="color:var(--danger-red)"></i>
-              <span class="date" data-bind="text: label"></span>
+  <div class="offcanvas-body p-3">
+    <!-- Day-Wise Prayer Cards -->
+    <div class="d-flex flex-column gap-3 mb-2" data-bind="foreach: missedPrayerDays">
+      <div class="card border rounded-4 shadow-none p-3 bg-white" style="border-color:var(--border-grey)!important">
+        <div class="fw-bold text-dark mb-3" style="font-size:1.05rem" data-bind="text: dateLabel"></div>
+        <div class="row g-2" data-bind="foreach: prayers">
+          <div class="col-4">
+            <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border"
+                 data-bind="click: function() { $root.toggleDayPrayer($parent, $data); },
+                            css: isDone ? 'bg-success bg-opacity-10 border-success-subtle text-success' : 'bg-danger bg-opacity-10 border-danger-subtle text-danger'"
+                 style="cursor:pointer;user-select:none">
+              <i data-bind="attr: { class: 'bi ' + icon }" style="font-size:.95rem"></i>
+              <span class="text-dark fw-bold small text-truncate mx-1" data-bind="text: label"></span>
+              <i data-bind="attr: { class: isDone ? 'bi bi-check-circle' : 'bi bi-x-circle' }" style="font-size:.95rem"></i>
             </div>
-            <span class="count" data-bind="text: timeLabel"></span>
-          </div>
-        </div>
-      </div>
-      <div class="text-center py-3" data-bind="visible: todayGroups().missing.length === 0" style="background:var(--light-green);border-radius:.6rem">
-        <i class="bi bi-check-circle-fill" style="color:var(--dark-green);font-size:1.5rem"></i>
-        <p class="mb-0 fw-semibold" style="color:var(--dark-green);font-size:.85rem">All passed prayers completed today!</p>
-      </div>
-    </div>
-
-    <!-- Historical summary -->
-    <div class="missing-section">
-      <div class="missing-section-title">Since Qaza Start Date</div>
-      <div class="text-secondary mb-2" style="font-size:.8rem">
-        <i class="bi bi-calendar-range me-1"></i>
-        <span data-bind="text: qazaStartLabel"></span>
-      </div>
-      <div class="row g-2 mb-2">
-        <div class="col-6">
-          <div class="stat-card" style="background:#f8fafc;border-color:var(--border-grey)">
-            <span class="stat-value text-dark" data-bind="text: stats().total.toLocaleString()"></span>
-            <span class="stat-label text-secondary">Total Days</span>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="stat-card" style="background:var(--light-green);border-color:#c8e6c9">
-            <span class="stat-value" style="color:var(--dark-green)" data-bind="text: stats().completed.toLocaleString()"></span>
-            <span class="stat-label" style="color:var(--dark-green)">Cleared Days</span>
-          </div>
-        </div>
-      </div>
-      <div class="row g-2">
-        <div class="col-6">
-          <div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-            <span class="stat-value" style="color:var(--danger-red)" data-bind="text: missingDaysCount.toLocaleString()"></span>
-            <span class="stat-label" style="color:var(--danger-red)">Missing Days</span>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-            <span class="stat-value" style="color:var(--danger-red)" data-bind="text: missingPrayersCount.toLocaleString()"></span>
-            <span class="stat-label" style="color:var(--danger-red)">Missing Prayers</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Recent missing days -->
-    <div class="missing-section">
-      <div class="missing-section-title">Recent Missing Days</div>
-      <div data-bind="visible: recentMissingDays().length === 0" class="text-center py-3 text-secondary" style="font-size:.85rem">
-        <i class="bi bi-emoji-smile me-1"></i>No recent missing days — amazing!
-      </div>
-      <div data-bind="foreach: recentMissingDays">
-        <div class="missing-day-row">
-          <span class="date" data-bind="text: dateLabel"></span>
-          <span class="count" data-bind="text: missing + ' of 5 missing'"></span>
-        </div>
-      </div>
+    <!-- Empty State -->
+    <div class="text-center py-5" data-bind="visible: missedPrayerDays().length === 0">
+      <div class="fs-1 mb-2">🕌</div>
+      <p class="fw-semibold text-secondary mb-1">No prayer records available</p>
+      <p class="text-secondary mb-0" style="font-size:.85rem">Tracking will appear here as dates are recorded.</p>
     </div>
-
   </div>
 </div>
 

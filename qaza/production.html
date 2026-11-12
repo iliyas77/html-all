@@ -10,18 +10,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<style>:root{--dark-green:#094E3A;--light-green:#E8F5E9;--border-grey:#E0E0E0;--danger-red:#dc2626;--bs-primary:#094E3A;--bs-primary-rgb:9,78,58;--bs-success:#094E3A;--bs-success-rgb:9,78,58}*{font-family:Inter,system-ui,-apple-system,sans-serif}body{background:#fafafa;min-height:100vh;padding-bottom:72px;-webkit-font-smoothing:antialiased;color:#1e293b;font-size:16px}.app-header{background:#fff;backdrop-filter:blur(8px);border-bottom:1px solid var(--border-grey)}.app-header .container{display:flex;align-items:center;justify-content:space-between;gap:.5rem;min-height:44px}.brand-group{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:1 1 auto}.navbar-brand{font-weight:800;font-size:1.15rem;color:var(--dark-green)!important;padding:0;margin:0;line-height:1.15}.brand-date{font-size:.72rem;font-weight:600;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;margin-top:1px}.icon-btn{background:transparent;border:0;padding:.45rem;border-radius:.55rem;color:var(--dark-green);font-size:1.15rem;transition:background .15s;line-height:1;flex-shrink:0}.icon-btn:hover{background:var(--light-green)}.icon-btn-danger{color:var(--danger-red)}.icon-btn-danger:hover{background:#fef2f2}.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:56px;background:#fff;border-top:1px solid #eef2f6;box-shadow:0 -2px 10px #00000008;z-index:1030;margin:0;padding:0}.bottom-nav-inner{display:flex;align-items:stretch;justify-content:space-around;width:100%;height:100%;max-width:480px;margin:0 auto;padding:0}.nav-btn{position:relative;flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px 0 4px;border:0;background:transparent;color:#94a3b8;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:color .15s ease,transform .12s ease;text-decoration:none}.nav-btn:active{transform:scale(.92)}.nav-btn:focus-visible{outline:2px solid var(--dark-green);outline-offset:-2px}.nav-btn .nav-indicator{position:absolute;top:0;width:24px;height:3px;border-radius:0 0 3px 3px;background:transparent;transition:all .2s ease;transform:scaleX(0)}.nav-btn.active .nav-indicator{background:var(--dark-green);transform:scaleX(1)}.nav-btn .bi{font-size:1.35rem;line-height:1;margin-bottom:3px;transition:transform .18s cubic-bezier(.34,1.56,.64,1),color .15s ease}.nav-btn .nav-label{font-size:.68rem;font-weight:500;letter-spacing:-.01em;line-height:1;transition:color .15s ease,font-weight .15s ease}.nav-btn:hover,.nav-btn.active{color:var(--dark-green)}.nav-btn.active .bi{transform:scale(1.08)}.nav-btn.active .nav-label{font-weight:700}.prayer-item{display:flex;align-items:center;gap:.75rem;padding:.95rem 1rem;border:2px solid var(--border-grey);border-radius:.75rem;background:#fff;cursor:pointer;user-select:none;transition:all .15s;margin-bottom:.5rem}.prayer-item:last-child{margin-bottom:0}.prayer-item:hover{border-color:#a7d5c4;background:var(--light-green)}.prayer-item.is-checked{border-color:var(--dark-green);background:var(--light-green);box-shadow:0 0 0 3px #094e3a1a}.prayer-item.is-checked .prayer-name,.prayer-item.is-checked .prayer-icon{color:var(--dark-green)}.prayer-item.is-missing{border-color:var(--danger-red);background:#fef2f2}.prayer-item.is-missing:hover{background:#fee2e2}.prayer-item.is-missing .prayer-name,.prayer-item.is-missing .prayer-icon,.prayer-item.is-missing .time-chip{color:var(--danger-red)}.prayer-item.is-missing input[type=checkbox]{accent-color:var(--danger-red)}.prayer-item.is-upcoming{cursor:default}.prayer-item.is-upcoming:hover{border-color:var(--border-grey);background:#fff}.prayer-item.is-upcoming input[type=checkbox]{cursor:not-allowed;opacity:.55}.prayer-item input[type=checkbox]{width:20px;height:20px;accent-color:var(--dark-green);cursor:pointer;flex-shrink:0;margin:0}.prayer-icon{font-size:1.15rem;color:#64748b;flex-shrink:0;width:1.4rem;text-align:center;transition:color .15s}.prayer-name{font-size:1rem;font-weight:600;color:#334155;letter-spacing:.005em}.time-chip{margin-left:auto;font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;color:#64748b}.stat-card{border-radius:.75rem;padding:.85rem .25rem;text-align:center;border:1px solid}.stat-card .stat-value{font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;display:block}.stat-card .stat-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-top:.3rem}.toast-notif{position:fixed;left:50%;bottom:76px;transform:translate(-50%,30px);opacity:0;pointer-events:none;transition:all .3s;z-index:2000;background:var(--dark-green);color:#fff;padding:.85rem 1.75rem;border-radius:999px;font-size:.95rem;font-weight:700;text-align:center;max-width:calc(100% - 2rem);box-shadow:0 10px 30px #094e3a66}.toast-notif.show{opacity:1;transform:translate(-50%)}.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:.5rem;height:64px}@keyframes shimmer{0%{background-position:-200% 0}to{background-position:200% 0}}.progress-fill{transition:width .55s cubic-bezier(.4,0,.2,1)}.offcanvas-bottom,#settingsSheet.offcanvas-bottom,#calendarSheet.offcanvas-bottom,#missingSheet.offcanvas-bottom{height:90vh!important;max-height:90vh!important;min-height:90vh!important;border-top-left-radius:1.5rem;border-top-right-radius:1.5rem;display:flex!important;flex-direction:column!important}#settingsSheet .offcanvas-body,#calendarSheet .offcanvas-body,#missingSheet .offcanvas-body{flex:1 1 auto;overflow-y:auto}.history-row{background:#fff;border:1px solid var(--border-grey);border-radius:.75rem;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem}.breakdown-row{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border-grey);font-size:.88rem}.breakdown-row:last-child{border-bottom:0}.subtab-container{display:flex;gap:.25rem;padding:.3rem;border-radius:.85rem;background:var(--light-green);margin-bottom:1rem}.subtab-btn{flex:1;border:0;background:transparent;padding:.65rem .25rem;border-radius:.6rem;font-weight:700;font-size:.85rem;color:var(--dark-green);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.4rem}.subtab-btn:hover{background:#094e3a0f}.subtab-btn.active{background:var(--dark-green);color:#fff}.subtab-btn.active.subtab-danger{background:var(--danger-red);color:#fff}.subtab-btn .subtab-badge{font-size:.68rem;padding:.15rem .45rem;border-radius:999px;background:#094e3a24;color:var(--dark-green);font-weight:800;min-width:1.4rem;text-align:center}.subtab-btn.active .subtab-badge{background:#ffffff47;color:#fff}.subtab-btn .subtab-badge.danger{background:#fee2e2;color:var(--danger-red)}.subtab-btn.active .subtab-badge.danger{background:#ffffff47;color:#fff}.history-icon{width:38px;height:38px;border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.05rem}.history-icon.check{background:var(--light-green);color:var(--dark-green)}.history-icon.uncheck{background:#f1f5f9;color:#94a3b8}.history-icon.complete{background:var(--dark-green);color:#fff}.btn-save{background:var(--dark-green);border-color:var(--dark-green);color:#fff;font-weight:700;font-size:.95rem}.btn-save:hover{background:#063924;border-color:#063924;color:#fff}.form-control,.form-select{font-size:.95rem;padding:.7rem .9rem}.form-control:focus,.form-select:focus{border-color:var(--dark-green);box-shadow:0 0 0 .2rem #094e3a26}.form-label{font-size:.72rem!important}.form-text{font-size:.78rem}.alert{font-size:.88rem}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal-wd{text-align:center;font-size:.7rem;font-weight:800;color:#94a3b8;padding:.4rem 0;text-transform:uppercase;letter-spacing:.05em}.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:600;border-radius:50%;background:#f1f5f9;color:#475569;cursor:pointer;transition:all .13s;position:relative;min-height:38px}.cal-cell.empty{background:transparent;cursor:default;pointer-events:none}.cal-cell.out-of-range:not(.today){background:#f8fafc;color:#94a3b8;cursor:not-allowed;font-weight:500;opacity:.85}.cal-cell.today{box-shadow:inset 0 0 0 2px var(--dark-green);color:var(--dark-green);font-weight:800;background:#fff}.cal-cell.partial{background:var(--light-green);color:var(--dark-green);font-weight:700}.cal-cell.partial:hover{background:#c8e6c9;transform:scale(1.06)}.cal-cell.complete{background:var(--dark-green);color:#fff;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#ffffffd9;font-weight:800;box-shadow:0 2px 6px #094e3a4d}.cal-cell.complete:hover{background:#063924;transform:scale(1.06)}.cal-cell.today.complete{box-shadow:inset 0 0 0 2px #fff,0 2px 6px #094e3a4d;color:#fff}.cal-cell:not(.empty):not(.out-of-range):not(.complete):not(.partial):hover{background:#cbd5e1;transform:scale(1.06)}.missing-section{border-bottom:1px solid var(--border-grey);padding-bottom:1rem;margin-bottom:1rem}.missing-section:last-child{border-bottom:0}.missing-section-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:.6rem}.summary-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:.6rem;font-size:.8rem;font-weight:700;margin-right:.35rem;margin-bottom:.35rem}.summary-pill.passed{background:#f1f5f9;color:#475569}.summary-pill.completed{background:var(--light-green);color:var(--dark-green)}.summary-pill.missing{background:#fee2e2;color:var(--danger-red)}.missing-day-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem .9rem;background:#f8fafc;border:1px solid var(--border-grey);border-radius:.6rem;margin-bottom:.4rem;font-size:.85rem}.missing-day-row .date{font-weight:700;color:#334155}.missing-day-row .count{font-weight:700;color:var(--danger-red);font-size:.8rem}</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>:root{--dark-green:#094E3A;--light-green:#E8F5E9;--border-grey:#E0E0E0;--danger-red:#dc2626;--bs-primary:#094E3A;--bs-primary-rgb:9,78,58;--bs-success:#094E3A;--bs-success-rgb:9,78,58}*{font-family:Inter,system-ui,-apple-system,sans-serif}body{background:#fafafa;min-height:100vh;padding-bottom:72px;-webkit-font-smoothing:antialiased;color:#1e293b;font-size:16px}.app-header{background:#fff;backdrop-filter:blur(8px);border-bottom:1px solid var(--border-grey)}.app-header .container{display:flex;align-items:center;justify-content:space-between;gap:.5rem;min-height:44px}.navbar-brand{color:var(--dark-green)!important}.icon-btn{background:transparent;border:0;padding:.45rem;border-radius:.55rem;color:var(--dark-green);font-size:1.15rem;transition:background .15s;line-height:1;flex-shrink:0}.icon-btn:hover{background:var(--light-green)}.icon-btn-danger{color:var(--danger-red)}.icon-btn-danger:hover{background:#fef2f2}.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:56px;background:#fff;border-top:1px solid #eef2f6;box-shadow:0 -2px 10px #00000008;z-index:1030;margin:0;padding:0}.bottom-nav-inner{display:flex;align-items:stretch;justify-content:space-around;width:100%;height:100%;max-width:480px;margin:0 auto;padding:0}.nav-btn{position:relative;flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px 0 4px;border:0;background:transparent;color:#94a3b8;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:color .15s ease,transform .12s ease;text-decoration:none}.nav-btn:active{transform:scale(.92)}.nav-btn:focus-visible{outline:2px solid var(--dark-green);outline-offset:-2px}.nav-btn .nav-indicator{position:absolute;top:0;width:24px;height:3px;border-radius:0 0 3px 3px;background:transparent;transition:all .2s ease;transform:scaleX(0)}.nav-btn.active .nav-indicator{background:var(--dark-green);transform:scaleX(1)}.nav-btn .bi{font-size:1.35rem;line-height:1;margin-bottom:3px;transition:transform .18s cubic-bezier(.34,1.56,.64,1),color .15s ease}.nav-btn .nav-label{font-size:.68rem;font-weight:500;letter-spacing:-.01em;line-height:1;transition:color .15s ease,font-weight .15s ease}.nav-btn:hover,.nav-btn.active{color:var(--dark-green)}.nav-btn.active .bi{transform:scale(1.08)}.nav-btn.active .nav-label{font-weight:700}.prayer-item{display:flex;align-items:center;gap:.75rem;padding:.95rem 1rem;border:2px solid var(--border-grey);border-radius:.75rem;background:#fff;cursor:pointer;user-select:none;transition:all .15s;margin-bottom:.5rem}.prayer-item:last-child{margin-bottom:0}.prayer-item:hover{border-color:#a7d5c4;background:var(--light-green)}.prayer-item.is-checked{border-color:var(--dark-green);background:var(--light-green);box-shadow:0 0 0 3px #094e3a1a}.prayer-item.is-checked .prayer-icon{color:var(--dark-green)}.prayer-item.is-missing{border-color:var(--danger-red);background:#fef2f2}.prayer-item.is-missing:hover{background:#fee2e2}.prayer-item.is-missing .prayer-icon{color:var(--danger-red)}.prayer-item.is-missing input[type=checkbox]{accent-color:var(--danger-red)}.prayer-item.is-upcoming{cursor:default}.prayer-item.is-upcoming:hover{border-color:var(--border-grey);background:#fff}.prayer-item.is-upcoming input[type=checkbox]{cursor:not-allowed;opacity:.55}.prayer-item input[type=checkbox]{width:20px;height:20px;accent-color:var(--dark-green);cursor:pointer;flex-shrink:0;margin:0}.prayer-icon{font-size:1.15rem;color:#64748b;flex-shrink:0;width:1.4rem;text-align:center;transition:color .15s}.toast-notif{position:fixed;left:50%;bottom:76px;transform:translate(-50%,30px);opacity:0;pointer-events:none;transition:all .3s;z-index:2000;background:var(--dark-green);color:#fff;padding:.85rem 1.75rem;border-radius:999px;font-size:.95rem;font-weight:700;text-align:center;max-width:calc(100% - 2rem);box-shadow:0 10px 30px #094e3a66}.toast-notif.show{opacity:1;transform:translate(-50%)}.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:.5rem;height:64px}@keyframes shimmer{0%{background-position:-200% 0}to{background-position:200% 0}}.progress-fill{transition:width .55s cubic-bezier(.4,0,.2,1)}.offcanvas-bottom,#settingsSheet.offcanvas-bottom,#calendarSheet.offcanvas-bottom,#missingPrayersSheet.offcanvas-bottom,#missingSheet.offcanvas-bottom{height:90vh!important;max-height:90vh!important;min-height:90vh!important;border-top-left-radius:1.5rem;border-top-right-radius:1.5rem;display:flex!important;flex-direction:column!important}#settingsSheet .offcanvas-body,#currentPrayerDateSheet .offcanvas-body,#qazaDateSheet .offcanvas-body,#locationTimeSheet .offcanvas-body,#calendarSheet .offcanvas-body,#missingPrayersSheet .offcanvas-body,#missingSheet .offcanvas-body{flex:1 1 auto;overflow-y:auto}.subtab-container{display:flex;gap:.25rem;padding:.3rem;border-radius:.85rem;background:var(--light-green);margin-bottom:1rem}.subtab-btn{flex:1;border:0;background:transparent;padding:.65rem .25rem;border-radius:.6rem;font-weight:700;font-size:.85rem;color:var(--dark-green);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.4rem}.subtab-btn:hover{background:#094e3a0f}.subtab-btn.active{background:var(--dark-green);color:#fff}.subtab-btn.active.subtab-danger{background:var(--danger-red);color:#fff}.subtab-btn .subtab-badge{font-size:.68rem;padding:.15rem .45rem;border-radius:999px;background:#094e3a24;color:var(--dark-green);font-weight:800;min-width:1.4rem;text-align:center}.subtab-btn.active .subtab-badge{background:#ffffff47;color:#fff}.subtab-btn .subtab-badge.danger{background:#fee2e2;color:var(--danger-red)}.subtab-btn.active .subtab-badge.danger{background:#ffffff47;color:#fff}.history-icon{width:38px;height:38px;border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.05rem}.history-icon.check{background:var(--light-green);color:var(--dark-green)}.history-icon.uncheck{background:#f1f5f9;color:#94a3b8}.history-icon.complete{background:var(--dark-green);color:#fff}.form-control,.form-select{font-size:.95rem;padding:.7rem .9rem}.form-control:focus,.form-select:focus{border-color:var(--dark-green);box-shadow:0 0 0 .2rem #094e3a26}.form-label{font-size:.72rem!important}.form-text{font-size:.78rem}.alert{font-size:.88rem}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal-wd{text-align:center;font-size:.7rem;font-weight:800;color:#94a3b8;padding:.4rem 0;text-transform:uppercase;letter-spacing:.05em}.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:600;border-radius:50%;background:#f1f5f9;color:#475569;cursor:pointer;transition:all .13s;position:relative;min-height:38px}.cal-cell.empty{background:transparent;cursor:default;pointer-events:none}.cal-cell.out-of-range:not(.today){background:#f8fafc;color:#94a3b8;cursor:not-allowed;font-weight:500;opacity:.85}.cal-cell.today{box-shadow:inset 0 0 0 2px var(--dark-green);color:var(--dark-green);font-weight:800;background:#fff}.cal-cell.partial{background:var(--light-green);color:var(--dark-green);font-weight:700}.cal-cell.partial:hover{background:#c8e6c9;transform:scale(1.06)}.cal-cell.complete{background:var(--dark-green);color:#fff;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#ffffffd9;font-weight:800;box-shadow:0 2px 6px #094e3a4d}.cal-cell.complete:hover{background:#063924;transform:scale(1.06)}.cal-cell.today.complete{box-shadow:inset 0 0 0 2px #fff,0 2px 6px #094e3a4d;color:#fff}.cal-cell:not(.empty):not(.out-of-range):not(.complete):not(.partial):hover{background:#cbd5e1;transform:scale(1.06)}</style>
 </head>
 <body>
 <nav class="navbar app-header sticky-top py-2">
 <div class="container" style="max-width:480px">
-<div class="brand-group">
-<span class="navbar-brand" data-bind="text: tabTitle">Today</span>
-<span class="brand-date" data-bind="visible: showDateInHeader, text: headerDateLabel"></span>
+<div class="d-flex flex-column lh-sm flex-grow-1 min-w-0">
+<span class="navbar-brand p-0 m-0 fw-bold fs-5" style="color:var(--dark-green)!important;line-height:1.15" data-bind="text: tabTitle">Today</span>
+<span class="text-secondary fw-semibold text-truncate small" style="font-size:.72rem" data-bind="visible: showDateInHeader, text: headerDateLabel"></span>
 </div>
 <div class="d-flex gap-1 flex-shrink-0">
-<button class="icon-btn icon-btn-danger" data-bind="visible: activeTab()==='today', click: openMissingSheet" aria-label="Missing prayers">
-<i class="bi bi-exclamation-triangle-fill"></i>
+<button class="icon-btn" data-bind="visible: activeTab()==='today', click: openMissingSheet" aria-label="Missed prayers" title="Missed Prayers">
+<i class="bi bi-clock-history"></i>
 </button>
 <button class="icon-btn" data-bind="visible: activeTab()==='qaza', click: openCalendar" aria-label="Calendar">
 <i class="bi bi-calendar3"></i>
@@ -66,8 +67,8 @@ Done
 <label class="prayer-item is-missing" data-bind="css: { 'is-checked': checkedObs }">
 <input type="checkbox" data-bind="checked: checkedObs">
 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-<span class="prayer-name" data-bind="text: label"></span>
-<span class="time-chip" data-bind="text: timeLabel"></span>
+<span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+<span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
 </label>
 </div>
 <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().missing.length === 0">No missed prayers — well done.</p>
@@ -77,8 +78,8 @@ Done
 <label class="prayer-item is-upcoming">
 <input type="checkbox" data-bind="checked: checkedObs, disable: true">
 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-<span class="prayer-name" data-bind="text: label"></span>
-<span class="time-chip" data-bind="text: timeLabel"></span>
+<span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+<span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
 </label>
 </div>
 <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().upcoming.length === 0">All prayers have started.</p>
@@ -91,14 +92,28 @@ Done
 <label class="prayer-item" data-bind="css: { 'is-checked': checkedObs }">
 <input type="checkbox" data-bind="checked: checkedObs">
 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-<span class="prayer-name" data-bind="text: label"></span>
-<span class="time-chip" data-bind="text: timeLabel"></span>
+<span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
+<span class="ms-auto text-secondary fw-bold small" style="font-variant-numeric:tabular-nums" data-bind="text: timeLabel"></span>
 </label>
 </div>
 <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: todayGroups().done.length === 0">Nothing checked off yet.</p>
 </div>
 </div>
 </div>
+<button type="button" class="btn w-100 p-3 rounded-4 mb-3 d-flex align-items-center justify-content-between shadow-sm bg-white"
+style="border:1px solid var(--border-grey)!important;color:#1e293b"
+data-bind="click: openMissingSheet">
+<div class="d-flex align-items-center gap-3">
+<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:38px;height:38px;background:var(--light-green);color:var(--dark-green);font-size:1.05rem">
+<i class="fa-solid fa-calendar-check"></i>
+</div>
+<div class="text-start">
+<div class="fw-bold" style="font-size:.95rem">Missed Prayers</div>
+<div class="text-secondary" style="font-size:.76rem">View day-wise prayer status from Current Prayers</div>
+</div>
+</div>
+<i class="fa-solid fa-chevron-right text-secondary" style="font-size:.85rem"></i>
+</button>
 </div>
 </section>
 <section data-bind="visible: activeTab() === 'qaza'">
@@ -119,7 +134,7 @@ Complete
 <label class="prayer-item is-missing" data-bind="css: { 'is-checked': checkedObs }">
 <input type="checkbox" data-bind="checked: checkedObs">
 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-<span class="prayer-name" data-bind="text: label"></span>
+<span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
 </label>
 </div>
 <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: yesterdayGroups().notComplete.length === 0">All prayers complete.</p>
@@ -129,7 +144,7 @@ Complete
 <label class="prayer-item" data-bind="css: { 'is-checked': checkedObs }">
 <input type="checkbox" data-bind="checked: checkedObs">
 <i data-bind="attr: {class: 'bi ' + icon + ' prayer-icon'}"></i>
-<span class="prayer-name" data-bind="text: label"></span>
+<span class="fw-semibold text-dark fs-6" style="letter-spacing:.005em" data-bind="text: label"></span>
 </label>
 </div>
 <p class="text-secondary fst-italic py-2 mb-0" style="font-size:.92rem" data-bind="visible: yesterdayGroups().complete.length === 0">Nothing checked off yet.</p>
@@ -140,7 +155,7 @@ Complete
 </section>
 <section data-bind="visible: activeTab() === 'history'">
 <div class="d-flex flex-column gap-2" data-bind="foreach: filteredHistory">
-<div class="history-row">
+<div class="bg-white border rounded-3 p-3 d-flex align-items-center justify-content-between gap-2 shadow-none" style="border-color:var(--border-grey)!important">
 <div class="d-flex align-items-center gap-2 min-w-0 flex-grow-1">
 <div class="history-icon" data-bind="css: iconClass">
 <i data-bind="attr: {class: 'bi ' + icon}"></i>
@@ -166,21 +181,21 @@ Complete
 <div class="card-body">
 <div class="row g-2 mb-4">
 <div class="col-4">
-<div class="stat-card" style="background:#f8fafc;border-color:var(--border-grey)">
-<span class="stat-value text-dark" data-bind="text: stats().total.toLocaleString()">0</span>
-<span class="stat-label text-secondary">Target</span>
+<div class="rounded-3 p-3 text-center border" style="background:#f8fafc;border-color:var(--border-grey)!important">
+<span class="d-block fw-bold fs-4 text-dark" style="font-variant-numeric:tabular-nums" data-bind="text: stats().total.toLocaleString()">0</span>
+<span class="d-block fw-bold text-secondary text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Target</span>
 </div>
 </div>
 <div class="col-4">
-<div class="stat-card" style="background:var(--light-green);border-color:#c8e6c9">
-<span class="stat-value" style="color:var(--dark-green)" data-bind="text: stats().completed.toLocaleString()">0</span>
-<span class="stat-label" style="color:var(--dark-green)">Cleared</span>
+<div class="rounded-3 p-3 text-center border" style="background:var(--light-green);border-color:#c8e6c9!important">
+<span class="d-block fw-bold fs-4" style="color:var(--dark-green);font-variant-numeric:tabular-nums" data-bind="text: stats().completed.toLocaleString()">0</span>
+<span class="d-block fw-bold text-uppercase mt-1" style="color:var(--dark-green);font-size:.68rem;letter-spacing:.06em">Cleared</span>
 </div>
 </div>
 <div class="col-4">
-<div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-<span class="stat-value" style="color:var(--danger-red)" data-bind="text: stats().remaining.toLocaleString()">0</span>
-<span class="stat-label" style="color:var(--danger-red)">Left</span>
+<div class="rounded-3 p-3 text-center border" style="background:#fef2f2;border-color:#fecaca!important">
+<span class="d-block fw-bold fs-4 text-danger" style="font-variant-numeric:tabular-nums" data-bind="text: stats().remaining.toLocaleString()">0</span>
+<span class="d-block fw-bold text-danger text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Left</span>
 </div>
 </div>
 </div>
@@ -200,7 +215,7 @@ data-bind="style: { width: stats().percent.toFixed(3) + '%' }"></div>
 <div class="card-body">
 <h6 class="fw-bold text-dark mb-3" style="font-size:1rem">Detailed Breakdown</h6>
 <div data-bind="foreach: breakdown">
-<div class="breakdown-row">
+<div class="d-flex justify-content-between py-2 border-bottom" style="font-size:.88rem;border-color:var(--border-grey)!important">
 <span class="text-secondary" data-bind="text: label"></span>
 <span class="fw-bold" data-bind="text: value, style: { color: color }"></span>
 </div>
@@ -240,26 +255,147 @@ data-bind="click: goProgress, css: { active: activeTab() === 'progress' }" aria-
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="settingsSheet"
 style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
 <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
-<h5 class="offcanvas-title fw-bold" style="color:var(--dark-green);font-size:1.2rem">Settings</h5>
+<h5 class="offcanvas-title fw-bold" style="color:var(--dark-green);font-size:1.2rem">
+<i class="fa-solid fa-gear me-2"></i>Settings
+</h5>
 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 </div>
-<div class="offcanvas-body">
-<div class="mb-3">
-<label class="form-label text-uppercase text-secondary fw-bold">Qaza Start Date</label>
-<input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
-<div class="form-text">From this date up to yesterday — the Qaza target is calculated automatically.</div>
+<div class="offcanvas-body p-3">
+<div class="list-group list-group-flush rounded-4 border overflow-hidden shadow-sm" style="border-color:var(--border-grey)!important">
+<button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
+style="border-color:var(--border-grey)!important" data-bind="click: openCurrentPrayerDateSheet">
+<div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+<i class="fa-solid fa-calendar-day"></i>
 </div>
-<button class="btn btn-save w-100 fw-bold py-3 mb-4" data-bind="click: saveSettings">Save Settings</button>
+<div class="min-w-0">
+<div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Current Prayer Starting Date</div>
+<div class="text-secondary text-truncate small" data-bind="text: currentStartLabel"></div>
+</div>
+</div>
+<i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+</button>
+<button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
+style="border-color:var(--border-grey)!important" data-bind="click: openQazaDateSheet">
+<div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+<i class="fa-solid fa-moon"></i>
+</div>
+<div class="min-w-0">
+<div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Qaza Start Prayer Date</div>
+<div class="text-secondary text-truncate small" data-bind="text: qazaStartLabel"></div>
+</div>
+</div>
+<i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+</button>
+<button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3"
+data-bind="click: openLocationTimeSheet">
+<div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+<i class="fa-solid fa-location-dot"></i>
+</div>
+<div class="min-w-0">
+<div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Location &amp; Time</div>
+<div class="text-secondary text-truncate small" data-bind="text: locationTimeLabel"></div>
+</div>
+</div>
+<i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+</button>
+</div>
+</div>
+</div>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="currentPrayerDateSheet"
+style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+<div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+<div class="d-flex align-items-center gap-2">
+<button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+<i class="fa-solid fa-arrow-left fs-5"></i>
+</button>
+<h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Current Prayer Starting Date</h5>
+</div>
+<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body p-3">
+<div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
+<div class="mb-3">
+<label class="form-label text-uppercase text-secondary fw-bold">Select Starting Date</label>
+<input type="date" class="form-control fw-semibold" data-bind="value: pendingCurrentStartDate, attr: { max: todayDate }">
+<div class="form-text mt-2">
+Tracking for daily current prayers will be managed from this date through today.
+</div>
+</div>
+<div class="p-2 rounded-2" style="background:#fef2f2;border:1px solid #fee2e2">
+<div class="small fw-semibold text-danger">
+<i class="fa-solid fa-triangle-exclamation me-1"></i>Saving will rebuild and reset current prayers tracking from this selected date through today.
+</div>
+</div>
+</div>
+<button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveCurrentPrayerStartDate">
+Save Current Prayer Date
+</button>
+</div>
+</div>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="qazaDateSheet"
+style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+<div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+<div class="d-flex align-items-center gap-2">
+<button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+<i class="fa-solid fa-arrow-left fs-5"></i>
+</button>
+<h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Qaza Start Prayer Date</h5>
+</div>
+<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body p-3">
+<div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
+<div class="mb-3">
+<label class="form-label text-uppercase text-secondary fw-bold">Select Qaza Start Date</label>
+<input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
+<div class="form-text mt-2">
+The Qaza target is calculated automatically from this start date up to yesterday.
+</div>
+</div>
+<div class="p-2 rounded-2" style="background:#f8fafc;border:1px solid var(--border-grey)">
+<div class="small fw-semibold text-secondary">
+<i class="fa-solid fa-circle-info me-1"></i>Changing this recalculates your overall Qaza target days and progress percentage.
+</div>
+</div>
+</div>
+<button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveQazaStartDate">
+Save Qaza Start Date
+</button>
+</div>
+</div>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="locationTimeSheet"
+style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
+<div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
+<div class="d-flex align-items-center gap-2">
+<button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
+<i class="fa-solid fa-arrow-left fs-5"></i>
+</button>
+<h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Location &amp; Time</h5>
+</div>
+<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body p-3">
+<div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
 <div class="mb-3">
 <label class="form-label text-uppercase text-secondary fw-bold">City / District</label>
 <select class="form-select fw-semibold" data-bind="value: pendingCity, options: cities"></select>
-<div class="form-text">Andhra Pradesh districts included.</div>
+<div class="form-text mt-1">Andhra Pradesh districts included.</div>
 </div>
-<div class="mb-3">
+<div>
 <label class="form-label text-uppercase text-secondary fw-bold">Prayer Times API URL</label>
 <input type="text" class="form-control fw-semibold" data-bind="value: pendingApiUrl" placeholder="https://api.aladhan.com/v1/timingsByCity/...">
-<div class="form-text">Leave blank to use the default AlAdhan URL.</div>
+<div class="form-text mt-1">Leave blank to use default AlAdhan timings for selected city.</div>
 </div>
+</div>
+<button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveLocationTime">
+Save Location &amp; Time
+</button>
 </div>
 </div>
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="calendarSheet"
@@ -321,92 +457,49 @@ data-bind="click: jumpToStart">
 </div>
 </div>
 </div>
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="missingSheet"
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="missingPrayersSheet"
 style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
 <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
-<h5 class="offcanvas-title fw-bold" style="color:var(--danger-red);font-size:1.2rem">
-<i class="bi bi-exclamation-triangle-fill me-1"></i>Missing Prayers
+<div class="d-flex align-items-center gap-2">
+<div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+style="width:38px;height:38px;background:var(--light-green);color:var(--dark-green);font-size:1.05rem">
+<i class="fa-solid fa-calendar-check"></i>
+</div>
+<h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">
+Missed Prayers
 </h5>
+</div>
 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 </div>
-<div class="offcanvas-body">
-<div class="missing-section">
-<div class="missing-section-title">Today · <span data-bind="text: todayShortLabel"></span></div>
-<div class="mb-3">
-<span class="summary-pill passed"><i class="bi bi-clock"></i> Passed <strong data-bind="text: todaySummary().passed"></strong></span>
-<span class="summary-pill completed"><i class="bi bi-check2"></i> Completed <strong data-bind="text: todaySummary().completed"></strong></span>
-<span class="summary-pill missing"><i class="bi bi-x"></i> Missing <strong data-bind="text: todaySummary().missing"></strong></span>
-<span class="summary-pill passed"><i class="bi bi-hourglass"></i> Upcoming <strong data-bind="text: todaySummary().upcoming"></strong></span>
-</div>
-<div data-bind="visible: todayGroups().missing.length > 0">
-<div class="d-flex flex-column" data-bind="foreach: todayGroups().missing">
-<div class="missing-day-row">
-<div class="d-flex align-items-center gap-2">
-<i data-bind="attr: {class: 'bi ' + icon}" style="color:var(--danger-red)"></i>
-<span class="date" data-bind="text: label"></span>
-</div>
-<span class="count" data-bind="text: timeLabel"></span>
-</div>
-</div>
-</div>
-<div class="text-center py-3" data-bind="visible: todayGroups().missing.length === 0" style="background:var(--light-green);border-radius:.6rem">
-<i class="bi bi-check-circle-fill" style="color:var(--dark-green);font-size:1.5rem"></i>
-<p class="mb-0 fw-semibold" style="color:var(--dark-green);font-size:.85rem">All passed prayers completed today!</p>
-</div>
-</div>
-<div class="missing-section">
-<div class="missing-section-title">Since Qaza Start Date</div>
-<div class="text-secondary mb-2" style="font-size:.8rem">
-<i class="bi bi-calendar-range me-1"></i>
-<span data-bind="text: qazaStartLabel"></span>
-</div>
-<div class="row g-2 mb-2">
-<div class="col-6">
-<div class="stat-card" style="background:#f8fafc;border-color:var(--border-grey)">
-<span class="stat-value text-dark" data-bind="text: stats().total.toLocaleString()"></span>
-<span class="stat-label text-secondary">Total Days</span>
-</div>
-</div>
-<div class="col-6">
-<div class="stat-card" style="background:var(--light-green);border-color:#c8e6c9">
-<span class="stat-value" style="color:var(--dark-green)" data-bind="text: stats().completed.toLocaleString()"></span>
-<span class="stat-label" style="color:var(--dark-green)">Cleared Days</span>
-</div>
-</div>
-</div>
-<div class="row g-2">
-<div class="col-6">
-<div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-<span class="stat-value" style="color:var(--danger-red)" data-bind="text: missingDaysCount.toLocaleString()"></span>
-<span class="stat-label" style="color:var(--danger-red)">Missing Days</span>
-</div>
-</div>
-<div class="col-6">
-<div class="stat-card" style="background:#fef2f2;border-color:#fecaca">
-<span class="stat-value" style="color:var(--danger-red)" data-bind="text: missingPrayersCount.toLocaleString()"></span>
-<span class="stat-label" style="color:var(--danger-red)">Missing Prayers</span>
+<div class="offcanvas-body p-3">
+<div class="d-flex flex-column gap-3 mb-2" data-bind="foreach: missedPrayerDays">
+<div class="card border rounded-4 shadow-none p-3 bg-white" style="border-color:var(--border-grey)!important">
+<div class="fw-bold text-dark mb-3" style="font-size:1.05rem" data-bind="text: dateLabel"></div>
+<div class="row g-2" data-bind="foreach: prayers">
+<div class="col-4">
+<div class="d-flex align-items-center justify-content-between p-2 rounded-3 border"
+data-bind="click: function() { $root.toggleDayPrayer($parent, $data); },
+css: isDone ? 'bg-success bg-opacity-10 border-success-subtle text-success' : 'bg-danger bg-opacity-10 border-danger-subtle text-danger'"
+style="cursor:pointer;user-select:none">
+<i data-bind="attr: { class: 'bi ' + icon }" style="font-size:.95rem"></i>
+<span class="text-dark fw-bold small text-truncate mx-1" data-bind="text: label"></span>
+<i data-bind="attr: { class: isDone ? 'bi bi-check-circle' : 'bi bi-x-circle' }" style="font-size:.95rem"></i>
 </div>
 </div>
 </div>
 </div>
-<div class="missing-section">
-<div class="missing-section-title">Recent Missing Days</div>
-<div data-bind="visible: recentMissingDays().length === 0" class="text-center py-3 text-secondary" style="font-size:.85rem">
-<i class="bi bi-emoji-smile me-1"></i>No recent missing days — amazing!
 </div>
-<div data-bind="foreach: recentMissingDays">
-<div class="missing-day-row">
-<span class="date" data-bind="text: dateLabel"></span>
-<span class="count" data-bind="text: missing + ' of 5 missing'"></span>
-</div>
-</div>
+<div class="text-center py-5" data-bind="visible: missedPrayerDays().length === 0">
+<div class="fs-1 mb-2">🕌</div>
+<p class="fw-semibold text-secondary mb-1">No prayer records available</p>
+<p class="text-secondary mb-0" style="font-size:.85rem">Tracking will appear here as dates are recorded.</p>
 </div>
 </div>
 </div>
 <div class="toast-notif" data-bind="text: toast, css: { show: toast }"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/knockout@3.5.1/build/output/knockout-latest.js"></script>
-<script>(function(){"use strict";var q="namazTrackerData",w="namazTrackerCity",v=["fajr","dhuhr","asr","maghrib","isha"],A={fajr:"Fajr",dhuhr:"Dhuhr",asr:"Asr",maghrib:"Maghrib",isha:"Isha"},_={fajr:"bi-sunrise",dhuhr:"bi-brightness-high",asr:"bi-sun",maghrib:"bi-sunset",isha:"bi-moon-stars"},U={today:"Today",qaza:"Qaza",history:"History",progress:"Progress"},F="https://api.aladhan.com/v1",L="Guntur",E="IN",R=7300,B=750,J=["Guntur","Vijayawada","Visakhapatnam","Tirupati","Nellore","Kurnool","Rajahmundry","Kakinada","Anantapur","Kadapa","Chittoor","Ongole","Eluru","Machilipatnam","Srikakulam","Vizianagaram","Nandyal","Adoni","Tenali","Bapatla","Mangalagiri","Amaravati","Ponnur","Bhimavaram","Tadepalligudem","Dharmavaram","Gudivada","Narasaraopet","Chilakaluripet","Proddatur","Hindupur","Madanapalle","Puttur","Tuni","Samalkot","Palasa"];function M(a){return a.getFullYear()+"-"+String(a.getMonth()+1).padStart(2,"0")+"-"+String(a.getDate()).padStart(2,"0")}function d(){return M(new Date)}function y(a,u){var m=a.split("-").map(Number),p=new Date(m[0],m[1]-1,m[2]);return p.setDate(p.getDate()+u),M(p)}function H(a){if(!a)return"\u2014";var u=a.split("-").map(Number);return new Date(u[0],u[1]-1,u[2]).toLocaleDateString(void 0,{weekday:"long",year:"numeric",month:"long",day:"numeric"})}function z(a){var u=a.split("-").map(Number);return new Date(u[0],u[1]-1,u[2]).toLocaleDateString(void 0,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}function Y(){var a=new Date;return a.getHours()*60+a.getMinutes()}function k(a){if(!a)return null;var u=a.split(":").map(Number);return u[0]*60+u[1]}function G(a){if(a==null)return"";var u=Math.floor(a/60),m=a%60,p=u>=12?"PM":"AM";return u=u%12||12,u+":"+String(m).padStart(2,"0")+" "+p}function K(a){return a.toLocaleTimeString(void 0,{hour:"numeric",minute:"2-digit"})}function I(a,u){if(!a||!u)return 0;var m=a.split("-").map(Number),p=u.split("-").map(Number),D=Date.UTC(m[0],m[1]-1,m[2]),P=Date.UTC(p[0],p[1]-1,p[2]);return P<D?0:Math.floor((P-D)/864e5)+1}function b(){return{fajr:!1,dhuhr:!1,asr:!1,maghrib:!1,isha:!1}}function S(a){return!!a&&v.every(function(u){return a[u]===!0})}function Q(a){return a?v.filter(function(u){return a[u]===!0}).length:0}var O=["January","February","March","April","May","June","July","August","September","October","November","December"];function V(){var a=this;a.data=ko.observable(null),a.version=ko.observable(0);function u(){a.version(a.version()+1)}a.activeTab=ko.observable("today"),a.todaySubTab=ko.observable("missing"),a.qazaSubTab=ko.observable("notComplete"),a.loading=ko.observable(!1),a.error=ko.observable(""),a.toast=ko.observable(""),a.tick=ko.observable(0),a.todayTimings=ko.observable(null),a.todayPrayers=p(P),a.activeQazaDate=ko.observable(""),a.yesterdayPrayers=p(x),a.activityLog=ko.observableArray([]),a.pendingStartDate=ko.observable(""),a.pendingCity=ko.observable(""),a.pendingApiUrl=ko.observable(""),a.cities=J;var m=new Date;a.calendarYear=ko.observable(m.getFullYear()),a.calendarMonth=ko.observable(m.getMonth()),a._suppressSave=!1,a._toastTimer=null,a._advanceTimer=null,a._settingsSheet=null,a._calendarSheet=null,a._missingSheet=null,a._savedCity=L,a._savedCountry=E,a._savedApiUrl=null;function p(e){var t={};return v.forEach(function(r){t[r]=ko.observable(!1),t[r].subscribe(function(i){a._suppressSave||e(r,i)})}),t}a.tabTitle=ko.pureComputed(function(){return U[a.activeTab()]||"Today"}),a.showDateInHeader=ko.pureComputed(function(){var e=a.activeTab();return e==="today"||e==="qaza"}),a.headerDateLabel=ko.pureComputed(function(){if(a.activeTab()==="today"){var e=a.data();return e?z(e.currentPrayers.date):""}if(a.activeTab()==="qaza"){var t=a.activeQazaDate();return t?z(t):""}return""}),a.yesterdayDate=ko.pureComputed(function(){return y(d(),-1)}),a.todayGroups=ko.pureComputed(function(){a.version(),a.tick();var e=a.data();if(!e)return{upcoming:[],missing:[],done:[]};var t=a.todayTimings(),r=Y(),i={fajr:0,dhuhr:1,asr:2,maghrib:3,isha:4},n={upcoming:[],missing:[],done:[]};v.forEach(function(s){var c=t?t[s]:null,l=e.currentPrayers[s]===!0,f=l?"done":c!==null&&r>=c?"missing":"upcoming";n[f].push({key:s,label:A[s],icon:_[s],time:c,timeLabel:G(c),status:f,checkedObs:a.todayPrayers[s]})});function o(s,c){var l=s.time==null?9999:s.time,f=c.time==null?9999:c.time;return l!==f?l-f:i[s.key]-i[c.key]}return n.upcoming.sort(o),n.missing.sort(o),n.done.sort(o),n}),a.yesterdayGroups=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return{notComplete:[],complete:[]};var t=a.activeQazaDate(),r=t&&e.qazaHistory[t]||b(),i={notComplete:[],complete:[]};return v.forEach(function(n){var o=r[n]===!0;(o?i.complete:i.notComplete).push({key:n,label:A[n],icon:_[n],checkedObs:a.yesterdayPrayers[n]})}),i}),a.yesterdayStatus=ko.pureComputed(function(){var e=a.yesterdayGroups().complete.length;return e===5?"\u2705 Cleared \u2014 moving to previous day\u2026":e+" of 5 prayers completed for this day."}),a.todayShortLabel=ko.pureComputed(function(){var e=a.data();return e?z(e.currentPrayers.date):""}),a.todaySummary=ko.pureComputed(function(){a.tick(),a.version();var e=a.data();if(!e)return{passed:0,completed:0,missing:0,upcoming:0};var t=a.todayTimings(),r=Y(),i=0,n=0,o=0,s=0;return v.forEach(function(c){var l=t?t[c]:null;l!==null&&r>=l?(i++,e.currentPrayers[c]===!0?n++:o++):s++}),{passed:i,completed:n,missing:o,upcoming:s}}),a.qazaStartLabel=ko.pureComputed(function(){var e=a.data();return e?H(e.qazaStartDate):""}),a.missingDaysCount=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return 0;var t=e.qazaStartDate,r=y(d(),-1),i=I(t,r);return Math.max(i-(Number(e.stats.completedQazaDays)||0),0)}),a.missingPrayersCount=ko.pureComputed(function(){return a.missingDaysCount()*5}),a.recentMissingDays=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return[];for(var t=e.qazaStartDate,r=y(d(),-1),i=[],n=r,o=0;n>=t&&i.length<15&&o<120;){o++;var s=e.qazaHistory[n],c=Q(s);c<5&&i.push({date:n,dateLabel:z(n),done:c,missing:5-c}),n=y(n,-1)}return i}),a.stats=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return{total:0,completed:0,remaining:0,percent:0};var t=e.qazaStartDate,r=y(d(),-1),i=I(t,r),n=0;Object.keys(e.qazaHistory).forEach(function(c){c<t||c>r||S(e.qazaHistory[c])&&n++});var o=Math.max(i-n,0),s=i>0?Math.min(n/i*100,100):0;return{total:i,completed:n,remaining:o,percent:s}}),a.progressPercentLabel=ko.pureComputed(function(){var e=a.stats().percent;return e>0&&e<1?e.toFixed(2)+"%":e>0&&e<10?e.toFixed(1)+"%":Math.round(e)+"%"}),a.breakdown=ko.pureComputed(function(){var e=a.stats(),t=e.completed;return[{label:"Days Completed",value:t.toLocaleString(),color:"#094E3A"},{label:"Months Completed",value:(t/30).toFixed(1),color:"#094E3A"},{label:"Years Completed",value:(t/365).toFixed(2),color:"#094E3A"},{label:"Prayers Completed",value:(t*5).toLocaleString(),color:"#094E3A"},{label:"Days Remaining",value:e.remaining.toLocaleString(),color:"#dc2626"},{label:"Prayers Remaining",value:(e.remaining*5).toLocaleString(),color:"#dc2626"},{label:"Total Prayers",value:(e.total*5).toLocaleString(),color:"#334155"}]}),a.filteredHistory=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return[];var t=e.qazaStartDate,r=y(d(),-1),i=a.activityLog().filter(function(n){return n.date>=t&&n.date<=r}).sort(function(n,o){return o.timestamp-n.timestamp});return i.map(function(n){var o=n.type==="complete",s=o?"bi-check-circle-fill":_[n.prayer]||"bi-question-circle",c=o?"complete":n.action==="check"?"check":"uncheck",l=o?"Day Completed":(A[n.prayer]||n.prayer)+" "+(n.action==="check"?"completed":"unchecked"),f=new Date(n.timestamp),C=z(n.date)+" \xB7 "+K(f),g,T,h;return o?(g="\u2713",T="#094E3A",h="#fff"):n.action==="check"?(g="\u2713",T="#E8F5E9",h="#094E3A"):(g="\u2717",T="#f1f5f9",h="#64748b"),{label:l,dateLabel:C,icon:s,iconClass:c,badge:g,badgeBg:T,badgeColor:h}})}),a.monthOptions=O.map(function(e,t){return{name:e,value:t}}),a.yearOptions=ko.pureComputed(function(){for(var e=a.data(),t=new Date().getFullYear(),r=e?parseInt(e.qazaStartDate.split("-")[0],10):t,i=Math.min(r,t-5),n=[],o=t;o>=i;o--)n.push(o);return n}),a.calendarLabel=ko.pureComputed(function(){return O[a.calendarMonth()]+" "+a.calendarYear()}),a.calendarDays=ko.pureComputed(function(){a.tick(),a.version();var e=a.calendarYear(),t=a.calendarMonth(),r=a.data();if(!r)return[];for(var i=new Date(e,t,1).getDay(),n=new Date(e,t+1,0).getDate(),o=r.qazaStartDate,s=d(),c=y(s,-1),l=[],f=0;f<i;f++)l.push({empty:!0,day:"",dateStr:"",inRange:!1,complete:!1,partial:!1,isToday:!1});for(var C=1;C<=n;C++){var g=e+"-"+String(t+1).padStart(2,"0")+"-"+String(C).padStart(2,"0"),T=g>=o&&g<=c,h=r.qazaHistory[g],j=S(h),W=!j&&h&&Q(h)>0,Z=g===s;l.push({empty:!1,day:C,dateStr:g,inRange:T,complete:j,partial:W,isToday:Z})}return l}),a.monthCompletedCount=ko.pureComputed(function(){var e=0;return a.calendarDays().forEach(function(t){t.complete&&e++}),e}),a.selectCalendarDate=function(e){!e||e.empty||!e.inRange||(a.activeQazaDate(e.dateStr),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide())},a.openCalendar=function(){var e=a.activeQazaDate();if(a.activeTab()==="qaza"&&e){var t=e.split("-").map(Number);a.calendarYear(t[0]),a.calendarMonth(t[1]-1)}else{var r=new Date;a.calendarYear(r.getFullYear()),a.calendarMonth(r.getMonth())}a._calendarSheet.show()},a.jumpToYesterday=function(){a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide(),a.showToast("Jumped to latest Qaza day.")},a.jumpToStart=function(){var e=a.data();e&&(a.activeQazaDate(e.qazaStartDate),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide(),a.showToast("Jumped to start date."))},a.openMissingSheet=function(){a._missingSheet.show()},a.saveData=function(){try{localStorage.setItem(q,JSON.stringify(a.data()))}catch{}},a.loadData=function(){var e=null;try{var t=localStorage.getItem(q);t&&(e=JSON.parse(t))}catch{}var r={currentPrayers:Object.assign({date:d()},b()),qazaHistory:{},qazaStartDate:y(d(),-R),stats:{totalQazaDays:0,completedQazaDays:0},activityLog:[]};!e||typeof e!="object"?e=r:(e={currentPrayers:Object.assign(r.currentPrayers,e.currentPrayers&&typeof e.currentPrayers=="object"?e.currentPrayers:{}),qazaHistory:e.qazaHistory&&typeof e.qazaHistory=="object"?e.qazaHistory:{},qazaStartDate:typeof e.qazaStartDate=="string"&&e.qazaStartDate?e.qazaStartDate:r.qazaStartDate,stats:Object.assign(r.stats,e.stats&&typeof e.stats=="object"?e.stats:{}),activityLog:Array.isArray(e.activityLog)?e.activityLog:[]},Object.keys(e.qazaHistory).forEach(function(s){var c=e.qazaHistory[s];if(!c||typeof c!="object"){delete e.qazaHistory[s];return}var l=b();v.forEach(function(f){l[f]=c[f]===!0}),e.qazaHistory[s]=l}));var i=y(d(),-1);e.qazaStartDate>i&&(e.qazaStartDate=i),a.data(e),a.activityLog(e.activityLog.slice());try{var n=localStorage.getItem(w);if(n){var o=JSON.parse(n);a._savedCity=o.city||L,a._savedCountry=o.country||E,a._savedApiUrl=o.apiUrl||null}}catch{}D(),a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),u()};function D(){var e=a.data();if(!e)return!1;var t=d();if(e.currentPrayers&&e.currentPrayers.date!==t){var r=e.currentPrayers,i=v.some(function(s){return r[s]===!0}),n=v.every(function(s){return r[s]===!0});if(i&&!n&&r.date&&r.date>=e.qazaStartDate){var o=e.qazaHistory[r.date]||b();v.forEach(function(s){o[s]=o[s]||r[s]===!0}),e.qazaHistory[r.date]=o}return e.currentPrayers=Object.assign({date:t},b()),a.saveData(),!0}return!1}a.loadTodayPrayers=function(){var e=a.data();a._suppressSave=!0;try{v.forEach(function(t){a.todayPrayers[t](!!e.currentPrayers[t])})}finally{a._suppressSave=!1}},a.loadYesterdayPrayers=function(){var e=a.data(),t=a.activeQazaDate(),r=t&&e.qazaHistory[t]||b();a._suppressSave=!0;try{v.forEach(function(i){a.yesterdayPrayers[i](!!r[i])})}finally{a._suppressSave=!1}},a.computeCursor=function(){var e=a.data();if(!e)return y(d(),-1);for(var t=e.qazaStartDate,r=y(d(),-1),i=0;r>=t&&S(e.qazaHistory[r])&&i<2e4;)r=y(r,-1),i++;return r<t?t:r},a.logActivity=function(e,t,r,i){var n=a.data(),o={type:e,prayer:t||null,date:r,timestamp:Date.now()};i&&(o.action=i),n.activityLog.push(o),n.activityLog.length>2e3&&(n.activityLog=n.activityLog.slice(-1500)),a.activityLog(n.activityLog.slice())},a.showToast=function(e){a.toast(e),clearTimeout(a._toastTimer),a._toastTimer=setTimeout(function(){a.toast("")},2800)};function P(e,t){var r=a.data();r&&(r.currentPrayers[e]=t,a.logActivity("prayer",e,r.currentPrayers.date,t?"check":"uncheck"),a.saveData(),u())}function x(e,t){var r=a.data(),i=a.activeQazaDate();if(!(!i||!r)){r.qazaHistory[i]||(r.qazaHistory[i]=b());var n=r.qazaHistory[i],o=S(n);n[e]=t;var s=S(n);if(v.every(function(l){return n[l]===!1})&&delete r.qazaHistory[i],a.logActivity("prayer",e,i,t?"check":"uncheck"),s&&!o&&a.logActivity("complete",null,i),a.saveData(),u(),s&&!o){a.showToast("\u{1F389} MashaAllah! Day cleared.");var c=i;clearTimeout(a._advanceTimer),a._advanceTimer=setTimeout(function(){a.activeQazaDate()===c&&S(r.qazaHistory[c])&&(a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),u())},B)}}}a.goToday=function(){a.activeTab("today")},a.goQaza=function(){a.activeTab("qaza")},a.goHistory=function(){a.activeTab("history")},a.goProgress=function(){a.activeTab("progress")},a.deleteHistory=function(){var e=a.data();if(!e||!Array.isArray(e.activityLog)||e.activityLog.length===0){a.showToast("No history to delete.");return}confirm("Delete all "+e.activityLog.length+` history entries?
-Qaza records and progress will be preserved.`)&&(e.activityLog=[],a.activityLog([]),a.saveData(),u(),a.showToast("History deleted."))},a.fetchPrayerTimes=function(){a.loading(!0),a.error("");var e=a._savedApiUrl||F+"/timingsByCity/"+d()+"?city="+encodeURIComponent(a._savedCity)+"&country="+encodeURIComponent(a._savedCountry)+"&school=1";fetch(e).then(function(t){if(!t.ok)throw new Error("HTTP "+t.status);return t.json()}).then(function(t){if(!t||!t.data||!t.data.timings)throw new Error("Bad response");var r=t.data.timings;a.todayTimings({fajr:k(r.Fajr),dhuhr:k(r.Dhuhr),asr:k(r.Asr),maghrib:k(r.Maghrib),isha:k(r.Isha)})}).catch(function(){a.error("Could not fetch prayer times. Using defaults."),a.todayTimings()||a.todayTimings({fajr:300,dhuhr:720,asr:930,maghrib:1080,isha:1170})}).finally(function(){a.loading(!1)})},a.openSettings=function(){var e=a.data();a.pendingStartDate(e.qazaStartDate),a.pendingCity(a._savedCity),a.pendingApiUrl(a._savedApiUrl||""),a._settingsSheet.show()},a.saveSettings=function(){var e=a.data(),t=a.pendingStartDate(),r=a.pendingCity(),i=(a.pendingApiUrl()||"").trim(),n=y(d(),-1),o=!1;if(t&&t!==e.qazaStartDate){if(t>n){a.showToast("Start date cannot be after yesterday.");return}if(!confirm("Change Qaza start date to "+H(t)+"? This will recalculate your Qaza target."))return;e.qazaStartDate=t,o=!0}if(r&&r!==a._savedCity&&(a._savedCity=r,a._savedCountry="IN",o=!0),(i||null)!==a._savedApiUrl&&(a._savedApiUrl=i||null,o=!0),o){try{localStorage.setItem(w,JSON.stringify({city:a._savedCity,country:a._savedCountry,apiUrl:a._savedApiUrl}))}catch{}a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),a.saveData(),a.fetchPrayerTimes(),u(),a.showToast("Settings saved.")}a._settingsSheet.hide()},a.init=function(){a._settingsSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("settingsSheet")),a._calendarSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("calendarSheet")),a._missingSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("missingSheet")),a.loadData(),a.fetchPrayerTimes(),setInterval(function(){a.tick(a.tick()+1)},6e4),setInterval(function(){D()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),u(),a.showToast("\u{1F305} A new day has begun.")),a.fetchPrayerTimes()},1800*1e3),setInterval(function(){D()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),u(),a.fetchPrayerTimes(),a.showToast("\u{1F305} A new day has begun."))},3e4),document.addEventListener("visibilitychange",function(){!document.hidden&&D()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),u(),a.fetchPrayerTimes())}),window.addEventListener("storage",function(e){e.key===q&&(a.loadData(),a.fetchPrayerTimes())})}}var N=new V;N.init(),ko.applyBindings(N)})();</script>
+<script>(function(){"use strict";var T="namazTrackerData",H="namazTrackerCity",h=["fajr","dhuhr","asr","maghrib","isha"],k={fajr:"Fajr",dhuhr:"Dhuhr",asr:"Asr",maghrib:"Maghrib",isha:"Isha"},A={fajr:"bi-sunrise",dhuhr:"bi-brightness-high",asr:"bi-sun",maghrib:"bi-sunset",isha:"bi-moon"},R={today:"Today",qaza:"Qaza",history:"History",progress:"Progress"},B="https://api.aladhan.com/v1",O="Guntur",j="IN",F=7300,V=750,x=["Guntur","Vijayawada","Visakhapatnam","Tirupati","Nellore","Kurnool","Rajahmundry","Kakinada","Anantapur","Kadapa","Chittoor","Ongole","Eluru","Machilipatnam","Srikakulam","Vizianagaram","Nandyal","Adoni","Tenali","Bapatla","Mangalagiri","Amaravati","Ponnur","Bhimavaram","Tadepalligudem","Dharmavaram","Gudivada","Narasaraopet","Chilakaluripet","Proddatur","Hindupur","Madanapalle","Puttur","Tuni","Samalkot","Palasa"];function Y(a){return a.getFullYear()+"-"+String(a.getMonth()+1).padStart(2,"0")+"-"+String(a.getDate()).padStart(2,"0")}function c(){return Y(new Date)}function m(a,s){var S=a.split("-").map(Number),D=new Date(S[0],S[1]-1,S[2]);return D.setDate(D.getDate()+s),Y(D)}function q(a){if(!a)return"\u2014";var s=a.split("-").map(Number);return new Date(s[0],s[1]-1,s[2]).toLocaleDateString(void 0,{weekday:"long",year:"numeric",month:"long",day:"numeric"})}function J(a){if(!a)return"\u2014";var s=a.split("-").map(Number);return new Date(s[0],s[1]-1,s[2]).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}function I(a){var s=a.split("-").map(Number);return new Date(s[0],s[1]-1,s[2]).toLocaleDateString(void 0,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}function G(){var a=new Date;return a.getHours()*60+a.getMinutes()}function _(a){if(!a)return null;var s=a.split(":").map(Number);return s[0]*60+s[1]}function K(a){if(a==null)return"";var s=Math.floor(a/60),S=a%60,D=s>=12?"PM":"AM";return s=s%12||12,s+":"+String(S).padStart(2,"0")+" "+D}function W(a){return a.toLocaleTimeString(void 0,{hour:"numeric",minute:"2-digit"})}function Z(a,s){if(!a||!s)return 0;var S=a.split("-").map(Number),D=s.split("-").map(Number),C=Date.UTC(S[0],S[1]-1,S[2]),b=Date.UTC(D[0],D[1]-1,D[2]);return b<C?0:Math.floor((b-C)/864e5)+1}function g(){return{fajr:!1,dhuhr:!1,asr:!1,maghrib:!1,isha:!1}}function p(a){return!!a&&h.every(function(s){return a[s]===!0})}function w(a){return a?h.filter(function(s){return a[s]===!0}).length:0}var N=["January","February","March","April","May","June","July","August","September","October","November","December"];function X(){var a=this;a.data=ko.observable(null),a.version=ko.observable(0);function s(){a.version(a.version()+1)}a.activeTab=ko.observable("today"),a.todaySubTab=ko.observable("missing"),a.qazaSubTab=ko.observable("notComplete"),a.loading=ko.observable(!1),a.error=ko.observable(""),a.toast=ko.observable(""),a.tick=ko.observable(0),a.todayTimings=ko.observable(null),a.todayPrayers=D($),a.activeQazaDate=ko.observable(""),a.yesterdayPrayers=D(aa),a.activityLog=ko.observableArray([]),a.pendingCurrentStartDate=ko.observable(""),a.pendingStartDate=ko.observable(""),a.pendingCity=ko.observable(""),a.pendingApiUrl=ko.observable(""),a.cities=x,a.todayDate=ko.pureComputed(function(){return c()}),a.currentStartDate=ko.pureComputed(function(){var e=a.data();return e&&e.currentPrayerStartDate||c()}),a.currentStartLabel=ko.pureComputed(function(){return q(a.currentStartDate())});var S=new Date;a.calendarYear=ko.observable(S.getFullYear()),a.calendarMonth=ko.observable(S.getMonth()),a._suppressSave=!1,a._toastTimer=null,a._advanceTimer=null,a._settingsSheet=null,a._calendarSheet=null,a._missingPrayersSheet=null,a._missingSheet=null,a._savedCity=O,a._savedCountry=j,a._savedApiUrl=null;function D(e){var t={};return h.forEach(function(r){t[r]=ko.observable(!1),t[r].subscribe(function(n){a._suppressSave||e(r,n)})}),t}function C(e){if(e){Array.isArray(e.currentPrayers)||(e.currentPrayers=[]);var t=e.currentPrayerStartDate||c(),r=c();t>r&&(t=r),e.currentPrayerStartDate=t;var n={};e.currentPrayers.forEach(function(u){u&&u.date&&(n[u.date]=u)});for(var i=t,o=[];i<=r;)n[i]?o.push(n[i]):o.push(Object.assign({date:i},g())),i=m(i,1);e.currentPrayers=o}}function b(e){var t=a.data();if(!t||!Array.isArray(t.currentPrayers))return-1;for(var r=0;r<t.currentPrayers.length;r++)if(t.currentPrayers[r].date===e)return r;return-1}function M(e){var t=a.data();if(!t||!e)return g();var r=b(e);return r>=0?t.currentPrayers[r]:t.qazaHistory&&t.qazaHistory[e]?t.qazaHistory[e]:g()}function Q(){var e=a.data(),t=c();if(!e)return Object.assign({date:t},g());Array.isArray(e.currentPrayers)||(e.currentPrayers=[]);var r=b(t);if(r>=0)return e.currentPrayers[r];if(e.qazaHistory&&p(e.qazaHistory[t]))return{date:t,fajr:!0,dhuhr:!0,asr:!0,maghrib:!0,isha:!0};var n=Object.assign({date:t},g());return e.currentPrayers.push(n),n}a.tabTitle=ko.pureComputed(function(){return R[a.activeTab()]||"Today"}),a.showDateInHeader=ko.pureComputed(function(){var e=a.activeTab();return e==="today"||e==="qaza"}),a.headerDateLabel=ko.pureComputed(function(){if(a.activeTab()==="today")return I(c());if(a.activeTab()==="qaza"){var e=a.activeQazaDate();return e?I(e):""}return""}),a.yesterdayDate=ko.pureComputed(function(){return m(c(),-1)}),a.todayGroups=ko.pureComputed(function(){a.version(),a.tick();var e=a.data();if(!e)return{upcoming:[],missing:[],done:[]};var t=Q(),r=a.todayTimings(),n=G(),i={fajr:0,dhuhr:1,asr:2,maghrib:3,isha:4},o={upcoming:[],missing:[],done:[]};h.forEach(function(l){var y=r?r[l]:null,d=t[l]===!0,f=d?"done":y!==null&&n>=y?"missing":"upcoming";o[f].push({key:l,label:k[l],icon:A[l],time:y,timeLabel:K(y),status:f,checkedObs:a.todayPrayers[l]})});function u(l,y){var d=l.time==null?9999:l.time,f=y.time==null?9999:y.time;return d!==f?d-f:i[l.key]-i[y.key]}return o.upcoming.sort(u),o.missing.sort(u),o.done.sort(u),o}),a.missedPrayerDays=ko.pureComputed(function(){a.version();var e=a.data();return!e||!Array.isArray(e.currentPrayers)?[]:e.currentPrayers.map(function(t){var r=t.date,n=w(t),i=n===5,o=h.map(function(u){var l=t[u]===!0;return{key:u,label:k[u],icon:A[u],isDone:l,statusText:l?"\u2713 Done":"\u2715 Missed"}});return{date:r,dateLabel:J(r),allDone:i,missedCount:5-n,prayers:o}})}),a.openMissingSheet=function(){a._missingPrayersSheet&&a._missingPrayersSheet.show()},a.toggleDayPrayer=function(e,t){if(!(!e||!e.date||!t)){var r=e.date,n=a.data();if(!(!n||!Array.isArray(n.currentPrayers))){var i=b(r);if(!(i<0)){var o=n.currentPrayers[i],u=!o[t.key];if(o[t.key]=u,r===c()){a._suppressSave=!0;try{a.todayPrayers[t.key](u)}finally{a._suppressSave=!1}}if(r===a.activeQazaDate()){a._suppressSave=!0;try{a.yesterdayPrayers[t.key](u)}finally{a._suppressSave=!1}}n.qazaHistory||(n.qazaHistory={}),p(o)?(n.qazaHistory[r]={fajr:!0,dhuhr:!0,asr:!0,maghrib:!0,isha:!0},a.logActivity("complete",null,r)):n.qazaHistory[r]&&p(n.qazaHistory[r])&&delete n.qazaHistory[r],a.logActivity("prayer",t.key,r,u?"check":"uncheck"),a.saveData(),s()}}}},a.yesterdayGroups=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return{notComplete:[],complete:[]};var t=a.activeQazaDate(),r=t?M(t):g(),n={notComplete:[],complete:[]};return h.forEach(function(i){var o=r[i]===!0;(o?n.complete:n.notComplete).push({key:i,label:k[i],icon:A[i],checkedObs:a.yesterdayPrayers[i]})}),n}),a.yesterdayStatus=ko.pureComputed(function(){var e=a.yesterdayGroups().complete.length;return e===5?"\u2705 Cleared \u2014 moving to previous day\u2026":e+" of 5 prayers completed for this day."}),a.qazaStartLabel=ko.pureComputed(function(){var e=a.data();return e?q(e.qazaStartDate):""}),a.locationTimeLabel=ko.pureComputed(function(){a.version();var e=a._savedCity||O,t=a._savedApiUrl?" (Custom API)":"";return e+", "+(a._savedCountry||j)+t}),a.stats=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return{total:0,completed:0,remaining:0,percent:0};var t=e.qazaStartDate,r=m(c(),-1),n=Z(t,r),i=0;Object.keys(e.qazaHistory).forEach(function(l){l<t||l>r||p(e.qazaHistory[l])&&i++});var o=Math.max(n-i,0),u=n>0?Math.min(i/n*100,100):0;return{total:n,completed:i,remaining:o,percent:u}}),a.progressPercentLabel=ko.pureComputed(function(){var e=a.stats().percent;return e>0&&e<1?e.toFixed(2)+"%":e>0&&e<10?e.toFixed(1)+"%":Math.round(e)+"%"}),a.breakdown=ko.pureComputed(function(){var e=a.stats(),t=e.completed;return[{label:"Days Completed",value:t.toLocaleString(),color:"#094E3A"},{label:"Months Completed",value:(t/30).toFixed(1),color:"#094E3A"},{label:"Years Completed",value:(t/365).toFixed(2),color:"#094E3A"},{label:"Prayers Completed",value:(t*5).toLocaleString(),color:"#094E3A"},{label:"Days Remaining",value:e.remaining.toLocaleString(),color:"#dc2626"},{label:"Prayers Remaining",value:(e.remaining*5).toLocaleString(),color:"#dc2626"},{label:"Total Prayers",value:(e.total*5).toLocaleString(),color:"#334155"}]}),a.filteredHistory=ko.pureComputed(function(){a.version();var e=a.data();if(!e)return[];var t=e.qazaStartDate,r=m(c(),-1),n=a.activityLog().filter(function(i){return i.date>=t&&i.date<=r}).sort(function(i,o){return o.timestamp-i.timestamp});return n.map(function(i){var o=i.type==="complete",u=o?"bi-check-circle-fill":A[i.prayer]||"bi-question-circle",l=o?"complete":i.action==="check"?"check":"uncheck",y=o?"Day Completed":(k[i.prayer]||i.prayer)+" "+(i.action==="check"?"completed":"unchecked"),d=new Date(i.timestamp),f=I(i.date)+" \xB7 "+W(d),v,P,z;return o?(v="\u2713",P="#094E3A",z="#fff"):i.action==="check"?(v="\u2713",P="#E8F5E9",z="#094E3A"):(v="\u2717",P="#f1f5f9",z="#64748b"),{label:y,dateLabel:f,icon:u,iconClass:l,badge:v,badgeBg:P,badgeColor:z}})}),a.monthOptions=N.map(function(e,t){return{name:e,value:t}}),a.yearOptions=ko.pureComputed(function(){for(var e=a.data(),t=new Date().getFullYear(),r=e?parseInt(e.qazaStartDate.split("-")[0],10):t,n=Math.min(r,t-5),i=[],o=t;o>=n;o--)i.push(o);return i}),a.calendarLabel=ko.pureComputed(function(){return N[a.calendarMonth()]+" "+a.calendarYear()}),a.calendarDays=ko.pureComputed(function(){a.tick(),a.version();var e=a.calendarYear(),t=a.calendarMonth(),r=a.data();if(!r)return[];for(var n=new Date(e,t,1).getDay(),i=new Date(e,t+1,0).getDate(),o=r.qazaStartDate,u=c(),l=m(u,-1),y=[],d=0;d<n;d++)y.push({empty:!0,day:"",dateStr:"",inRange:!1,complete:!1,partial:!1,isToday:!1});for(var f=1;f<=i;f++){var v=e+"-"+String(t+1).padStart(2,"0")+"-"+String(f).padStart(2,"0"),P=v>=o&&v<=l,z=r.qazaHistory[v],U=p(z),ea=!U&&z&&w(z)>0,ta=v===u;y.push({empty:!1,day:f,dateStr:v,inRange:P,complete:U,partial:ea,isToday:ta})}return y}),a.monthCompletedCount=ko.pureComputed(function(){var e=0;return a.calendarDays().forEach(function(t){t.complete&&e++}),e}),a.selectCalendarDate=function(e){!e||e.empty||!e.inRange||(a.activeQazaDate(e.dateStr),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide())},a.openCalendar=function(){var e=a.activeQazaDate();if(a.activeTab()==="qaza"&&e){var t=e.split("-").map(Number);a.calendarYear(t[0]),a.calendarMonth(t[1]-1)}else{var r=new Date;a.calendarYear(r.getFullYear()),a.calendarMonth(r.getMonth())}a._calendarSheet.show()},a.jumpToYesterday=function(){a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide(),a.showToast("Jumped to latest Qaza day.")},a.jumpToStart=function(){var e=a.data();e&&(a.activeQazaDate(e.qazaStartDate),a.loadYesterdayPrayers(),a.activeTab("qaza"),a._calendarSheet.hide(),a.showToast("Jumped to start date."))},a.saveData=function(){try{localStorage.setItem(T,JSON.stringify(a.data())),console.log("\u{1F4BE} Database saved to localStorage ["+T+"]:",a.data())}catch(e){console.error("Failed to save to localStorage:",e)}},a.logDatabaseStats=function(){var e=a.data();if(e){var t=Object.keys(e.qazaHistory||{}),r=0;t.forEach(function(u){r+=w(e.qazaHistory[u])});var n=Q(),i=w(n),o=Array.isArray(e.currentPrayers)?e.currentPrayers.map(function(u){return u.date}):[];console.group("%c\u{1F54C} Namaz & Qaza Tracker \u2014 Database Overview","color:#094E3A;font-weight:bold;font-size:13px;"),console.table({"Today Date":{Value:c()},"Today's Prayers Completed":{Value:i+" / 5"},"Active Dates in currentPrayers":{Value:o.length+" active date(s) ["+o.join(", ")+"]"},"Current Prayer Start Date":{Value:e.currentPrayerStartDate||"N/A"},"Qaza Start Date":{Value:e.qazaStartDate},"Qaza History Days Recorded":{Value:t.length+" days"},"Total Qaza Prayers Cleared":{Value:r},"Activity Log Entries":{Value:(e.activityLog?e.activityLog.length:0)+" events"},"City / Country":{Value:(a._savedCity||"Default")+", "+(a._savedCountry||"IN")},"LocalStorage Keys":{Value:T+", "+H}}),console.log("\u{1F4CB} currentPrayers collection (active incomplete dates):",e.currentPrayers),console.log("\u{1F4E6} Raw Database Object:",e),console.log("\u{1F4DC} Activity Log (last 10):",(e.activityLog||[]).slice(-10)),console.groupEnd()}},a.loadData=function(){var e=null;try{var t=localStorage.getItem(T);t&&(e=JSON.parse(t))}catch{}var r={currentPrayers:[Object.assign({date:c()},g())],currentPrayerStartDate:c(),qazaHistory:{},qazaStartDate:m(c(),-F),stats:{totalQazaDays:0,completedQazaDays:0},activityLog:[]};if(!e||typeof e!="object")e=r;else{var n=[];if(Array.isArray(e.currentPrayers))e.currentPrayers.forEach(function(d){if(d&&typeof d=="object"&&d.date){var f=Object.assign({date:d.date},g());h.forEach(function(v){f[v]=d[v]===!0}),n.push(f)}});else if(e.currentPrayers&&typeof e.currentPrayers=="object"){var i=e.currentPrayers.date||c(),o=Object.assign({date:i},g());h.forEach(function(d){o[d]=e.currentPrayers[d]===!0}),n.push(o)}e={currentPrayers:n,currentPrayerStartDate:typeof e.currentPrayerStartDate=="string"&&e.currentPrayerStartDate?e.currentPrayerStartDate:e.currentPrayers&&e.currentPrayers.date?e.currentPrayers.date:c(),qazaHistory:e.qazaHistory&&typeof e.qazaHistory=="object"?e.qazaHistory:{},qazaStartDate:typeof e.qazaStartDate=="string"&&e.qazaStartDate?e.qazaStartDate:r.qazaStartDate,stats:Object.assign(r.stats,e.stats&&typeof e.stats=="object"?e.stats:{}),activityLog:Array.isArray(e.activityLog)?e.activityLog:[]},Object.keys(e.qazaHistory).forEach(function(d){var f=e.qazaHistory[d];if(!f||typeof f!="object"){delete e.qazaHistory[d];return}var v=g();h.forEach(function(P){v[P]=f[P]===!0}),e.qazaHistory[d]=v})}var u=m(c(),-1);e.qazaStartDate>u&&(e.qazaStartDate=u),C(e),a.data(e),a.activityLog(e.activityLog.slice());try{var l=localStorage.getItem(H);if(l){var y=JSON.parse(l);a._savedCity=y.city||O,a._savedCountry=y.country||j,a._savedApiUrl=y.apiUrl||null}}catch{}E(),a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),s()};function E(){var e=a.data();if(!e)return!1;var t=c(),r=b(t);return r===-1?(C(e),a.saveData(),!0):!1}a.loadTodayPrayers=function(){var e=Q();a._suppressSave=!0;try{h.forEach(function(t){a.todayPrayers[t](e[t]===!0)})}finally{a._suppressSave=!1}},a.loadYesterdayPrayers=function(){var e=a.activeQazaDate(),t=e?M(e):g();a._suppressSave=!0;try{h.forEach(function(r){a.yesterdayPrayers[r](t[r]===!0)})}finally{a._suppressSave=!1}},a.computeCursor=function(){var e=a.data();if(!e)return m(c(),-1);for(var t=e.qazaStartDate,r=m(c(),-1),n=0;r>=t&&p(M(r))&&n<2e4;)r=m(r,-1),n++;return r<t?t:r},a.logActivity=function(e,t,r,n){var i=a.data(),o={type:e,prayer:t||null,date:r,timestamp:Date.now()};n&&(o.action=n),i.activityLog.push(o),i.activityLog.length>2e3&&(i.activityLog=i.activityLog.slice(-1500)),a.activityLog(i.activityLog.slice())},a.showToast=function(e){a.toast(e),clearTimeout(a._toastTimer),a._toastTimer=setTimeout(function(){a.toast("")},2800)};function $(e,t){var r=a.data();if(r){Array.isArray(r.currentPrayers)||(r.currentPrayers=[]);var n=c(),i=b(n),o;i>=0?o=r.currentPrayers[i]:(o=Object.assign({date:n},g()),r.qazaHistory&&p(r.qazaHistory[n])&&h.forEach(function(u){o[u]=!0}),r.currentPrayers.push(o),i=r.currentPrayers.length-1),o[e]=t===!0,a.logActivity("prayer",e,n,t?"check":"uncheck"),r.qazaHistory||(r.qazaHistory={}),p(o)?(r.qazaHistory[n]={fajr:!0,dhuhr:!0,asr:!0,maghrib:!0,isha:!0},a.logActivity("complete",null,n),a.showToast("Masha'Allah! Today's prayers completed.")):r.qazaHistory[n]&&p(r.qazaHistory[n])&&delete r.qazaHistory[n],a.saveData(),s()}}function aa(e,t){var r=a.data(),n=a.activeQazaDate();if(!(!n||!r)){Array.isArray(r.currentPrayers)||(r.currentPrayers=[]);var i=b(n),o=!1,u=!1;if(i>=0){var l=r.currentPrayers[i];o=p(l),l[e]=t===!0,u=p(l),r.qazaHistory||(r.qazaHistory={}),u?(r.qazaHistory[n]={fajr:!0,dhuhr:!0,asr:!0,maghrib:!0,isha:!0},a.logActivity("complete",null,n)):(r.qazaHistory[n]=Object.assign({},l),delete r.qazaHistory[n].date)}else{r.qazaHistory[n]||(r.qazaHistory[n]=g());var y=r.qazaHistory[n];if(o=p(y),y[e]=t===!0,u=p(y),h.every(function(v){return y[v]===!1}))delete r.qazaHistory[n];else if(!u&&n>=(r.currentPrayerStartDate||c())){var d=Object.assign({date:n},y);r.currentPrayers.push(d),C(r)}u&&!o&&a.logActivity("complete",null,n)}if(a.logActivity("prayer",e,n,t?"check":"uncheck"),a.saveData(),s(),u&&!o){a.showToast("Masha'Allah! Day cleared.");var f=n;clearTimeout(a._advanceTimer),a._advanceTimer=setTimeout(function(){a.activeQazaDate()===f&&(a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),s())},V)}}}a.goToday=function(){a.activeTab("today")},a.goQaza=function(){a.activeTab("qaza")},a.goHistory=function(){a.activeTab("history")},a.goProgress=function(){a.activeTab("progress")},a.deleteHistory=function(){var e=a.data();if(!e||!Array.isArray(e.activityLog)||e.activityLog.length===0){a.showToast("No history to delete.");return}confirm("Delete all "+e.activityLog.length+` history entries?
+Qaza records and progress will be preserved.`)&&(e.activityLog=[],a.activityLog([]),a.saveData(),s(),a.showToast("History deleted."))},a.fetchPrayerTimes=function(){a.loading(!0),a.error("");var e=a._savedApiUrl||B+"/timingsByCity/"+c()+"?city="+encodeURIComponent(a._savedCity)+"&country="+encodeURIComponent(a._savedCountry)+"&school=1";fetch(e).then(function(t){if(!t.ok)throw new Error("HTTP "+t.status);return t.json()}).then(function(t){if(!t||!t.data||!t.data.timings)throw new Error("Bad response");var r=t.data.timings;a.todayTimings({fajr:_(r.Fajr),dhuhr:_(r.Dhuhr),asr:_(r.Asr),maghrib:_(r.Maghrib),isha:_(r.Isha)})}).catch(function(){a.error("Could not fetch prayer times. Using defaults."),a.todayTimings()||a.todayTimings({fajr:300,dhuhr:720,asr:930,maghrib:1080,isha:1170})}).finally(function(){a.loading(!1)})},a.openSettings=function(){var e=a.data();a.pendingCurrentStartDate(e.currentPrayerStartDate||c()),a.pendingStartDate(e.qazaStartDate),a.pendingCity(a._savedCity),a.pendingApiUrl(a._savedApiUrl||""),a._settingsSheet&&a._settingsSheet.show()},a.backToSettings=function(){a._currentPrayerDateSheet&&a._currentPrayerDateSheet.hide(),a._qazaDateSheet&&a._qazaDateSheet.hide(),a._locationTimeSheet&&a._locationTimeSheet.hide(),a._settingsSheet&&a._settingsSheet.show()},a.openCurrentPrayerDateSheet=function(){var e=a.data();a.pendingCurrentStartDate(e.currentPrayerStartDate||c()),a._settingsSheet&&a._settingsSheet.hide(),a._currentPrayerDateSheet&&a._currentPrayerDateSheet.show()},a.openQazaDateSheet=function(){var e=a.data();a.pendingStartDate(e.qazaStartDate),a._settingsSheet&&a._settingsSheet.hide(),a._qazaDateSheet&&a._qazaDateSheet.show()},a.openLocationTimeSheet=function(){a.pendingCity(a._savedCity),a.pendingApiUrl(a._savedApiUrl||""),a._settingsSheet&&a._settingsSheet.hide(),a._locationTimeSheet&&a._locationTimeSheet.show()},a.saveCurrentPrayerStartDate=function(){var e=a.data(),t=a.pendingCurrentStartDate();if(!t){a.showToast("Please select a valid date.");return}if(t>c()){a.showToast("Current prayer start date cannot be in the future.");return}if(confirm("Rebuild current prayers tracking from "+q(t)+" through today? All prayer tracking in this range will be reset to incomplete.")){e.currentPrayerStartDate=t;for(var r=[],n=t,i=c();n<=i;)r.push({date:n,fajr:!1,dhuhr:!1,asr:!1,maghrib:!1,isha:!1}),n=m(n,1);e.currentPrayers=r,a.logActivity("setting","current_prayer",t,"current_prayer_start_date"),a.saveData(),a.loadTodayPrayers(),s(),a.showToast("Current prayer start date updated."),a._currentPrayerDateSheet&&a._currentPrayerDateSheet.hide(),a._settingsSheet&&a._settingsSheet.show()}},a.saveQazaStartDate=function(){var e=a.data(),t=a.pendingStartDate(),r=m(c(),-1);if(!t){a.showToast("Please select a valid date.");return}if(t>r){a.showToast("Start date cannot be after yesterday.");return}if(t!==e.qazaStartDate){if(!confirm("Change Qaza start date to "+q(t)+"? This will recalculate your Qaza target."))return;e.qazaStartDate=t,a.logActivity("setting","qaza",t,"qaza_start_date"),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),a.saveData(),s()}a.showToast("Qaza start date updated."),a._qazaDateSheet&&a._qazaDateSheet.hide(),a._settingsSheet&&a._settingsSheet.show()},a.saveLocationTime=function(){var e=a.pendingCity(),t=(a.pendingApiUrl()||"").trim(),r=!1;if(e&&e!==a._savedCity&&(a._savedCity=e,a._savedCountry="IN",r=!0),(t||null)!==a._savedApiUrl&&(a._savedApiUrl=t||null,r=!0),r){try{localStorage.setItem(H,JSON.stringify({city:a._savedCity,country:a._savedCountry,apiUrl:a._savedApiUrl}))}catch{}a.fetchPrayerTimes(),s()}a.showToast("Location and time settings updated."),a._locationTimeSheet&&a._locationTimeSheet.hide(),a._settingsSheet&&a._settingsSheet.show()},a.init=function(){a._settingsSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("settingsSheet")),a._calendarSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("calendarSheet")),a._currentPrayerDateSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("currentPrayerDateSheet")),a._qazaDateSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("qazaDateSheet")),a._locationTimeSheet=bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("locationTimeSheet"));var e=document.getElementById("missingPrayersSheet")||document.getElementById("missingSheet");e&&(a._missingPrayersSheet=bootstrap.Offcanvas.getOrCreateInstance(e),a._missingSheet=a._missingPrayersSheet),a.loadData(),a.fetchPrayerTimes(),a.logDatabaseStats(),setInterval(function(){a.tick(a.tick()+1)},6e4),setInterval(function(){E()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),s(),a.showToast("A new day has begun.")),a.fetchPrayerTimes()},1800*1e3),setInterval(function(){E()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),s(),a.fetchPrayerTimes(),a.showToast("A new day has begun."))},3e4),document.addEventListener("visibilitychange",function(){!document.hidden&&E()&&(a.loadTodayPrayers(),a.activeQazaDate(a.computeCursor()),a.loadYesterdayPrayers(),s(),a.fetchPrayerTimes())}),window.addEventListener("storage",function(t){t.key===T&&(a.loadData(),a.fetchPrayerTimes())})}}var L=new X;L.init(),ko.applyBindings(L),window.qazaDb={get:function(){return L.data()},log:function(){L.logDatabaseStats()},clear:function(){confirm("Clear all localStorage data for Namaz Tracker?")&&(localStorage.removeItem("namazTrackerData"),localStorage.removeItem("namazTrackerCity"),location.reload())}}})();</script>
 </body>
 </html>
