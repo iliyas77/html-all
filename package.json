@@ -1,0 +1,13 @@
+{
+  "name": "all-html-apps",
+  "version": "1.0.0",
+  "description": "Multi-application HTML workspace",
+  "scripts": {
+    "build": "node production/qaza-build.js",
+    "build:qaza": "node production/qaza-build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
+
