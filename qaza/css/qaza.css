@@ -124,44 +124,9 @@
 }
 
 /* --------------------------------------------------------------------------
-   3. Qaza Calendar Prayer Status Overrides
+   3. Screen Layouts & Bottom Sheet Specifics
    -------------------------------------------------------------------------- */
-.cal-cell.partial {
-  background: var(--light-green);
-  color: var(--dark-green);
-  font-weight: 700;
-}
-
-.cal-cell.partial:hover {
-  background: #c8e6c9;
-  transform: scale(1.06);
-}
-
-.cal-cell.complete {
-  background: var(--dark-green);
-  color: #fff;
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
-  text-decoration-color: rgba(255, 255, 255, .85);
-  font-weight: 800;
-  box-shadow: 0 2px 6px rgba(9, 78, 58, .3);
-}
-
-.cal-cell.complete:hover {
-  background: #063924;
-  transform: scale(1.06);
-}
-
-.cal-cell.today.complete {
-  box-shadow: inset 0 0 0 2px #fff, 0 2px 6px rgba(9, 78, 58, .3);
-  color: #fff;
-}
-
-/* --------------------------------------------------------------------------
-   4. Qaza Screen Layouts & Bottom Sheet Specifics
-   -------------------------------------------------------------------------- */
-#settingsSheet.offcanvas-bottom,
-#calendarSheet.offcanvas-bottom {
+#settingsSheet.offcanvas-bottom {
   height: 90vh !important;
   max-height: 90vh !important;
   min-height: 90vh !important;
@@ -174,8 +139,7 @@
 #settingsSheet .offcanvas-body,
 #currentPrayerDateSheet .offcanvas-body,
 #qazaDateSheet .offcanvas-body,
-#locationTimeSheet .offcanvas-body,
-#calendarSheet .offcanvas-body {
+#locationTimeSheet .offcanvas-body {
   flex: 1 1 auto;
   overflow-y: auto;
 }
@@ -393,4 +357,31 @@
 .prayer-tile.is-upcoming .prayer-tile-status {
   color: #64748b;
 }
+
+/* Database JSON View */
+.db-json-container {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  background-color: #ffffff;
+  color: #212529;
+  border-color: var(--border-grey) !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.db-json-container.db-json-dark {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+  border-color: #333333 !important;
+}
+
+.db-json-tree .json-formatter-row {
+  line-height: 1.5;
+}
+
+.db-json-tree .json-formatter-row .json-formatter-toggler {
+  font-size: 0.75rem;
+  user-select: none;
+}
+
 

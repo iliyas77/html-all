@@ -5,10 +5,10 @@ var STORAGE_KEY = 'namazTrackerData', CITY_KEY = 'namazTrackerCity';
 var PRAYERS = ['fajr','dhuhr','asr','maghrib','isha'];
 var LABELS = { fajr:'Fajr', dhuhr:'Dhuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 var PRAYER_ICONS = { fajr:'bi-sunrise', dhuhr:'bi-brightness-high', asr:'bi-sun', maghrib:'bi-sunset', isha:'bi-moon' };
-var TITLES = { today:'Today', qaza:'Qaza', history:'History', progress:'Progress' };
+var TITLES = { today:'Today', qaza:'Qaza', history:'History', settings:'Settings' };
 var API_BASE = 'https://api.aladhan.com/v1';
 var DEFAULT_CITY = 'Guntur', DEFAULT_COUNTRY = 'IN';
-var DEFAULT_QAZA_DAYS = 7300, ADVANCE_DELAY = 750;
+var ADVANCE_DELAY = 750;
 
 var AP_CITIES = [
   'Guntur','Vijayawada','Visakhapatnam','Tirupati','Nellore','Kurnool','Rajahmundry','Kakinada',
@@ -25,6 +25,151 @@ function formatNiceDate(s) { if (!s) return '—'; var p = s.split('-').map(Numb
 function formatStandardDate(s) { if (!s) return ''; var p = s.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
 function formatCardDate(s) { return formatStandardDate(s); }
 function formatShortDate(s) { var p = s.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+
+function formatTimeHMS(d) {
+  d = d || new Date();
+  var h = String(d.getHours()).padStart(2, '0');
+  var m = String(d.getMinutes()).padStart(2, '0');
+  var s = String(d.getSeconds()).padStart(2, '0');
+  return h + ':' + m + ':' + s;
+}
+
+function isAppDarkMode() {
+  if (typeof document === 'undefined') return false;
+  var htmlTheme = document.documentElement.getAttribute('data-bs-theme');
+  if (htmlTheme === 'dark') return true;
+  if (document.body && (document.body.classList.contains('dark') || document.body.classList.contains('dark-theme'))) return true;
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return true;
+  return false;
+}
+
+function fallbackCopyText(text, onSuccess, onFailure) {
+  try {
+    var textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '-9999px';
+    textArea.style.left = '-9999px';
+    textArea.setAttribute('readonly', '');
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    if (ok) {
+      onSuccess();
+    } else {
+      onFailure(new Error('execCommand returned false'));
+    }
+  } catch (e) {
+    onFailure(e);
+  }
+}
+
+function renderFallbackJsonTree(container, obj, defaultDepth, isDark) {
+  container.innerHTML = '';
+  var root = document.createElement('div');
+  root.className = 'json-formatter-row' + (isDark ? ' json-formatter-dark' : '');
+
+  function createNode(val, key, currentDepth) {
+    var row = document.createElement('div');
+    row.className = 'json-formatter-row';
+
+    var isObject = val !== null && typeof val === 'object';
+    var isArr = Array.isArray(val);
+
+    if (isObject) {
+      var keys = Object.keys(val);
+      var togglerLink = document.createElement('a');
+      togglerLink.className = 'json-formatter-toggler-link';
+      togglerLink.style.cursor = 'pointer';
+
+      var toggler = document.createElement('span');
+      toggler.className = 'json-formatter-toggler';
+      togglerLink.appendChild(toggler);
+
+      if (key !== undefined) {
+        var keySpan = document.createElement('span');
+        keySpan.className = 'json-formatter-key';
+        keySpan.textContent = key + ': ';
+        togglerLink.appendChild(keySpan);
+      }
+
+      var valueSpan = document.createElement('span');
+      valueSpan.className = 'json-formatter-value';
+      var constrName = document.createElement('span');
+      constrName.className = 'json-formatter-constructor-name';
+      constrName.textContent = isArr ? ('Array[' + keys.length + ']') : 'Object';
+      valueSpan.appendChild(constrName);
+      togglerLink.appendChild(valueSpan);
+
+      row.appendChild(togglerLink);
+
+      var children = document.createElement('div');
+      children.className = 'json-formatter-children' + (isArr ? ' json-formatter-array' : ' json-formatter-object');
+
+      var isOpen = currentDepth < defaultDepth;
+      if (isOpen) {
+        row.classList.add('json-formatter-open');
+        buildChildren();
+      }
+
+      function buildChildren() {
+        if (children.children.length > 0) return;
+        keys.forEach(function(k) {
+          children.appendChild(createNode(val[k], k, currentDepth + 1));
+        });
+      }
+
+      togglerLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        var open = row.classList.toggle('json-formatter-open');
+        if (open) {
+          buildChildren();
+          children.style.display = '';
+        } else {
+          children.style.display = 'none';
+        }
+      });
+
+      row.appendChild(children);
+    } else {
+      var leafSpan = document.createElement('span');
+      if (key !== undefined) {
+        var kSpan = document.createElement('span');
+        kSpan.className = 'json-formatter-key';
+        kSpan.textContent = key + ': ';
+        leafSpan.appendChild(kSpan);
+      }
+
+      var valSpan = document.createElement('span');
+      var type = typeof val;
+      if (val === null) {
+        valSpan.className = 'json-formatter-null';
+        valSpan.textContent = 'null';
+      } else if (type === 'string') {
+        valSpan.className = 'json-formatter-string';
+        valSpan.textContent = JSON.stringify(val);
+      } else if (type === 'number') {
+        valSpan.className = 'json-formatter-number';
+        valSpan.textContent = String(val);
+      } else if (type === 'boolean') {
+        valSpan.className = 'json-formatter-boolean';
+        valSpan.textContent = String(val);
+      } else {
+        valSpan.className = 'json-formatter-' + type;
+        valSpan.textContent = String(val);
+      }
+      leafSpan.appendChild(valSpan);
+      row.appendChild(leafSpan);
+    }
+    return row;
+  }
+
+  var rootNode = createNode(obj, undefined, 0);
+  root.appendChild(rootNode);
+  container.appendChild(root);
+}
 function getCalendarDayDiff(dateStr, baseDateStr) {
   if (!dateStr) return 0;
   var b = baseDateStr || todayString();
@@ -65,8 +210,6 @@ function blank() { return { fajr:false, dhuhr:false, asr:false, maghrib:false, i
 function isComplete(rec) { return !!rec && PRAYERS.every(function(p){ return rec[p]===true; }); }
 function countDone(rec) { return rec ? PRAYERS.filter(function(p){ return rec[p]===true; }).length : 0; }
 
-var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
 var SECTION_ORDER = ['missed', 'upcoming', 'done'];
 var SECTION_CONFIG = {
   missed: { title: 'Missed', badgeClass: 'badge-missed', titleClass: 'text-danger' },
@@ -86,7 +229,7 @@ function isDayCardEnabled(dateStr, trackingStartDate) {
   return true;
 }
 
-function groupDayPrayers(dateStr, rec, timings, now, isInteractive) {
+function groupDayPrayers(dateStr, rec, timings, now, isInteractive, isQaza) {
   var isCurrentDay = (dateStr === todayString());
   var groups = { missed: [], upcoming: [], done: [] };
 
@@ -139,6 +282,7 @@ function groupDayPrayers(dateStr, rec, timings, now, isInteractive) {
     groups[status].push({
       date: dateStr,
       key: p,
+      isQaza: Boolean(isQaza),
       label: LABELS[p],
       icon: PRAYER_ICONS[p],
       status: status,
@@ -191,6 +335,7 @@ function buildDayCard(dateStr, rec, opts) {
   var isNavigatable = (opts.mode === 'navigation');
   var isInteractive = !isLocked && (opts.mode === 'interactive');
   var isGrid = Boolean(opts.isGrid);
+  var isQaza = opts.screenPrefix === 'qaza' || Boolean(opts.isQaza);
 
   var disabledReason = '';
   if (isLocked) {
@@ -212,12 +357,14 @@ function buildDayCard(dateStr, rec, opts) {
 
   var sections = [];
   if ((isEnabled || isLocked) && hasRecords) {
-    sections = groupDayPrayers(dateStr, rec, opts.timings, opts.now, isInteractive);
+    sections = groupDayPrayers(dateStr, rec, opts.timings, opts.now, isInteractive, isQaza);
   }
 
   return {
     date: dateStr,
     cardId: (opts.screenPrefix || 'card') + '-' + dateStr,
+    screenPrefix: opts.screenPrefix,
+    isQaza: isQaza,
     relativeLabel: titleInfo.relative,
     bracketDate: titleInfo.bracketDate,
     fullTitle: titleInfo.full,
@@ -238,7 +385,49 @@ function AppViewModel() {
 
   self.data = ko.observable(null);
   self.version = ko.observable(0);
-  function bump() { self.version(self.version()+1); }
+  function bump() {
+    self.version(self.version() + 1);
+    if (self.data && self.data.valueHasMutated) {
+      self.data.valueHasMutated();
+    }
+    if (self.dbLastUpdated) {
+      self.dbLastUpdated(formatTimeHMS(new Date()));
+    }
+  }
+
+  self.dbLastUpdated = ko.observable(formatTimeHMS(new Date()));
+  self.dbCopyStatus = ko.observable('');
+  self.dbCopyStatusClass = ko.observable('bg-success');
+  self._copyStatusTimer = null;
+  self.isViewingStorageSnapshot = ko.observable(false);
+  self.storageSnapshotData = ko.observable(null);
+  self.dbExpandDepth = ko.observable(1);
+  self.isDbDarkMode = ko.observable(isAppDarkMode());
+
+  self.dbEntryCounts = ko.pureComputed(function() {
+    self.version();
+    var d = self.isViewingStorageSnapshot() ? self.storageSnapshotData() : self.data();
+    var cpCount = (d && Array.isArray(d.currentPrayers)) ? d.currentPrayers.length : 0;
+    var qhCount = (d && Array.isArray(d.qazaHistory)) ? d.qazaHistory.length : 0;
+    return 'currentPrayers: ' + cpCount + ' entries, qazaHistory: ' + qhCount + ' entries';
+  });
+
+  self.dbJsonSummaryLabel = ko.pureComputed(function() {
+    self.version();
+    var d = self.data();
+    var cpCount = (d && Array.isArray(d.currentPrayers)) ? d.currentPrayers.length : 0;
+    var qhCount = (d && Array.isArray(d.qazaHistory)) ? d.qazaHistory.length : 0;
+    return cpCount + ' current, ' + qhCount + ' qaza entries';
+  });
+
+  self.version.subscribe(function() {
+    if (self.dbLastUpdated) {
+      self.dbLastUpdated(formatTimeHMS(new Date()));
+    }
+    if (!self.isViewingStorageSnapshot()) {
+      self.renderJsonTree();
+    }
+  });
 
   self.activeTab = ko.observable('today');
   self.todaySubTab = ko.observable('current');
@@ -261,37 +450,77 @@ function AppViewModel() {
 
   self.pendingCurrentStartDate = ko.observable('');
   self.pendingStartDate = ko.observable('');
+  self.pendingEndDate = ko.observable('');
   self.pendingCity = ko.observable('');
   self.pendingApiUrl = ko.observable('');
   self.cities = AP_CITIES;
 
   self.todayDate = ko.pureComputed(function() { return todayString(); });
-  self.currentStartDate = ko.pureComputed(function() { var d = self.data(); return d ? (d.currentPrayerStartDate || todayString()) : todayString(); });
+  self.currentStartDate = ko.pureComputed(function() {
+    self.version();
+    var d = self.data();
+    return d ? (d.currentPrayerStartDate || todayString()) : todayString();
+  });
   self.currentStartLabel = ko.pureComputed(function() { return formatNiceDate(self.currentStartDate()); });
-  self.qazaMaxDate = ko.pureComputed(function() { return shiftDate(self.currentStartDate(), -1); });
+  self.qazaStartDate = ko.pureComputed(function() {
+    self.version();
+    var d = self.data();
+    return d ? (d.qazaStartDate || '') : '';
+  });
+  self.qazaEndDate = ko.pureComputed(function() {
+    self.version();
+    var d = self.data();
+    return d ? (d.qazaEndDate || '') : '';
+  });
+  self.hasQazaDates = ko.pureComputed(function() {
+    self.version();
+    return Boolean(self.qazaStartDate() && self.qazaEndDate());
+  });
+  self.hasQazaStartDate = self.hasQazaDates;
 
-  var initDate = new Date();
-  self.calendarYear = ko.observable(initDate.getFullYear());
-  self.calendarMonth = ko.observable(initDate.getMonth());
+  self.isSettingsOpen = ko.observable(false);
 
+  self.qazaDateError = ko.pureComputed(function() {
+    var start = self.pendingStartDate();
+    var end = self.pendingEndDate();
+    var maxDate = self.yesterdayDate();
+    if (start && start > maxDate) {
+      return 'Start date cannot be today or a future date.';
+    }
+    if (end && end > maxDate) {
+      return 'End date cannot be today or a future date.';
+    }
+    if (start && end && end < start) {
+      return 'End date must be on or after start date.';
+    }
+    return '';
+  });
+
+  self.isQazaDateValid = ko.pureComputed(function() {
+    var start = self.pendingStartDate();
+    var end = self.pendingEndDate();
+    var maxDate = self.yesterdayDate();
+    if (!start || !end) return false;
+    if (start > maxDate || end > maxDate) return false;
+    return end >= start;
+  });
+
+  self._isLoaded = false;
+  self._isInternalSave = false;
   self._suppressSave = false;
   self._toastTimer = null;
   self._advanceTimer = null;
   self._settingsSheet = null;
-  self._calendarSheet = null;
   self._savedCity = DEFAULT_CITY;
   self._savedCountry = DEFAULT_COUNTRY;
   self._savedApiUrl = null;
   self._navigating = false;
-  self._scrollPositions = { today: 0, qaza: 0, history: 0, progress: 0 };
+  self._scrollPositions = { today: 0, qaza: 0, history: 0 };
 
-  /* ---- Helper functions for date & currentPrayers collection ---- */
+  /* ---- Helper functions for date & prayer collections ---- */
   function getQazaDateRange(data) {
-    if (!data) return { start: '', end: '' };
-    var currentStart = data.currentPrayerStartDate || todayString();
-    var end = shiftDate(currentStart, -1);
-    var start = data.qazaStartDate || shiftDate(todayString(), -DEFAULT_QAZA_DAYS);
-    return { start: start, end: end };
+    if (!data || !data.qazaStartDate || !data.qazaEndDate) return { start: '', end: '' };
+    return { start: data.qazaStartDate, end: data.qazaEndDate };
   }
 
   function ensureCurrentPrayersRange(data) {
@@ -312,8 +541,6 @@ function AppViewModel() {
     while (cur <= endDate) {
       if (existingMap[cur]) {
         newArray.push(existingMap[cur]);
-      } else if (data.qazaHistory && isComplete(data.qazaHistory[cur])) {
-        // Completed day already removed from currentPrayers; do not re-add
       } else {
         newArray.push(Object.assign({ date: cur }, blank()));
       }
@@ -331,12 +558,22 @@ function AppViewModel() {
     return -1;
   }
 
+  function findQazaPrayerIndex(dateStr) {
+    var data = self.data();
+    if (!data || !Array.isArray(data.qazaHistory)) return -1;
+    for (var i = 0; i < data.qazaHistory.length; i++) {
+      if (data.qazaHistory[i] && data.qazaHistory[i].date === dateStr) return i;
+    }
+    return -1;
+  }
+
   function getRecordForDate(dateStr) {
     var data = self.data();
     if (!data || !dateStr) return blank();
     var idx = findCurrentPrayerIndex(dateStr);
     if (idx >= 0) return data.currentPrayers[idx];
-    if (data.qazaHistory && data.qazaHistory[dateStr]) return data.qazaHistory[dateStr];
+    var qIdx = findQazaPrayerIndex(dateStr);
+    if (qIdx >= 0) return data.qazaHistory[qIdx];
     return blank();
   }
 
@@ -348,11 +585,6 @@ function AppViewModel() {
 
     var idx = findCurrentPrayerIndex(curDate);
     if (idx >= 0) return data.currentPrayers[idx];
-
-    // Check if date was already recorded in qazaHistory:
-    if (data.qazaHistory && data.qazaHistory[curDate]) {
-      return Object.assign({ date: curDate }, data.qazaHistory[curDate]);
-    }
 
     // If today is not in currentPrayers:
     if (curDate === todayString()) {
@@ -377,7 +609,9 @@ function AppViewModel() {
   });
   self.showDateInHeader = ko.pureComputed(function() {
     var t = self.activeTab();
-    return t === 'today' || t === 'qaza';
+    if (t === 'today') return true;
+    if (t === 'qaza') return self.hasQazaStartDate() && Boolean(self.headerDateLabel());
+    return false;
   });
   self.headerDateLabel = ko.pureComputed(function() {
     if (self.activeTab() === 'today') {
@@ -457,25 +691,11 @@ function AppViewModel() {
     });
   });
 
-  /* ---- 2. Qaza Cards (Lazy List: Active Day + Next 4 Upcoming) ---- */
+  /* ---- 2. Qaza Cards (Active Day + Next 4 Upcoming) ---- */
   self.computeActiveQazaDate = function() {
     var data = self.data();
-    if (!data) return '';
-    var range = getQazaDateRange(data);
-    var start = range.start, end = range.end;
-    if (!start || !end || start > end) return '';
-
-    var cur = end;
-    var guard = 0;
-    while (cur >= start && guard < 30000) {
-      var rec = getRecordForDate(cur);
-      if (!isComplete(rec)) {
-        return cur;
-      }
-      cur = shiftDate(cur, -1);
-      guard++;
-    }
-    return '';
+    if (!data || !data.qazaStartDate || !data.qazaEndDate || !Array.isArray(data.qazaHistory) || data.qazaHistory.length === 0) return '';
+    return data.qazaHistory[0].date;
   };
 
   self.computeCursor = self.computeActiveQazaDate;
@@ -484,48 +704,38 @@ function AppViewModel() {
     self.version();
     self.tick();
     var data = self.data();
-    if (!data) return [];
-    var range = getQazaDateRange(data);
-    var start = range.start, end = range.end;
-    if (!start || !end || start > end) return [];
-
-    var activeDate = self.computeActiveQazaDate();
-    if (!activeDate) return [];
+    if (!data || !data.qazaStartDate || !data.qazaEndDate || !Array.isArray(data.qazaHistory) || data.qazaHistory.length === 0) return [];
 
     var now = nowMinutes();
     var cards = [];
 
-    // 1. Active Day Card (interactive & unlocked)
-    var activeRec = getRecordForDate(activeDate);
-    cards.push(buildDayCard(activeDate, activeRec, {
-      trackingStartDate: start,
+    // 1. Active Day Card (newest pending day in qazaHistory)
+    var activeEntry = data.qazaHistory[0];
+    cards.push(buildDayCard(activeEntry.date, activeEntry, {
+      trackingStartDate: data.qazaStartDate,
       mode: 'interactive',
       screenPrefix: 'qaza',
-      isGrid: false,
-      isHighlighted: true,
+      isGrid: true,
+      isHighlighted: false,
       isLocked: false,
       timings: null,
       now: now
     }));
 
-    // 2. Next 4 upcoming day cards (previous in date order, locked/dimmed)
-    var cur = shiftDate(activeDate, -1);
-    var loaded = 0;
-    while (cur >= start && loaded < 4) {
-      var rec = getRecordForDate(cur);
-      cards.push(buildDayCard(cur, rec, {
-        trackingStartDate: start,
+    // 2. Next 4 upcoming day cards (locked/dimmed)
+    for (var i = 1; i < Math.min(5, data.qazaHistory.length); i++) {
+      var entry = data.qazaHistory[i];
+      cards.push(buildDayCard(entry.date, entry, {
+        trackingStartDate: data.qazaStartDate,
         mode: 'interactive',
         screenPrefix: 'qaza',
-        isGrid: false,
+        isGrid: true,
         isHighlighted: false,
         isLocked: true,
-        lockedReason: 'Locked — complete ' + formatStandardDate(activeDate) + ' to unlock',
+        lockedReason: 'Locked — complete ' + formatStandardDate(activeEntry.date) + ' to unlock',
         timings: null,
         now: now
       }));
-      cur = shiftDate(cur, -1);
-      loaded++;
     }
 
     return cards;
@@ -542,9 +752,15 @@ function AppViewModel() {
     self.goToday(targetDate);
   };
 
-  self.qazaStartLabel = ko.pureComputed(function() {
-    var d = self.data(); return d ? formatNiceDate(d.qazaStartDate) : '';
+  self.qazaDateRangeLabel = ko.pureComputed(function() {
+    self.version();
+    var start = self.qazaStartDate();
+    var end = self.qazaEndDate();
+    if (start && end) return formatStandardDate(start) + ' – ' + formatStandardDate(end);
+    if (start) return formatStandardDate(start);
+    return 'Not set';
   });
+  self.qazaStartLabel = self.qazaDateRangeLabel;
 
   self.locationTimeLabel = ko.pureComputed(function() {
     self.version();
@@ -553,54 +769,16 @@ function AppViewModel() {
     return city + ', ' + (self._savedCountry || DEFAULT_COUNTRY) + custom;
   });
 
-  /* ---- Stats ---- */
-  self.stats = ko.pureComputed(function() {
-    self.version();
-    var data = self.data();
-    if (!data) return { total:0, completed:0, remaining:0, percent:0 };
-    var range = getQazaDateRange(data);
-    var start = range.start, end = range.end;
-    if (!start || !end || start > end) {
-      return { total: 0, completed: 0, remaining: 0, percent: 0 };
-    }
-    var total = daysBetween(start, end), completed = 0;
-    Object.keys(data.qazaHistory || {}).forEach(function(k) {
-      if (k < start || k > end) return;
-      if (isComplete(data.qazaHistory[k])) completed++;
-    });
-    var remaining = Math.max(total - completed, 0);
-    var percent = total > 0 ? Math.min(completed/total*100, 100) : 0;
-    return { total: total, completed: completed, remaining: remaining, percent: percent };
-  });
-
-  self.progressPercentLabel = ko.pureComputed(function() {
-    var p = self.stats().percent;
-    if (p > 0 && p < 1) return p.toFixed(2)+'%';
-    if (p > 0 && p < 10) return p.toFixed(1)+'%';
-    return Math.round(p)+'%';
-  });
-
-  self.breakdown = ko.pureComputed(function() {
-    var s = self.stats(); var doneDays = s.completed;
-    return [
-      { label:'Days Completed',    value: doneDays.toLocaleString(),        color:'#094E3A' },
-      { label:'Months Completed',  value: (doneDays/30).toFixed(1),          color:'#094E3A' },
-      { label:'Years Completed',   value: (doneDays/365).toFixed(2),         color:'#094E3A' },
-      { label:'Prayers Completed', value: (doneDays*5).toLocaleString(),     color:'#094E3A' },
-      { label:'Days Remaining',    value: s.remaining.toLocaleString(),      color:'#dc2626' },
-      { label:'Prayers Remaining', value: (s.remaining*5).toLocaleString(),  color:'#dc2626' },
-      { label:'Total Prayers',     value: (s.total*5).toLocaleString(),      color:'#334155' }
-    ];
-  });
-
   /* ---- History ---- */
   self.filteredHistory = ko.pureComputed(function() {
     self.version();
     var data = self.data(); if (!data) return [];
-    var range = getQazaDateRange(data);
-    var start = range.start, end = range.end;
+    var qStart = data.qazaStartDate;
+    var cStart = data.currentPrayerStartDate || todayString();
+    var minStart = qStart ? (qStart < cStart ? qStart : cStart) : cStart;
+    var end = todayString();
     var entries = self.activityLog().filter(function(a) {
-      return a.date >= start && a.date <= end;
+      return a.date >= minStart && a.date <= end;
     }).sort(function(a,b) { return b.timestamp - a.timestamp; });
 
     return entries.map(function(a) {
@@ -618,154 +796,112 @@ function AppViewModel() {
     });
   });
 
-  /* ---- Calendar ---- */
-  self.monthOptions = MONTH_NAMES.map(function(name, i) { return { name: name, value: i }; });
-
-  self.yearOptions = ko.pureComputed(function() {
-    var data = self.data();
-    var currentYear = new Date().getFullYear();
-    var startYear = data ? parseInt(data.qazaStartDate.split('-')[0], 10) : currentYear;
-    var minYear = Math.min(startYear, currentYear - 5);
-    var result = [];
-    for (var y = currentYear; y >= minYear; y--) result.push(y);
-    return result;
-  });
-
-  self.calendarLabel = ko.pureComputed(function() {
-    return MONTH_NAMES[self.calendarMonth()] + ' ' + self.calendarYear();
-  });
-
-  self.calendarDays = ko.pureComputed(function() {
-    self.tick();
-    self.version();
-    var year = self.calendarYear(), month = self.calendarMonth();
-    var data = self.data(); if (!data) return [];
-
-    var firstWeekday = new Date(year, month, 1).getDay();
-    var daysInMonth = new Date(year, month + 1, 0).getDate();
-    var range = getQazaDateRange(data);
-    var startStr = range.start;
-    var endStr = range.end;
-    var todayStr = todayString();
-
-    var days = [];
-    for (var i = 0; i < firstWeekday; i++) days.push({ empty: true, day: '', dateStr: '', inRange: false, complete: false, partial: false, isToday: false });
-
-    for (var d = 1; d <= daysInMonth; d++) {
-      var dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-      var clickable = dateStr >= startStr && dateStr <= endStr;
-      var rec = data.qazaHistory[dateStr];
-      var complete = isComplete(rec);
-      var partial  = !complete && rec && countDone(rec) > 0;
-      var isToday  = dateStr === todayStr;
-      days.push({
-        empty: false, day: d, dateStr: dateStr,
-        inRange: clickable,
-        complete: complete, partial: partial, isToday: isToday
-      });
-    }
-    return days;
-  });
-
-  self.monthCompletedCount = ko.pureComputed(function() {
-    var c = 0;
-    self.calendarDays().forEach(function(d) { if (d.complete) c++; });
-    return c;
-  });
-
-  self.selectCalendarDate = function(day) {
-    if (!day || day.empty || !day.inRange) return;
-    self.goQaza(day.dateStr);
-    if (self._calendarSheet) self._calendarSheet.hide();
-  };
-
-  self.openCalendar = function() {
-    var ds = self.selectedQazaDate() || self.computeCursor();
-    if (self.activeTab() === 'qaza' && ds) {
-      var parts = ds.split('-').map(Number);
-      self.calendarYear(parts[0]);
-      self.calendarMonth(parts[1] - 1);
-    } else {
-      var now = new Date();
-      self.calendarYear(now.getFullYear());
-      self.calendarMonth(now.getMonth());
-    }
-    if (self._calendarSheet) self._calendarSheet.show();
-  };
-
-  self.jumpToYesterday = function() {
-    self.goQaza(self.computeCursor());
-    if (self._calendarSheet) self._calendarSheet.hide();
-    self.showToast('Jumped to latest Qaza day.');
-  };
-
-  self.jumpToStart = function() {
-    var data = self.data(); if (!data) return;
-    self.goQaza(data.qazaStartDate);
-    if (self._calendarSheet) self._calendarSheet.hide();
-    self.showToast('Jumped to start date.');
-  };
-
   /* ---- Data ---- */
-  self.saveData = function() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(self.data()));
-      console.log('💾 Database saved to localStorage [' + STORAGE_KEY + ']:', self.data());
-    } catch (e) {
-      console.error('Failed to save to localStorage:', e);
-    }
-  };
+  function flattenPrayerRows(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map(function(item) {
+      return {
+        date: item.date,
+        fajr: item.fajr ? 'done' : 'pending',
+        dhuhr: item.dhuhr ? 'done' : 'pending',
+        asr: item.asr ? 'done' : 'pending',
+        maghrib: item.maghrib ? 'done' : 'pending',
+        isha: item.isha ? 'done' : 'pending'
+      };
+    });
+  }
 
-  self.logDatabaseStats = function() {
+  self.logDatabaseState = function(actionLabel) {
     var d = self.data();
     if (!d) return;
-    var qazaDates = Object.keys(d.qazaHistory || {});
-    var totalQazaPrayers = 0;
-    qazaDates.forEach(function(k) {
-      totalQazaPrayers += countDone(d.qazaHistory[k]);
-    });
-    var todayRec = getTodayRecord();
-    var todayDone = countDone(todayRec);
-    var activeCurrentDates = Array.isArray(d.currentPrayers) ? d.currentPrayers.map(function(item) { return item.date; }) : [];
+    var suffix = actionLabel ? ' (' + actionLabel + ')' : '';
 
-    console.group('%c🕌 Namaz & Qaza Tracker — Database Overview', 'color:#094E3A;font-weight:bold;font-size:13px;');
+    console.log('[DB] Settings' + suffix);
     console.table({
-      'Today Date': { Value: todayString() },
-      "Today's Prayers Completed": { Value: todayDone + ' / 5' },
-      'Active Dates in currentPrayers': { Value: activeCurrentDates.length + ' active date(s) [' + activeCurrentDates.join(', ') + ']' },
-      'Current Prayer Start Date': { Value: d.currentPrayerStartDate || 'N/A' },
-      'Qaza Start Date': { Value: d.qazaStartDate },
-      'Qaza History Days Recorded': { Value: qazaDates.length + ' days' },
-      'Total Qaza Prayers Cleared': { Value: totalQazaPrayers },
-      'Activity Log Entries': { Value: (d.activityLog ? d.activityLog.length : 0) + ' events' },
-      'City / Country': { Value: (self._savedCity || 'Default') + ', ' + (self._savedCountry || 'IN') },
-      'LocalStorage Keys': { Value: STORAGE_KEY + ', ' + CITY_KEY }
+      qazaStartDate: d.qazaStartDate || 'Not set',
+      qazaEndDate: d.qazaEndDate || 'Not set',
+      currentPrayerStartDate: d.currentPrayerStartDate || 'Not set'
     });
-    console.log('📋 currentPrayers collection (active incomplete dates):', d.currentPrayers);
-    console.log('📦 Raw Database Object:', d);
-    console.log('📜 Activity Log (last 10):', (d.activityLog || []).slice(-10));
-    console.groupEnd();
+
+    console.log('[DB] qazaHistory' + suffix);
+    console.table(flattenPrayerRows(d.qazaHistory));
+
+    console.log('[DB] currentPrayers' + suffix);
+    console.table(flattenPrayerRows(d.currentPrayers));
+  };
+  self.logDatabaseStats = self.logDatabaseState;
+
+  self.saveData = function(actionLabel) {
+    if (!self._isLoaded) {
+      console.warn('[DB] Save skipped: data has not finished loading on startup.');
+      return;
+    }
+    var d = self.data();
+    if (!d) return;
+    try {
+      self._isInternalSave = true;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+      if (self.dbLastUpdated) self.dbLastUpdated(formatTimeHMS(new Date()));
+      console.log('[DB] saved');
+      console.table({
+        qazaStartDate: d.qazaStartDate || 'Not set',
+        qazaEndDate: d.qazaEndDate || 'Not set',
+        currentPrayerStartDate: d.currentPrayerStartDate || 'Not set'
+      });
+      self.logDatabaseState(actionLabel);
+    } catch (e) {
+      console.error('Failed to save to localStorage:', e);
+    } finally {
+      setTimeout(function() { self._isInternalSave = false; }, 50);
+    }
   };
 
   self.loadData = function() {
     var parsed = null;
-    try { var raw = localStorage.getItem(STORAGE_KEY); if (raw) parsed = JSON.parse(raw); } catch (e) {}
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) parsed = JSON.parse(raw);
+    } catch (e) {
+      console.error('Failed to load from localStorage:', e);
+    }
+
     var base = {
       currentPrayers: [
         Object.assign({ date: todayString() }, blank())
       ],
       currentPrayerStartDate: todayString(),
-      qazaHistory: {},
-      qazaStartDate: shiftDate(todayString(), -DEFAULT_QAZA_DAYS),
-      stats: { totalQazaDays: 0, completedQazaDays: 0 },
+      qazaHistory: [],
+      qazaStartDate: '',
+      qazaEndDate: '',
       activityLog: []
     };
 
-    if (!parsed || typeof parsed !== 'object') {
-      parsed = base;
-    } else {
-      var cpArray = [];
+    var loaded = Object.assign({}, base);
+    var needsCleanup = false;
+
+    if (parsed && typeof parsed === 'object') {
+      // One-time cleanup of legacy completed fields from persisted data
+      if ('completedCurrentPrayers' in parsed) {
+        delete parsed.completedCurrentPrayers;
+        needsCleanup = true;
+      }
+      if ('completedQazaDays' in parsed) {
+        delete parsed.completedQazaDays;
+        needsCleanup = true;
+      }
+
+      // Merge stored values over defaults (never the reverse)
+      if (typeof parsed.qazaStartDate === 'string') loaded.qazaStartDate = parsed.qazaStartDate;
+      if (typeof parsed.qazaEndDate === 'string') loaded.qazaEndDate = parsed.qazaEndDate;
+      if (typeof parsed.currentPrayerStartDate === 'string' && parsed.currentPrayerStartDate) {
+        loaded.currentPrayerStartDate = parsed.currentPrayerStartDate;
+      }
+      if (Array.isArray(parsed.activityLog)) {
+        loaded.activityLog = parsed.activityLog;
+      }
+
       if (Array.isArray(parsed.currentPrayers)) {
+        var cpArray = [];
         parsed.currentPrayers.forEach(function(item) {
           if (item && typeof item === 'object' && item.date) {
             var cleanItem = Object.assign({ date: item.date }, blank());
@@ -773,44 +909,65 @@ function AppViewModel() {
             cpArray.push(cleanItem);
           }
         });
+        loaded.currentPrayers = cpArray;
       } else if (parsed.currentPrayers && typeof parsed.currentPrayers === 'object') {
         var oldDate = parsed.currentPrayers.date || todayString();
         var oldClean = Object.assign({ date: oldDate }, blank());
         PRAYERS.forEach(function(p) { oldClean[p] = parsed.currentPrayers[p] === true; });
-        cpArray.push(oldClean);
+        loaded.currentPrayers = [oldClean];
       }
 
-      parsed = {
-        currentPrayers: cpArray,
-        currentPrayerStartDate: (typeof parsed.currentPrayerStartDate === 'string' && parsed.currentPrayerStartDate) ? parsed.currentPrayerStartDate : (parsed.currentPrayers && parsed.currentPrayers.date ? parsed.currentPrayers.date : todayString()),
-        qazaHistory: parsed.qazaHistory && typeof parsed.qazaHistory === 'object' ? parsed.qazaHistory : {},
-        qazaStartDate: (typeof parsed.qazaStartDate === 'string' && parsed.qazaStartDate) ? parsed.qazaStartDate : base.qazaStartDate,
-        stats: Object.assign(base.stats, parsed.stats && typeof parsed.stats === 'object' ? parsed.stats : {}),
-        activityLog: Array.isArray(parsed.activityLog) ? parsed.activityLog : []
-      };
+      // Preserve existing qazaHistory entries - never overwrite or reset on startup
+      if (Array.isArray(parsed.qazaHistory)) {
+        var qHistoryArray = [];
+        parsed.qazaHistory.forEach(function(item) {
+          if (item && typeof item === 'object' && item.date) {
+            var cleanItem = Object.assign({ id: item.id || ('qaza-' + item.date), date: item.date }, blank());
+            PRAYERS.forEach(function(p) { cleanItem[p] = item[p] === true; });
+            qHistoryArray.push(cleanItem);
+          }
+        });
+        loaded.qazaHistory = qHistoryArray;
+      }
+    }
 
-      Object.keys(parsed.qazaHistory).forEach(function(k) {
-        var rec = parsed.qazaHistory[k];
-        if (!rec || typeof rec !== 'object') { delete parsed.qazaHistory[k]; return; }
-        var clean = blank();
-        PRAYERS.forEach(function(p) { clean[p] = rec[p] === true; });
-        parsed.qazaHistory[k] = clean;
+    if (loaded.qazaHistory.length > 0) {
+      loaded.qazaHistory.sort(function(a, b) {
+        return b.date.localeCompare(a.date);
       });
     }
 
-    var range = getQazaDateRange(parsed);
-    if (parsed.qazaStartDate > range.end) parsed.qazaStartDate = range.end;
-    ensureCurrentPrayersRange(parsed);
-    self.data(parsed);
-    self.activityLog(parsed.activityLog.slice());
+    ensureCurrentPrayersRange(loaded);
+    self.data(loaded);
+    self.activityLog(loaded.activityLog.slice());
+    self.pendingStartDate(loaded.qazaStartDate || '');
+    self.pendingEndDate(loaded.qazaEndDate || '');
+    self.pendingCurrentStartDate(loaded.currentPrayerStartDate || todayString());
 
     try {
       var raw2 = localStorage.getItem(CITY_KEY);
-      if (raw2) { var s = JSON.parse(raw2); self._savedCity = s.city || DEFAULT_CITY; self._savedCountry = s.country || DEFAULT_COUNTRY; self._savedApiUrl = s.apiUrl || null; }
+      if (raw2) {
+        var s = JSON.parse(raw2);
+        self._savedCity = s.city || DEFAULT_CITY;
+        self._savedCountry = s.country || DEFAULT_COUNTRY;
+        self._savedApiUrl = s.apiUrl || null;
+      }
     } catch (e) {}
 
-    checkCurrentDate();
     self.selectedQazaDate(self.computeActiveQazaDate());
+    self._isLoaded = true;
+    if (needsCleanup) {
+      self.saveData('cleanup legacy completed keys');
+    }
+
+    console.log('[DB] loaded on startup');
+    console.table({
+      qazaStartDate: loaded.qazaStartDate || 'Not set',
+      qazaEndDate: loaded.qazaEndDate || 'Not set',
+      currentPrayerStartDate: loaded.currentPrayerStartDate || 'Not set'
+    });
+
+    checkCurrentDate();
     bump();
   };
 
@@ -818,9 +975,9 @@ function AppViewModel() {
     var data = self.data(); if (!data) return false;
     var today = todayString();
     var idx = findCurrentPrayerIndex(today);
-    if (idx === -1 && !(data.qazaHistory && isComplete(data.qazaHistory[today]))) {
+    if (idx === -1) {
       ensureCurrentPrayersRange(data);
-      self.saveData();
+      self.saveData('after add');
       return true;
     }
     return false;
@@ -854,25 +1011,26 @@ function AppViewModel() {
     var dateStr = prayer.date || (card && card.date);
     if (!dateStr) return false;
 
+    var isQaza = Boolean(prayer.isQaza || (card && card.isQaza) || self.activeTab() === 'qaza');
     var isCheckbox = Boolean(ev && ev.target && ev.target.type === 'checkbox');
     var newDone = isCheckbox ? ev.target.checked : !prayer.isDone();
-    var ok = self.updatePrayerStatus(dateStr, prayer.key, newDone);
+    var ok = self.updatePrayerStatus(dateStr, prayer.key, newDone, isQaza);
     if (!ok && isCheckbox && ev.target) {
       ev.target.checked = !newDone;
     }
     return isCheckbox;
   };
 
-  self.updatePrayerStatus = function(dateStr, prayer, isDone) {
+  self.updatePrayerStatus = function(dateStr, prayer, isDone, isQaza) {
     var data = self.data();
     if (!data || !dateStr) return false;
     if (!Array.isArray(data.currentPrayers)) data.currentPrayers = [];
+    if (!Array.isArray(data.qazaHistory)) data.qazaHistory = [];
 
-    var cpIdx = findCurrentPrayerIndex(dateStr);
-    var rec;
+    var targetQaza = (typeof isQaza === 'boolean') ? isQaza : (self.activeTab() === 'qaza');
 
-    if (cpIdx >= 0) {
-      rec = data.currentPrayers[cpIdx];
+    function applyCurrentPrayer(cpIdx) {
+      var rec = data.currentPrayers[cpIdx];
       var wasComplete = isComplete(rec);
       var willBeComplete = PRAYERS.every(function(p) {
         return p === prayer ? (isDone === true) : (rec[p] === true);
@@ -889,63 +1047,87 @@ function AppViewModel() {
 
         // On confirm, delete that day's object from currentPrayers array and persist in store
         rec[prayer] = true;
-        data.currentPrayers.splice(cpIdx, 1);
-        if (!data.qazaHistory) data.qazaHistory = {};
-        data.qazaHistory[dateStr] = { fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true };
+        var removed = data.currentPrayers.splice(cpIdx, 1)[0];
+        console.log('Removed completed entry:', removed);
         self.logActivity('complete', null, dateStr);
         self.logActivity('prayer', prayer, dateStr, 'check');
         self.showToast(dateStr === todayString() ? "Masha'Allah! Today's prayers completed." : "Masha'Allah! Prayers completed.");
-        self.saveData();
+        self.saveData('after remove');
         bump();
         return true;
       }
 
       rec[prayer] = (isDone === true);
-      var nowComplete = isComplete(rec);
-
-      if (!data.qazaHistory) data.qazaHistory = {};
-      if (nowComplete) {
-        data.qazaHistory[dateStr] = { fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true };
-        self.logActivity('complete', null, dateStr);
-        self.showToast(dateStr === todayString() ? "Masha'Allah! Today's prayers completed." : "Masha'Allah! Prayers completed.");
-      } else {
-        if (data.qazaHistory[dateStr] && isComplete(data.qazaHistory[dateStr])) {
-          delete data.qazaHistory[dateStr];
-        }
-      }
-
       self.logActivity('prayer', prayer, dateStr, isDone ? 'check' : 'uncheck');
-      self.saveData();
-      bump();
-      return true;
-    } else {
-      if (!data.qazaHistory) data.qazaHistory = {};
-      if (!data.qazaHistory[dateStr]) data.qazaHistory[dateStr] = blank();
-      rec = data.qazaHistory[dateStr];
-      var wasComplete2 = isComplete(rec);
-      rec[prayer] = (isDone === true);
-      var nowComplete2 = isComplete(rec);
-
-      if (PRAYERS.every(function(p){ return rec[p] === false; })) {
-        delete data.qazaHistory[dateStr];
-      } else if (!nowComplete2 && dateStr >= (data.currentPrayerStartDate || todayString())) {
-        var newCp = Object.assign({ date: dateStr }, rec);
-        data.currentPrayers.push(newCp);
-        ensureCurrentPrayersRange(data);
-      }
-      if (nowComplete2 && !wasComplete2) {
-        self.logActivity('complete', null, dateStr);
-        self.showToast("Masha'Allah! Day cleared.");
-      }
-
-      self.logActivity('prayer', prayer, dateStr, isDone ? 'check' : 'uncheck');
-      self.saveData();
+      self.saveData('after toggle');
       bump();
       return true;
     }
+
+    function applyQaza(qIdx) {
+      var qRec = data.qazaHistory[qIdx];
+      var qWasComplete = isComplete(qRec);
+      var qWillBeComplete = PRAYERS.every(function(p) {
+        return p === prayer ? (isDone === true) : (qRec[p] === true);
+      });
+
+      // Auto-remove completed days: confirmation dialog
+      if (!qWasComplete && qWillBeComplete) {
+        var qConfirmed = window.confirm("All prayers for this day are completed. This entry will be permanently removed from your history.");
+        if (!qConfirmed) {
+          // On cancel, keep the entry unchanged
+          bump();
+          return false;
+        }
+
+        // On confirm, delete that entry from qazaHistory, persist it
+        qRec[prayer] = true;
+        var removed = data.qazaHistory.splice(qIdx, 1)[0];
+        console.log('Removed completed entry:', removed);
+        data.qazaHistory = data.qazaHistory.slice();
+
+        self.selectedQazaDate(self.computeActiveQazaDate());
+        self.logActivity('complete', null, dateStr);
+        self.logActivity('prayer', prayer, dateStr, 'check');
+        self.showToast("Masha'Allah! Qaza day completed.");
+        self.saveData('after remove');
+        bump();
+        return true;
+      }
+
+      qRec[prayer] = (isDone === true);
+      data.qazaHistory = data.qazaHistory.slice();
+      self.logActivity('prayer', prayer, dateStr, isDone ? 'check' : 'uncheck');
+      self.saveData('after toggle');
+      bump();
+      return true;
+    }
+
+    if (targetQaza) {
+      var qIdx = findQazaPrayerIndex(dateStr);
+      if (qIdx >= 0) return applyQaza(qIdx);
+      var cpFallback = findCurrentPrayerIndex(dateStr);
+      if (cpFallback >= 0) return applyCurrentPrayer(cpFallback);
+      return false;
+    } else {
+      var cpIdx = findCurrentPrayerIndex(dateStr);
+      if (cpIdx >= 0) return applyCurrentPrayer(cpIdx);
+      var qFallback = findQazaPrayerIndex(dateStr);
+      if (qFallback >= 0) return applyQaza(qFallback);
+      return false;
+    }
+  };
+
+  self.closeAllSheets = function() {
+    if (self._settingsSheet) self._settingsSheet.hide();
+    if (self._currentPrayerDateSheet) self._currentPrayerDateSheet.hide();
+    if (self._qazaDateSheet) self._qazaDateSheet.hide();
+    if (self._locationTimeSheet) self._locationTimeSheet.hide();
+    self.isSettingsOpen(false);
   };
 
   self.goToday = function(targetDate) {
+    self.closeAllSheets();
     var d = (typeof targetDate === 'string' && targetDate) ? targetDate : todayString();
     self.selectedTodayDate(d);
     self.activeTab('today');
@@ -962,6 +1144,7 @@ function AppViewModel() {
   };
 
   self.goQaza = function(targetDate) {
+    self.closeAllSheets();
     var d = (typeof targetDate === 'string' && targetDate) ? targetDate : self.computeActiveQazaDate();
     self.selectedQazaDate(d);
     self.activeTab('qaza');
@@ -972,8 +1155,15 @@ function AppViewModel() {
     }, 120);
   };
 
-  self.goHistory = function() { self.activeTab('history'); bump(); };
-  self.goProgress = function() { self.activeTab('progress'); bump(); };
+  self.goHistory = function() {
+    self.closeAllSheets();
+    self.activeTab('history');
+    bump();
+  };
+
+  self.goSettings = function() {
+    self.openSettings();
+  };
 
   self.deleteHistory = function() {
     var data = self.data();
@@ -981,10 +1171,10 @@ function AppViewModel() {
       self.showToast('No history to delete.');
       return;
     }
-    if (!confirm('Delete all ' + data.activityLog.length + ' history entries?\n\nQaza records and progress will be preserved.')) return;
+    if (!confirm('Delete all ' + data.activityLog.length + ' history entries?\n\nQaza records will be preserved.')) return;
     data.activityLog = [];
     self.activityLog([]);
-    self.saveData();
+    self.saveData('after delete');
     bump();
     self.showToast('History deleted.');
   };
@@ -1009,10 +1199,14 @@ function AppViewModel() {
   /* ---- Settings Navigation ---- */
   self.openSettings = function() {
     var data = self.data();
-    self.pendingCurrentStartDate(data.currentPrayerStartDate || todayString());
-    self.pendingStartDate(data.qazaStartDate);
+    if (data) {
+      self.pendingCurrentStartDate(data.currentPrayerStartDate || todayString());
+      self.pendingStartDate(data.qazaStartDate || '');
+      self.pendingEndDate(data.qazaEndDate || '');
+    }
     self.pendingCity(self._savedCity);
     self.pendingApiUrl(self._savedApiUrl || '');
+    self.isSettingsOpen(true);
     if (self._settingsSheet) self._settingsSheet.show();
   };
 
@@ -1020,7 +1214,150 @@ function AppViewModel() {
     if (self._currentPrayerDateSheet) self._currentPrayerDateSheet.hide();
     if (self._qazaDateSheet) self._qazaDateSheet.hide();
     if (self._locationTimeSheet) self._locationTimeSheet.hide();
+    if (self._databaseJsonSheet) self._databaseJsonSheet.hide();
+    if (window.location.hash === '#database-json') {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {
+        window.location.hash = '';
+      }
+    }
     if (self._settingsSheet) self._settingsSheet.show();
+  };
+
+  self.openDatabaseJsonSheet = function() {
+    self.isViewingStorageSnapshot(false);
+    self.dbExpandDepth(1);
+    self.isDbDarkMode(isAppDarkMode());
+    if (self._settingsSheet) self._settingsSheet.hide();
+    if (self._databaseJsonSheet) self._databaseJsonSheet.show();
+    setTimeout(function() {
+      self.renderJsonTree();
+    }, 50);
+    if (window.location.hash !== '#database-json') {
+      try {
+        history.pushState(null, '', '#database-json');
+      } catch (e) {
+        window.location.hash = '#database-json';
+      }
+    }
+  };
+
+  self.renderJsonTree = function() {
+    var container = document.getElementById('dbJsonTreeViewer');
+    if (!container) return;
+
+    var dataToRender = self.isViewingStorageSnapshot() ? self.storageSnapshotData() : self.data();
+    if (!dataToRender) {
+      container.innerHTML = '<div class="text-secondary small fst-italic p-2">Database is empty or not loaded yet.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    var depth = (typeof self.dbExpandDepth() === 'number') ? self.dbExpandDepth() : 1;
+    var isDark = isAppDarkMode();
+    self.isDbDarkMode(isDark);
+
+    if (typeof JSONFormatter !== 'undefined') {
+      try {
+        var formatter = new JSONFormatter(dataToRender, depth, {
+          theme: isDark ? 'dark' : undefined,
+          hoverPreviewEnabled: true
+        });
+        self._jsonFormatterInstance = formatter;
+        container.appendChild(formatter.render());
+        return;
+      } catch (e) {
+        console.warn('JSONFormatter render failed, using fallback:', e);
+      }
+    }
+
+    renderFallbackJsonTree(container, dataToRender, depth, isDark);
+  };
+
+  self.expandAllJson = function() {
+    self.dbExpandDepth(Infinity);
+    if (self._jsonFormatterInstance && typeof self._jsonFormatterInstance.openAtDepth === 'function') {
+      self._jsonFormatterInstance.openAtDepth(Infinity);
+    } else {
+      self.renderJsonTree();
+    }
+  };
+
+  self.collapseAllJson = function() {
+    self.dbExpandDepth(0);
+    if (self._jsonFormatterInstance && typeof self._jsonFormatterInstance.openAtDepth === 'function') {
+      self._jsonFormatterInstance.openAtDepth(0);
+    } else {
+      self.renderJsonTree();
+    }
+  };
+
+  self.copyDbJson = function() {
+    var d = self.isViewingStorageSnapshot() ? self.storageSnapshotData() : self.data();
+    var jsonStr = '';
+    try {
+      jsonStr = JSON.stringify(d, null, 2);
+    } catch (err) {
+      self.dbCopyStatus('Error: Stringify failed');
+      self.dbCopyStatusClass('bg-danger');
+      return;
+    }
+
+    function handleSuccess() {
+      self.dbCopyStatus('Copied!');
+      self.dbCopyStatusClass('bg-success');
+      self.showToast('JSON copied to clipboard.');
+      clearTimeout(self._copyStatusTimer);
+      self._copyStatusTimer = setTimeout(function() {
+        self.dbCopyStatus('');
+      }, 2500);
+    }
+
+    function handleFailure(err) {
+      var msg = (err && err.message) ? err.message : 'Copy failed';
+      self.dbCopyStatus('Error: ' + msg);
+      self.dbCopyStatusClass('bg-danger');
+      self.showToast('Failed to copy: ' + msg);
+      clearTimeout(self._copyStatusTimer);
+      self._copyStatusTimer = setTimeout(function() {
+        self.dbCopyStatus('');
+      }, 3500);
+    }
+
+    if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(jsonStr).then(handleSuccess).catch(function() {
+        fallbackCopyText(jsonStr, handleSuccess, handleFailure);
+      });
+    } else {
+      fallbackCopyText(jsonStr, handleSuccess, handleFailure);
+    }
+  };
+
+  self.refreshDbFromStorage = function() {
+    var parsed = null;
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        parsed = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.error('Failed to read from localStorage:', e);
+    }
+
+    self.isViewingStorageSnapshot(true);
+    self.storageSnapshotData(parsed || {});
+    self.dbLastUpdated(formatTimeHMS(new Date()) + ' (storage snapshot)');
+    self.renderJsonTree();
+    self.showToast('Re-read persisted data from storage.');
+  };
+
+  self.showLiveDbState = function() {
+    self.isViewingStorageSnapshot(false);
+    self.storageSnapshotData(null);
+    self.dbLastUpdated(formatTimeHMS(new Date()));
+    self.renderJsonTree();
+    self.showToast('Switched to live database view.');
   };
 
   self.openCurrentPrayerDateSheet = function() {
@@ -1032,7 +1369,10 @@ function AppViewModel() {
 
   self.openQazaDateSheet = function() {
     var data = self.data();
-    self.pendingStartDate(data.qazaStartDate);
+    if (data) {
+      self.pendingStartDate(data.qazaStartDate || '');
+      self.pendingEndDate(data.qazaEndDate || '');
+    }
     if (self._settingsSheet) self._settingsSheet.hide();
     if (self._qazaDateSheet) self._qazaDateSheet.show();
   };
@@ -1082,7 +1422,7 @@ function AppViewModel() {
     data.currentPrayers = prayers;
 
     self.logActivity('setting', 'current_prayer', newCurrentStart, 'current_prayer_start_date');
-    self.saveData();
+    self.saveData('after date change');
     bump();
     self.showToast('Current prayer start date updated.');
 
@@ -1090,35 +1430,101 @@ function AppViewModel() {
     if (self._settingsSheet) self._settingsSheet.show();
   };
 
-  // 2. Qaza Start Prayer Date
-  self.saveQazaStartDate = function() {
+  // 2. Qaza Prayer Dates (Start & End)
+  self.saveQazaDates = function() {
     var data = self.data();
+    if (!data) return;
     var newStart = self.pendingStartDate();
-    var range = getQazaDateRange(data);
-    if (!newStart) {
-      self.showToast('Please select a valid date.');
+    var newEnd = self.pendingEndDate();
+    var maxDate = self.yesterdayDate();
+    if (!newStart || !newEnd) {
+      self.showToast('Please select both start and end dates.');
       return;
     }
-    if (newStart > range.end) {
-      self.showToast('Start date cannot be after ' + formatNiceDate(range.end) + '.');
+    if (newStart > maxDate) {
+      self.showToast('Start date cannot be today or a future date.');
+      return;
+    }
+    if (newEnd > maxDate) {
+      self.showToast('End date cannot be today or a future date.');
+      return;
+    }
+    if (newEnd < newStart) {
+      self.showToast('End date must be on or after start date.');
       return;
     }
 
-    if (newStart !== data.qazaStartDate) {
-      if (!confirm('Change Qaza start date to ' + formatNiceDate(newStart) + '? This will recalculate your Qaza target.')) {
+    if (!Array.isArray(data.qazaHistory)) {
+      data.qazaHistory = [];
+    }
+
+    if (data.qazaStartDate === newStart && data.qazaEndDate === newEnd) {
+      var qSheet = document.getElementById('qazaDateSheet');
+      if (qSheet && qSheet.classList.contains('show')) {
+        if (self._qazaDateSheet) self._qazaDateSheet.hide();
+        if (self._settingsSheet) self._settingsSheet.show();
+      }
+      return;
+    }
+
+    var outsideEntries = data.qazaHistory.filter(function(e) {
+      return e.date < newStart || e.date > newEnd;
+    });
+
+    if (outsideEntries.length > 0) {
+      var confirmMsg = outsideEntries.length + ' Qaza entries are outside the new range (' + formatStandardDate(newStart) + ' to ' + formatStandardDate(newEnd) + ') and will be removed. Do you want to proceed?';
+      if (!confirm(confirmMsg)) {
         return;
       }
-      data.qazaStartDate = newStart;
-      self.logActivity('setting', 'qaza', newStart, 'qaza_start_date');
-      self.selectedQazaDate(self.computeActiveQazaDate());
-      self.saveData();
-      bump();
     }
 
-    self.showToast('Qaza start date updated.');
-    if (self._qazaDateSheet) self._qazaDateSheet.hide();
-    if (self._settingsSheet) self._settingsSheet.show();
+    var existingMap = {};
+    data.qazaHistory.forEach(function(e) {
+      if (e && e.date) {
+        existingMap[e.date] = e;
+      }
+    });
+
+    var newHistory = [];
+    var cur = newEnd;
+    while (cur >= newStart) {
+      if (existingMap[cur]) {
+        newHistory.push(existingMap[cur]);
+      } else {
+        newHistory.push({
+          id: 'qaza-' + cur,
+          date: cur,
+          fajr: false,
+          dhuhr: false,
+          asr: false,
+          maghrib: false,
+          isha: false
+        });
+      }
+      cur = shiftDate(cur, -1);
+    }
+
+    newHistory.sort(function(a, b) {
+      return b.date.localeCompare(a.date);
+    });
+
+    data.qazaStartDate = newStart;
+    data.qazaEndDate = newEnd;
+    data.qazaHistory = newHistory;
+
+    self.logActivity('setting', 'qaza', newStart + ' to ' + newEnd, 'qaza_dates');
+    self.selectedQazaDate(self.computeActiveQazaDate());
+    self.saveData('after date change');
+    bump();
+
+    self.showToast('Qaza dates updated.');
+    var qSheetEl = document.getElementById('qazaDateSheet');
+    if (qSheetEl && qSheetEl.classList.contains('show')) {
+      if (self._qazaDateSheet) self._qazaDateSheet.hide();
+      if (self._settingsSheet) self._settingsSheet.show();
+    }
   };
+  self.saveQazaStartDate = self.saveQazaDates;
 
   // 3. Location & Time
   self.saveLocationTime = function() {
@@ -1152,10 +1558,77 @@ function AppViewModel() {
   /* ---- Init ---- */
   self.init = function() {
     self._settingsSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('settingsSheet'));
-    self._calendarSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('calendarSheet'));
     self._currentPrayerDateSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('currentPrayerDateSheet'));
     self._qazaDateSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('qazaDateSheet'));
     self._locationTimeSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('locationTimeSheet'));
+    self._databaseJsonSheet = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('databaseJsonSheet'));
+
+    var settingsEl = document.getElementById('settingsSheet');
+    if (settingsEl) {
+      settingsEl.addEventListener('show.bs.offcanvas', function() { self.isSettingsOpen(true); });
+      settingsEl.addEventListener('hidden.bs.offcanvas', function() {
+        setTimeout(function() {
+          var anyOpen = document.querySelector('.offcanvas.show');
+          if (!anyOpen) self.isSettingsOpen(false);
+        }, 50);
+      });
+    }
+    ['currentPrayerDateSheet', 'qazaDateSheet', 'locationTimeSheet', 'databaseJsonSheet'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('hidden.bs.offcanvas', function() {
+          if (id === 'databaseJsonSheet' && window.location.hash === '#database-json') {
+            try {
+              history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {
+              window.location.hash = '';
+            }
+          }
+          setTimeout(function() {
+            var anyOpen = document.querySelector('.offcanvas.show');
+            if (!anyOpen) self.isSettingsOpen(false);
+          }, 50);
+        });
+      }
+    });
+
+    var dbJsonEl = document.getElementById('databaseJsonSheet');
+    if (dbJsonEl) {
+      dbJsonEl.addEventListener('shown.bs.offcanvas', function() {
+        self.renderJsonTree();
+      });
+    }
+
+    if (window.matchMedia) {
+      var colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      var handleThemeChange = function() {
+        self.isDbDarkMode(isAppDarkMode());
+        self.renderJsonTree();
+      };
+      if (colorSchemeQuery.addEventListener) {
+        colorSchemeQuery.addEventListener('change', handleThemeChange);
+      } else if (colorSchemeQuery.addListener) {
+        colorSchemeQuery.addListener(handleThemeChange);
+      }
+    }
+
+    window.addEventListener('hashchange', function() {
+      if (window.location.hash === '#database-json') {
+        self.openDatabaseJsonSheet();
+      } else {
+        var dbEl = document.getElementById('databaseJsonSheet');
+        if (dbEl && dbEl.classList.contains('show') && self._databaseJsonSheet) {
+          self._databaseJsonSheet.hide();
+        }
+      }
+    });
+
+    if (window.location.hash === '#database-json') {
+      setTimeout(function() {
+        self.openDatabaseJsonSheet();
+      }, 100);
+    }
+
     self.loadData();
     self.fetchPrayerTimes();
     self.logDatabaseStats();
@@ -1180,14 +1653,32 @@ function AppViewModel() {
       if (checkCurrentDate()) { bump(); self.showToast('A new day has begun.'); }
       self.fetchPrayerTimes();
     }, 30*60*1000);
-    setInterval(function() {
-      if (checkCurrentDate()) { bump(); self.fetchPrayerTimes(); self.showToast('A new day has begun.'); }
-    }, 30000);
+    // Save state on backgrounding, hiding, or page unloading (protects against fold/unfold recreation or process kill)
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden && checkCurrentDate()) { bump(); self.fetchPrayerTimes(); }
+      if (document.hidden) {
+        self.saveData('page hidden');
+      } else if (checkCurrentDate()) {
+        bump();
+        self.fetchPrayerTimes();
+      }
     });
+    window.addEventListener('pagehide', function() {
+      self.saveData('pagehide');
+    });
+    window.addEventListener('beforeunload', function() {
+      self.saveData('beforeunload');
+    });
+
+    // Window resize and orientation handlers are strictly UI-only and never mutate or reset data state
+    window.addEventListener('resize', function() {
+      // UI-only layout update
+    }, { passive: true });
+    window.addEventListener('orientationchange', function() {
+      // UI-only layout update
+    }, { passive: true });
+
     window.addEventListener('storage', function(e) {
-      if (e.key !== STORAGE_KEY) return;
+      if (e.key !== STORAGE_KEY || self._isInternalSave) return;
       self.loadData(); self.fetchPrayerTimes();
     });
   };

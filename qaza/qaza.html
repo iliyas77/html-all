@@ -31,12 +31,8 @@
       </div>
     </div>
     <div class="d-flex gap-1 flex-shrink-0">
-      <!-- Qaza: Calendar icon -->
-      <button class="icon-btn" data-bind="visible: activeTab()==='qaza', click: openCalendar" aria-label="Calendar">
-        <i class="bi bi-calendar3"></i>
-      </button>
-      <!-- Progress: Settings icon -->
-      <button class="icon-btn" data-bind="visible: activeTab()==='progress', click: openSettings" aria-label="Settings">
+      <!-- Settings icon -->
+      <button class="icon-btn" data-bind="click: openSettings" aria-label="Settings">
         <i class="bi bi-gear-fill"></i>
       </button>
       <!-- History: Delete icon -->
@@ -111,7 +107,7 @@
       <!-- /ko -->
 
       <!-- Enabled: Grouped Prayer Sections -->
-      <!-- ko if: isEnabled && hasRecords -->
+      <!-- ko if: (isEnabled || isLocked) && hasRecords -->
       <div class="day-card-sections mt-2 d-flex flex-column gap-3">
         <!-- ko foreach: sections -->
         <div class="day-group">
@@ -228,10 +224,38 @@
 
   <!-- ======== QAZA ======== -->
   <section data-bind="visible: activeTab() === 'qaza'">
+    <!-- ko if: !hasQazaDates() -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white my-3"
+         style="border:1px solid var(--border-grey)!important">
+      <div class="fs-1 mb-2">📅</div>
+      <h6 class="fw-bold text-dark mb-1">Set your Qaza start and end dates</h6>
+      <p class="text-secondary small mb-3">Please select the starting and ending dates for your Qaza prayers to begin tracking.</p>
+      <div class="d-flex flex-column gap-2 mx-auto" style="max-width:340px">
+        <div class="row g-2">
+          <div class="col-6 text-start">
+            <label class="form-label text-uppercase text-secondary fw-bold">Start Date</label>
+            <input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
+          </div>
+          <div class="col-6 text-start">
+            <label class="form-label text-uppercase text-secondary fw-bold">End Date</label>
+            <input type="date" class="form-control fw-semibold" data-bind="value: pendingEndDate, attr: { max: yesterdayDate }">
+          </div>
+        </div>
+        <!-- ko if: qazaDateError -->
+        <div class="text-danger small fw-semibold" data-bind="text: qazaDateError"></div>
+        <!-- /ko -->
+        <button type="button" class="btn btn-primary fw-bold py-2 mt-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveQazaDates, enable: isQazaDateValid">
+          Set Qaza Dates
+        </button>
+      </div>
+    </div>
+    <!-- /ko -->
+
+    <!-- ko if: hasQazaDates() -->
     <!-- Lazy list: Active day + up to 4 upcoming cards -->
     <div class="d-flex flex-column" data-bind="template: { name: 'day-card-template', foreach: qazaCards }"></div>
 
-    <!-- Empty state if no Qaza cards -->
+    <!-- Empty state if all Qaza cards are complete -->
     <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white my-3"
          style="border:1px solid var(--border-grey)!important"
          data-bind="visible: qazaCards().length === 0">
@@ -239,6 +263,7 @@
       <h6 class="fw-bold text-dark mb-1">No Qaza Prayers</h6>
       <p class="text-secondary small mb-0">All Qaza prayers are complete!</p>
     </div>
+    <!-- /ko -->
   </section>
 
   <!-- ======== HISTORY ======== -->
@@ -267,55 +292,6 @@
     </div>
   </section>
 
-  <!-- ======== PROGRESS ======== -->
-  <section data-bind="visible: activeTab() === 'progress'">
-    <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--border-grey)!important">
-      <div class="card-body">
-        <div class="row g-2 mb-4">
-          <div class="col-4">
-            <div class="rounded-3 p-3 text-center border" style="background:#f8fafc;border-color:var(--border-grey)!important">
-              <span class="d-block fw-bold fs-4 text-dark" style="font-variant-numeric:tabular-nums" data-bind="text: stats().total.toLocaleString()">0</span>
-              <span class="d-block fw-bold text-secondary text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Target</span>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="rounded-3 p-3 text-center border" style="background:var(--light-green);border-color:#c8e6c9!important">
-              <span class="d-block fw-bold fs-4" style="color:var(--dark-green);font-variant-numeric:tabular-nums" data-bind="text: stats().completed.toLocaleString()">0</span>
-              <span class="d-block fw-bold text-uppercase mt-1" style="color:var(--dark-green);font-size:.68rem;letter-spacing:.06em">Cleared</span>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="rounded-3 p-3 text-center border" style="background:#fef2f2;border-color:#fecaca!important">
-              <span class="d-block fw-bold fs-4 text-danger" style="font-variant-numeric:tabular-nums" data-bind="text: stats().remaining.toLocaleString()">0</span>
-              <span class="d-block fw-bold text-danger text-uppercase mt-1" style="font-size:.68rem;letter-spacing:.06em">Left</span>
-            </div>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between fw-bold text-secondary mb-2" style="font-size:.85rem">
-          <span>Overall Progress</span>
-          <span style="color:var(--dark-green)" data-bind="text: progressPercentLabel">0%</span>
-        </div>
-        <div class="progress" style="height:16px" role="progressbar"
-             data-bind="attr: { 'aria-valuenow': stats().percent.toFixed(1) }">
-          <div class="progress-bar progress-fill"
-               style="background:linear-gradient(90deg,#4d9e7f,#094E3A)"
-               data-bind="style: { width: stats().percent.toFixed(3) + '%' }"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--border-grey)!important">
-      <div class="card-body">
-        <h6 class="fw-bold text-dark mb-3" style="font-size:1rem">Detailed Breakdown</h6>
-        <div data-bind="foreach: breakdown">
-          <div class="d-flex justify-content-between py-2 border-bottom" style="font-size:.88rem;border-color:var(--border-grey)!important">
-            <span class="text-secondary" data-bind="text: label"></span>
-            <span class="fw-bold" data-bind="text: value, style: { color: color }"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
 </div>
 
@@ -323,28 +299,22 @@
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
     <button type="button" class="nav-btn"
-            data-bind="click: function() { goToday(); }, css: { active: activeTab() === 'today' }" aria-label="Today">
+            data-bind="click: function() { goToday(); }, css: { active: activeTab() === 'today' && !isSettingsOpen() }" aria-label="Today">
       <span class="nav-indicator"></span>
       <i class="bi" data-bind="css: activeTab() === 'today' ? 'bi-sun-fill' : 'bi-sun'"></i>
       <span class="nav-label">Today</span>
     </button>
     <button type="button" class="nav-btn"
-            data-bind="click: goQaza, css: { active: activeTab() === 'qaza' }" aria-label="Qaza">
+            data-bind="click: goQaza, css: { active: activeTab() === 'qaza' && !isSettingsOpen() }" aria-label="Qaza">
       <span class="nav-indicator"></span>
       <i class="bi" data-bind="css: activeTab() === 'qaza' ? 'bi-moon-fill' : 'bi-moon'"></i>
       <span class="nav-label">Qaza</span>
     </button>
     <button type="button" class="nav-btn"
-            data-bind="click: goHistory, css: { active: activeTab() === 'history' }" aria-label="History">
+            data-bind="click: goHistory, css: { active: activeTab() === 'history' && !isSettingsOpen() }" aria-label="History">
       <span class="nav-indicator"></span>
       <i class="bi bi-clock-history"></i>
       <span class="nav-label">History</span>
-    </button>
-    <button type="button" class="nav-btn"
-            data-bind="click: goProgress, css: { active: activeTab() === 'progress' }" aria-label="Progress">
-      <span class="nav-indicator"></span>
-      <i class="bi bi-graph-up-arrow"></i>
-      <span class="nav-label">Progress</span>
     </button>
   </div>
 </nav>
@@ -376,7 +346,7 @@
         <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
       </button>
 
-      <!-- 2. Qaza Start Prayer Date -->
+      <!-- 2. Qaza Prayer Dates -->
       <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
               style="border-color:var(--border-grey)!important" data-bind="click: openQazaDateSheet">
         <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
@@ -385,16 +355,16 @@
             <i class="fa-solid fa-moon"></i>
           </div>
           <div class="min-w-0">
-            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Qaza Start Prayer Date</div>
-            <div class="text-secondary text-truncate small" data-bind="text: qazaStartLabel"></div>
+            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Qaza Prayer Dates</div>
+            <div class="text-secondary text-truncate small" data-bind="text: qazaDateRangeLabel"></div>
           </div>
         </div>
         <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
       </button>
 
       <!-- 3. Location & Time -->
-      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3"
-              data-bind="click: openLocationTimeSheet">
+      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3 border-bottom"
+              style="border-color:var(--border-grey)!important" data-bind="click: openLocationTimeSheet">
         <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
           <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
                style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
@@ -403,6 +373,22 @@
           <div class="min-w-0">
             <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Location &amp; Time</div>
             <div class="text-secondary text-truncate small" data-bind="text: locationTimeLabel"></div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
+      </button>
+
+      <!-- 4. Database (JSON) -->
+      <button type="button" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between p-3"
+              data-bind="click: openDatabaseJsonSheet">
+        <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1 text-start">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:42px;height:42px;background:var(--light-green);color:var(--dark-green);font-size:1.15rem">
+            <i class="fa-solid fa-database"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="fw-bold text-dark mb-0 small" style="font-size:.92rem">Database (JSON)</div>
+            <div class="text-secondary text-truncate small" data-bind="text: dbJsonSummaryLabel">Live database viewer &amp; export</div>
           </div>
         </div>
         <i class="fa-solid fa-chevron-right text-secondary small ms-2"></i>
@@ -445,7 +431,7 @@
   </div>
 </div>
 
-<!-- ======== 2. QAZA START PRAYER DATE SHEET (90%) ======== -->
+<!-- ======== 2. QAZA PRAYER DATES SHEET (90%) ======== -->
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="qazaDateSheet"
      style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
   <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
@@ -453,28 +439,34 @@
       <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings" aria-label="Back to settings">
         <i class="fa-solid fa-arrow-left fs-5"></i>
       </button>
-      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Qaza Start Prayer Date</h5>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Qaza Prayer Dates</h5>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body p-3">
     <div class="card border rounded-3 p-3 mb-4 shadow-none" style="border-color:var(--border-grey)!important;background:#fff">
       <div class="mb-3">
-        <label class="form-label text-uppercase text-secondary fw-bold">Select Qaza Start Date</label>
-        <input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: qazaMaxDate }">
-        <div class="form-text mt-2">
-          The Qaza target is calculated automatically from this start date up to the day before current prayer start date.
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="form-label text-uppercase text-secondary fw-bold">Qaza Start Date</label>
+            <input type="date" class="form-control fw-semibold" data-bind="value: pendingStartDate, attr: { max: yesterdayDate }">
+          </div>
+          <div class="col-6">
+            <label class="form-label text-uppercase text-secondary fw-bold">Qaza End Date</label>
+            <input type="date" class="form-control fw-semibold" data-bind="value: pendingEndDate, attr: { max: yesterdayDate }">
+          </div>
         </div>
-      </div>
-      <div class="p-2 rounded-2" style="background:#f8fafc;border:1px solid var(--border-grey)">
-        <div class="small fw-semibold text-secondary">
-          <i class="fa-solid fa-circle-info me-1"></i>Changing this recalculates your overall Qaza target days and progress percentage.
+        <!-- ko if: qazaDateError -->
+        <div class="text-danger small fw-semibold mt-2" data-bind="text: qazaDateError"></div>
+        <!-- /ko -->
+        <div class="form-text mt-2">
+          Qaza prayers will be tracked for each day in this range from newest to oldest.
         </div>
       </div>
     </div>
 
-    <button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveQazaStartDate">
-      Save Qaza Start Date
+    <button type="button" class="btn btn-primary w-100 fw-bold py-3 mb-2" style="background:var(--dark-green);border-color:var(--dark-green)" data-bind="click: saveQazaDates, enable: isQazaDateValid">
+      Save Qaza Dates
     </button>
   </div>
 </div>
@@ -511,80 +503,80 @@
   </div>
 </div>
 
-<!-- ======== CALENDAR SHEET (90%) ======== -->
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="calendarSheet"
-     style="height:90vh!important;max-height:90vh!important;min-height:90vh!important;">
-  <div class="offcanvas-header border-bottom" style="border-color:var(--border-grey)!important">
-    <h5 class="offcanvas-title fw-bold" style="color:var(--dark-green);font-size:1.2rem">Qaza Calendar</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<!-- ======== 4. DATABASE JSON VIEW SHEET (FULL PAGE) ======== -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="databaseJsonSheet"
+     style="height:100vh!important;max-height:100vh!important;min-height:100vh!important;border-radius:0!important;">
+  <div class="offcanvas-header border-bottom sticky-top bg-white py-3" style="border-color:var(--border-grey)!important;z-index:1020;" data-bind="css: { 'bg-dark text-light border-secondary': isDbDarkMode }">
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark p-0 me-1" data-bind="click: backToSettings, css: { 'text-light': isDbDarkMode }" aria-label="Back to settings">
+        <i class="fa-solid fa-arrow-left fs-5"></i>
+      </button>
+      <h5 class="offcanvas-title fw-bold mb-0" style="color:var(--dark-green);font-size:1.15rem">Database (JSON)</h5>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" data-bind="css: { 'btn-close-white': isDbDarkMode }"></button>
   </div>
-  <div class="offcanvas-body">
-    <!-- Month / year selectors -->
-    <div class="row g-2 mb-3">
-      <div class="col-7">
-        <label class="form-label text-uppercase text-secondary fw-bold">Month</label>
-        <select class="form-select fw-semibold"
-                data-bind="options: monthOptions, optionsText: 'name', optionsValue: 'value', value: calendarMonth"></select>
+  <div class="offcanvas-body p-3 d-flex flex-column" data-bind="css: { 'bg-dark text-light': isDbDarkMode }" style="background:var(--bs-body-bg,#f8f9fa);">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+      <span class="badge rounded-pill bg-light text-dark border px-3 py-2 fw-semibold"
+            style="border-color:var(--border-grey)!important;font-size:.78rem;"
+            data-bind="css: { 'bg-secondary text-light border-0': isDbDarkMode }">
+        <i class="fa-solid fa-clock-rotate-left me-1 text-secondary" data-bind="css: { 'text-light': isDbDarkMode }"></i>Last updated: <span data-bind="text: dbLastUpdated"></span>
+      </span>
+      <span class="text-secondary small fw-semibold" data-bind="text: dbEntryCounts, css: { 'text-light-emphasis': isDbDarkMode }"></span>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-1 shadow-sm" data-bind="click: copyDbJson">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copy JSON</span>
+        </button>
+        <!-- ko if: dbCopyStatus -->
+        <span class="badge" data-bind="text: dbCopyStatus, css: dbCopyStatusClass"></span>
+        <!-- /ko -->
+
+        <button type="button" class="btn btn-sm btn-outline-secondary fw-bold d-flex align-items-center gap-1 shadow-sm" data-bind="click: refreshDbFromStorage" title="Re-read persisted data from localStorage">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>Refresh from storage</span>
+        </button>
       </div>
-      <div class="col-5">
-        <label class="form-label text-uppercase text-secondary fw-bold">Year</label>
-        <select class="form-select fw-semibold"
-                data-bind="options: yearOptions, value: calendarYear"></select>
+
+      <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="JSON Tree Controls">
+        <button type="button" class="btn btn-outline-secondary fw-semibold" data-bind="click: expandAllJson" title="Expand all levels">
+          <i class="fa-solid fa-angles-down me-1"></i>Expand all
+        </button>
+        <button type="button" class="btn btn-outline-secondary fw-semibold" data-bind="click: collapseAllJson" title="Collapse all levels">
+          <i class="fa-solid fa-angles-up me-1"></i>Collapse all
+        </button>
       </div>
     </div>
 
-    <!-- Summary -->
-    <div class="text-center mb-3">
-      <div class="fw-bold" style="font-size:1.1rem;color:var(--dark-green)" data-bind="text: calendarLabel"></div>
-      <div class="text-secondary" style="font-size:.78rem;font-weight:600">
-        <span data-bind="text: monthCompletedCount"></span> days cleared this month
+    <!-- ko if: isViewingStorageSnapshot -->
+    <div class="alert alert-info py-2 px-3 small d-flex align-items-center justify-content-between mb-3 rounded-3 shadow-sm border-0">
+      <div>
+        <i class="fa-solid fa-database me-2"></i>Viewing static snapshot re-read from <code>localStorage</code>.
       </div>
-    </div>
-
-    <div class="cal-grid mb-1">
-      <span class="cal-wd">S</span><span class="cal-wd">M</span><span class="cal-wd">T</span>
-      <span class="cal-wd">W</span><span class="cal-wd">T</span><span class="cal-wd">F</span>
-      <span class="cal-wd">S</span>
-    </div>
-    <div class="cal-grid">
-      <!-- ko foreach: calendarDays -->
-      <div class="cal-cell"
-           data-bind="css: { empty: empty, complete: complete, partial: partial, today: isToday, 'out-of-range': !inRange },
-                      click: function() { $root.selectCalendarDate($data); }">
-        <span data-bind="text: day"></span>
-      </div>
-      <!-- /ko -->
-    </div>
-
-    <!-- Quick jump -->
-    <div class="d-flex gap-2 mt-4">
-      <button class="btn btn-sm flex-fill fw-bold"
-              style="background:var(--light-green);color:var(--dark-green);border:1px solid #c8e6c9"
-              data-bind="click: jumpToYesterday">
-        <i class="bi bi-arrow-left-circle me-1"></i>Latest Qaza Day
-      </button>
-      <button class="btn btn-sm flex-fill fw-bold"
-              style="background:#f8fafc;color:#475569;border:1px solid var(--border-grey)"
-              data-bind="click: jumpToStart">
-        <i class="bi bi-skip-backward me-1"></i>Start Date
+      <button type="button" class="btn btn-sm btn-link text-decoration-none fw-bold p-0 ms-2" data-bind="click: showLiveDbState">
+        Switch to Live View
       </button>
     </div>
+    <!-- /ko -->
 
-    <!-- Legend -->
-    <div class="d-flex flex-wrap gap-3 mt-3 small text-secondary" style="font-size:.72rem">
-      <span><span class="cal-cell complete d-inline-flex" style="width:14px;height:14px;vertical-align:middle"></span> Cleared</span>
-      <span><span class="cal-cell partial d-inline-flex" style="width:14px;height:14px;vertical-align:middle"></span> Partial</span>
-      <span><span class="cal-cell today d-inline-flex" style="width:14px;height:14px;vertical-align:middle"></span> Today</span>
-      <span><span class="cal-cell out-of-range d-inline-flex" style="width:14px;height:14px;vertical-align:middle"></span> Out of range</span>
+    <div class="card border rounded-3 p-3 flex-grow-1 shadow-none overflow-auto db-json-container"
+         style="min-height:400px;"
+         data-bind="css: { 'db-json-dark': isDbDarkMode }">
+      <div id="dbJsonTreeViewer" class="db-json-tree"></div>
     </div>
   </div>
 </div>
+
 
 <!-- ======== TOAST ======== -->
 <div class="toast-notif" data-bind="text: toast, css: { show: toast }"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/knockout@3.5.1/build/output/knockout-latest.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.5.23/dist/json-formatter.umd.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
