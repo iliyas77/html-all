@@ -1,0 +1,2503 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Quran Telugu Reader — Ruku-by-Ruku Study Edition</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        arabic: ['"Amiri Quran"', '"Scheherazade New"', '"Amiri"', 'serif'],
+                        telugu: ['"Noto Sans Telugu"', '"Ramabhadra"', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Google Fonts: Inter (UI), Amiri & Scheherazade New (Arabic Uthmani), Noto Sans Telugu (Telugu) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Custom Typography & Smooth Utilities */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-arabic-script {
+            font-family: 'Amiri Quran', 'Scheherazade New', 'Amiri', serif;
+            line-height: 2.15;
+            direction: rtl;
+            word-spacing: 2px;
+        }
+
+        .font-telugu-script {
+            font-family: 'Noto Sans Telugu', sans-serif;
+            line-height: 1.85;
+            letter-spacing: 0.01em;
+        }
+
+        /* Custom subtle scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Highlight animation when jumping from a Bookmark to an Ayah card */
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.55); background-color: #ecfdf5; }
+            70% { box-shadow: 0 0 0 12px rgba(5, 150, 105, 0); background-color: #ecfdf5; }
+            100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); background-color: #ffffff; }
+        }
+        .ayah-highlight-flash {
+            animation: highlightPulse 2.4s ease-out;
+            border-color: #059669 !important;
+        }
+
+        /* Bottom Sheet Slide Animation */
+        @keyframes slideUpSheet {
+            from { transform: translateY(100%); opacity: 0.5; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-sheet-up {
+            animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col bg-slate-50 text-slate-900">
+
+    <!-- =====================================================================
+         TOP STICKY HEADER (STRICTLY ENGLISH UI)
+    ====================================================================== -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-2xl mx-auto px-3 sm:px-4 pt-2.5 pb-2.5">
+            <!-- Top Row: Brand Title, Global Ruku Pill & Settings Gear -->
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white flex items-center justify-center shadow-sm shrink-0">
+                        <i class="fa-solid fa-book-quran text-lg"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">
+                                Quran Telugu Reader
+                            </h1>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium truncate">
+                            Ruku-by-Ruku Study Edition
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Action Controls -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <!-- Global Ruku Indicator / Quick Jump Trigger -->
+                    <button
+                        type="button"
+                        onclick="openGlobalRukuJumpModal()"
+                        id="global-ruku-header-btn"
+                        title="Jump to Global Ruku (1 - 556)"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-xs font-semibold transition active:scale-95"
+                    >
+                        <i class="fa-solid fa-compass text-emerald-600"></i>
+                        <span id="header-global-ruku-badge">Ruku #1 / 556</span>
+                    </button>
+
+                    <!-- Settings Button -->
+                    <button
+                        type="button"
+                        onclick="openSettingsModal()"
+                        title="Open Reader Settings"
+                        aria-label="Open Reader Settings"
+                        class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200/80 flex items-center justify-center transition active:scale-95"
+                    >
+                        <i class="fa-solid fa-gear text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ruku Navigation Controls Bar (Visible only on Ruku View Tab) -->
+            <div id="header-ruku-controls" class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <!-- Surah Selector Dropdown -->
+                <div class="sm:col-span-7">
+                    <label for="surah-select" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                        Select Surah (1 - 114)
+                    </label>
+                    <div class="relative">
+                        <select
+                            id="surah-select"
+                            onchange="handleSurahChange(this.value)"
+                            aria-label="Select Surah"
+                            class="w-full appearance-none bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 focus:border-emerald-600 rounded-xl pl-3 pr-9 py-2 text-xs sm:text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition cursor-pointer"
+                        >
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ruku Selector Dropdown -->
+                <div class="sm:col-span-5">
+                    <label for="ruku-select" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                        Select Ruku &amp; Ayah Range
+                    </label>
+                    <div class="relative">
+                        <select
+                            id="ruku-select"
+                            onchange="handleRukuChange(this.value)"
+                            aria-label="Select Ruku in Surah"
+                            class="w-full appearance-none bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 focus:border-emerald-600 rounded-xl pl-3 pr-9 py-2 text-xs sm:text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 transition cursor-pointer"
+                        >
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         MAIN CONTENT AREA (TAB 1: RUKU VIEW | TAB 2: BOOKMARKS VIEW)
+    ====================================================================== -->
+    <main class="flex-1 max-w-2xl w-full mx-auto px-3 sm:px-4 pt-4 pb-28">
+
+        <!-- TAB 1: RUKU VIEW -->
+        <section id="view-ruku" class="space-y-4">
+            <!-- Active Ruku Metadata Banner Card -->
+            <div id="ruku-banner-card" class="bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-900 text-white rounded-2xl p-4 sm:p-5 shadow-md relative overflow-hidden">
+                <!-- Decorative background geometric circle -->
+                <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/5 pointer-events-none"></div>
+                <div class="absolute -left-6 -bottom-10 w-28 h-28 rounded-full bg-white/5 pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
+                            <span id="banner-surah-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
+                                Surah 1
+                            </span>
+                            <span id="banner-revelation-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/50 text-emerald-100 border border-white/10">
+                                Meccan
+                            </span>
+                            <span id="banner-global-ruku-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-400/20 text-amber-200 border border-amber-300/30">
+                                Global Ruku #1 of 556
+                            </span>
+                        </div>
+
+                        <h2 id="banner-surah-title" class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                            1. Al-Faatiha (The Opening)
+                        </h2>
+                        <p id="banner-ruku-subtitle" class="text-xs sm:text-sm text-emerald-100 font-medium mt-0.5">
+                            Ruku 1 of 1 • Ayahs 1 - 7 (7 Ayahs)
+                        </p>
+                    </div>
+
+                    <!-- Quick Prev / Next Ruku Mini Buttons inside Banner -->
+                    <div class="flex items-center gap-2 self-start sm:self-center shrink-0">
+                        <button
+                            type="button"
+                            onclick="navigateRukuStep(-1)"
+                            id="banner-prev-ruku-btn"
+                            title="Previous Ruku"
+                            class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 disabled:opacity-40 disabled:pointer-events-none text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                        >
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            <span>Prev</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="navigateRukuStep(1)"
+                            id="banner-next-ruku-btn"
+                            title="Next Ruku"
+                            class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 disabled:opacity-40 disabled:pointer-events-none text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                        >
+                            <span>Next</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Skeleton State -->
+            <div id="ruku-loading-state" class="hidden space-y-3 py-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm animate-pulse">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="h-6 w-24 bg-slate-200 rounded-lg"></div>
+                        <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+                    </div>
+                    <div class="h-8 bg-slate-200 rounded-lg w-3/4 ml-auto mb-4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-slate-200 rounded w-full"></div>
+                        <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm animate-pulse">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="h-6 w-24 bg-slate-200 rounded-lg"></div>
+                        <div class="h-8 w-24 bg-slate-200 rounded-xl"></div>
+                    </div>
+                    <div class="h-8 bg-slate-200 rounded-lg w-2/3 ml-auto mb-4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-slate-200 rounded w-full"></div>
+                        <div class="h-4 bg-slate-200 rounded w-4/5"></div>
+                    </div>
+                </div>
+                <p class="text-center text-xs font-medium text-slate-500 pt-1">
+                    Fetching Surah data from GitHub repository...
+                </p>
+            </div>
+
+            <!-- Error State Card -->
+            <div id="ruku-error-state" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+                <h3 class="text-base font-bold text-red-900">Unable to Load Ruku Data</h3>
+                <p id="ruku-error-message" class="text-xs sm:text-sm text-red-700 max-w-md mx-auto">
+                    Could not fetch the Surah JSON file from GitHub. Please check your internet connection and try again.
+                </p>
+                <div class="pt-1">
+                    <button
+                        type="button"
+                        onclick="loadCurrentRuku(true)"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition"
+                    >
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Retry Loading</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bismillah Header Card (Shown at start of Ruku 1 except Surah 1 & Surah 9) -->
+            <div id="bismillah-card" class="hidden bg-amber-50/70 border border-amber-200/80 rounded-2xl px-4 py-3.5 text-center shadow-sm">
+                <p id="bismillah-arabic" class="font-arabic-script text-slate-800 text-2xl sm:text-3xl mb-1">
+                    بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                </p>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-amber-800">
+                    In the Name of Allah, the Entirely Merciful, the Especially Merciful
+                </p>
+            </div>
+
+            <!-- Ayah Cards Container -->
+            <div id="ruku-ayahs-container" class="space-y-3.5">
+                <!-- Dynamically populated with Ayah cards -->
+            </div>
+
+            <!-- Bottom Ruku Step Pagination Bar -->
+            <div id="ruku-bottom-pagination" class="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <button
+                    type="button"
+                    onclick="navigateRukuStep(-1)"
+                    id="bottom-prev-ruku-btn"
+                    class="flex-1 bg-white hover:bg-slate-50 active:bg-slate-100 disabled:opacity-45 disabled:pointer-events-none border border-slate-300 rounded-2xl p-3.5 text-left transition shadow-sm flex items-center gap-3"
+                >
+                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Previous Ruku</span>
+                        <span id="bottom-prev-ruku-label" class="block text-xs sm:text-sm font-bold text-slate-800 truncate">
+                            Start of Quran
+                        </span>
+                    </div>
+                </button>
+
+                <button
+                    type="button"
+                    onclick="navigateRukuStep(1)"
+                    id="bottom-next-ruku-btn"
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-45 disabled:pointer-events-none text-white rounded-2xl p-3.5 text-right transition shadow-md flex items-center justify-end gap-3"
+                >
+                    <div class="min-w-0">
+                        <span class="block text-[11px] font-semibold uppercase tracking-wider text-emerald-100">Next Ruku</span>
+                        <span id="bottom-next-ruku-label" class="block text-xs sm:text-sm font-bold text-white truncate">
+                            Surah 2 • Ruku 1
+                        </span>
+                    </div>
+                    <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 2: BOOKMARKS VIEW -->
+        <section id="view-bookmarks" class="hidden space-y-4">
+            <!-- Bookmarks Header Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-bookmark text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                            Saved Ayah Bookmarks
+                        </h2>
+                        <p id="bookmarks-subtitle-count" class="text-xs text-slate-500 font-medium">
+                            0 Ayahs saved in local storage
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    id="clear-all-bookmarks-btn"
+                    onclick="openClearBookmarksModal()"
+                    class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold transition"
+                >
+                    <i class="fa-regular fa-trash-can"></i>
+                    <span>Clear All</span>
+                </button>
+            </div>
+
+            <!-- Bookmarks Empty State -->
+            <div id="bookmarks-empty-state" class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-10 text-center space-y-3 shadow-sm">
+                <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                    <i class="fa-regular fa-bookmark text-2xl"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">No Bookmarked Ayahs Yet</h3>
+                <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                    While reading any Ruku, tap the <span class="font-semibold text-slate-700">Bookmark</span> button on any Ayah card to save it here for quick reference.
+                </p>
+                <div class="pt-2">
+                    <button
+                        type="button"
+                        onclick="switchBottomTab('ruku')"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition"
+                    >
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Go to Ruku View</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bookmarks Cards List -->
+            <div id="bookmarks-list-container" class="space-y-3.5">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         STICKY BOTTOM NAVIGATION BAR (STRICTLY 2 TABS, ENGLISH LABELS)
+    ====================================================================== -->
+    <nav aria-label="Primary Bottom Navigation" class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
+        <div class="max-w-2xl mx-auto px-4 grid grid-cols-2 gap-2 py-2">
+            <!-- Tab 1: Ruku View -->
+            <button
+                type="button"
+                id="nav-tab-ruku"
+                onclick="switchBottomTab('ruku')"
+                class="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition bg-emerald-50 text-emerald-700 border border-emerald-200/80"
+            >
+                <i class="fa-solid fa-book-open text-base"></i>
+                <span>Ruku View</span>
+            </button>
+
+            <!-- Tab 2: Bookmarks -->
+            <button
+                type="button"
+                id="nav-tab-bookmarks"
+                onclick="switchBottomTab('bookmarks')"
+                class="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition text-slate-600 hover:bg-slate-100 border border-transparent"
+            >
+                <i class="fa-solid fa-bookmark text-base"></i>
+                <span>Bookmarks</span>
+                <span
+                    id="nav-bookmarks-badge"
+                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700"
+                >
+                    0
+                </span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- =====================================================================
+         SETTINGS MODAL / BOTTOM SHEET (ENGLISH LABELS + LOCALSTORAGE)
+    ====================================================================== -->
+    <div
+        id="settings-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+        class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4"
+    >
+        <!-- Backdrop Click Area -->
+        <div class="fixed inset-0" onclick="closeSettingsModal()"></div>
+
+        <!-- Modal Panel -->
+        <div class="relative z-10 w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col animate-sheet-up">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 id="settings-modal-title" class="text-base font-bold text-slate-900">
+                            Reader Settings
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Automatically saved to your browser storage
+                        </p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onclick="closeSettingsModal()"
+                    aria-label="Close Settings"
+                    class="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 border border-slate-200 flex items-center justify-center transition"
+                >
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 overflow-y-auto space-y-5">
+                <!-- 1. Show Arabic Text Toggle -->
+                <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex items-center justify-between gap-4">
+                    <div>
+                        <label for="toggle-show-arabic" class="text-sm font-bold text-slate-900 block cursor-pointer">
+                            Show Arabic Text
+                        </label>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Enable or disable Arabic script across all views
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                            type="checkbox"
+                            id="toggle-show-arabic"
+                            onchange="handleToggleArabic(this.checked)"
+                            class="sr-only peer"
+                            checked
+                        >
+                        <div class="w-12 h-7 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500/30 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5.5 after:w-5.5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                </div>
+
+                <!-- 2. Telugu Font Size Control -->
+                <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-bold text-slate-900 block">
+                                Telugu Font Size
+                            </span>
+                            <span class="text-xs text-slate-500">
+                                Range: 14px to 34px (Default: 18px)
+                            </span>
+                        </div>
+                        <span id="setting-telugu-size-badge" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs">
+                            18px
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button
+                            type="button"
+                            onclick="adjustFontSize('telugu', -2)"
+                            class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 active:scale-98 border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 shadow-2xs transition"
+                        >
+                            <i class="fa-solid fa-minus text-xs"></i>
+                            <span>Decrease</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="adjustFontSize('telugu', 2)"
+                            class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 active:scale-98 border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 shadow-2xs transition"
+                        >
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Increase</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Telugu Preview Box -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                            Live Telugu Font Preview
+                        </span>
+                        <p id="preview-telugu-text" class="font-telugu-script text-slate-800" style="font-size: 18px;">
+                            అతి కృపాశీలుడు, అత్యంత దయామయుడైన అల్లాహ్ పేరుతో ప్రారంభిస్తున్నాను.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3. Arabic Font Size Control -->
+                <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-bold text-slate-900 block">
+                                Arabic Font Size
+                            </span>
+                            <span class="text-xs text-slate-500">
+                                Range: 18px to 44px (Default: 26px)
+                            </span>
+                        </div>
+                        <span id="setting-arabic-size-badge" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs">
+                            26px
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button
+                            type="button"
+                            onclick="adjustFontSize('arabic', -2)"
+                            class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 active:scale-98 border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 shadow-2xs transition"
+                        >
+                            <i class="fa-solid fa-minus text-xs"></i>
+                            <span>Decrease</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="adjustFontSize('arabic', 2)"
+                            class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 active:scale-98 border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 flex items-center justify-center gap-1.5 shadow-2xs transition"
+                        >
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Increase</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Arabic Preview Box -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                            Live Arabic Font Preview
+                        </span>
+                        <p id="preview-arabic-text" class="font-arabic-script text-slate-900 text-right" style="font-size: 26px;">
+                            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-3">
+                <button
+                    type="button"
+                    onclick="resetSettingsToDefault()"
+                    class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs sm:text-sm font-semibold transition"
+                >
+                    Reset to Defaults
+                </button>
+                <button
+                    type="button"
+                    onclick="closeSettingsModal()"
+                    class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition"
+                >
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         GLOBAL RUKU QUICK JUMP MODAL (1 - 556)
+    ====================================================================== -->
+    <div
+        id="global-ruku-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="global-ruku-modal-title"
+        class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4"
+    >
+        <div class="fixed inset-0" onclick="closeGlobalRukuJumpModal()"></div>
+        <div class="relative z-10 w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-sheet-up">
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h3 id="global-ruku-modal-title" class="text-base font-bold text-slate-900">
+                            Jump to Global Ruku
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Navigate directly to any of the 556 Rukus in the Quran
+                        </p>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    onclick="closeGlobalRukuJumpModal()"
+                    aria-label="Close Modal"
+                    class="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div>
+                    <label for="global-ruku-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Enter Global Ruku Number (1 - 556)
+                    </label>
+                    <input
+                        type="number"
+                        id="global-ruku-input"
+                        min="1"
+                        max="556"
+                        value="1"
+                        oninput="updateGlobalRukuPreview(this.value)"
+                        class="w-full bg-slate-50 focus:bg-white border border-slate-300 focus:border-emerald-600 rounded-xl px-3.5 py-2.5 text-base font-bold text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    >
+                </div>
+
+                <div id="global-ruku-preview-box" class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 text-xs sm:text-sm text-emerald-950 font-medium">
+                    Global Ruku #1: Surah 1. Al-Faatiha — Ruku 1 (Ayahs 1 - 7)
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-1">
+                    <button
+                        type="button"
+                        onclick="closeGlobalRukuJumpModal()"
+                        class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        onclick="confirmGlobalRukuJump()"
+                        class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition"
+                    >
+                        Go to Ruku
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         CUSTOM CONFIRMATION MODAL FOR CLEARING BOOKMARKS (NO window.confirm)
+    ====================================================================== -->
+    <div
+        id="clear-bookmarks-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="clear-bookmarks-title"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
+    >
+        <div class="fixed inset-0" onclick="closeClearBookmarksModal()"></div>
+        <div class="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 text-center space-y-4 animate-sheet-up">
+            <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-trash-can text-xl"></i>
+            </div>
+            <div>
+                <h3 id="clear-bookmarks-title" class="text-base font-bold text-slate-900">
+                    Clear All Saved Bookmarks?
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                    This action will permanently remove all saved Ayah bookmarks from your browser's local storage.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <button
+                    type="button"
+                    onclick="closeClearBookmarksModal()"
+                    class="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onclick="confirmClearAllBookmarks()"
+                    class="py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition"
+                >
+                    Yes, Clear All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         TOAST NOTIFICATION BANNER (STRICTLY ENGLISH)
+    ====================================================================== -->
+    <div
+        id="toast-container"
+        aria-live="polite"
+        class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-2"
+    >
+        <div class="bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-2.5 text-xs sm:text-sm font-medium whitespace-nowrap">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toast-message">Settings updated</span>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         APPLICATION JAVASCRIPT (DATA MAPPING, GITHUB FETCHER, UI STATE)
+    ====================================================================== -->
+    <script>
+        /**
+         * ====================================================================
+         * 1. BUILT-IN MASTER QURAN METADATA (114 SURAHS & ALL 556 RUKUS)
+         * ====================================================================
+         * Having the complete 114 Surahs and 556 Ruku start boundaries built in
+         * ensures instant zero-latency initialization, while also syncing/caching
+         * with https://api.alquran.cloud/v1/meta as requested.
+         */
+        const BUILTIN_SURAHS = [
+            [1, "Al-Faatiha", "The Opening", 7, "Meccan"],
+            [2, "Al-Baqarah", "The Cow", 286, "Medinan"],
+            [3, "Aal-i-Imraan", "The Family of Imraan", 200, "Medinan"],
+            [4, "An-Nisaa", "The Women", 176, "Medinan"],
+            [5, "Al-Maaida", "The Table", 120, "Medinan"],
+            [6, "Al-An'aam", "The Cattle", 165, "Meccan"],
+            [7, "Al-A'raaf", "The Heights", 206, "Meccan"],
+            [8, "Al-Anfaal", "The Spoils of War", 75, "Medinan"],
+            [9, "At-Tawba", "The Repentance", 129, "Medinan"],
+            [10, "Yunus", "Jonas", 109, "Meccan"],
+            [11, "Hud", "Hud", 123, "Meccan"],
+            [12, "Yusuf", "Joseph", 111, "Meccan"],
+            [13, "Ar-Ra'd", "The Thunder", 43, "Medinan"],
+            [14, "Ibrahim", "Abraham", 52, "Meccan"],
+            [15, "Al-Hijr", "The Rock", 99, "Meccan"],
+            [16, "An-Nahl", "The Bee", 128, "Meccan"],
+            [17, "Al-Israa", "The Night Journey", 111, "Meccan"],
+            [18, "Al-Kahf", "The Cave", 110, "Meccan"],
+            [19, "Maryam", "Mary", 98, "Meccan"],
+            [20, "Taa-Haa", "Taa-Haa", 135, "Meccan"],
+            [21, "Al-Anbiyaa", "The Prophets", 112, "Meccan"],
+            [22, "Al-Hajj", "The Pilgrimage", 78, "Medinan"],
+            [23, "Al-Muminoon", "The Believers", 118, "Meccan"],
+            [24, "An-Noor", "The Light", 64, "Medinan"],
+            [25, "Al-Furqaan", "The Criterion", 77, "Meccan"],
+            [26, "Ash-Shu'araa", "The Poets", 227, "Meccan"],
+            [27, "An-Naml", "The Ant", 93, "Meccan"],
+            [28, "Al-Qasas", "The Stories", 88, "Meccan"],
+            [29, "Al-Ankaboot", "The Spider", 69, "Meccan"],
+            [30, "Ar-Room", "The Romans", 60, "Meccan"],
+            [31, "Luqman", "Luqman", 34, "Meccan"],
+            [32, "As-Sajda", "The Prostration", 30, "Meccan"],
+            [33, "Al-Ahzaab", "The Clans", 73, "Medinan"],
+            [34, "Saba", "Sheba", 54, "Meccan"],
+            [35, "Faatir", "The Originator", 45, "Meccan"],
+            [36, "Yaseen", "Yaseen", 83, "Meccan"],
+            [37, "As-Saaffaat", "Those Drawn Up in Ranks", 182, "Meccan"],
+            [38, "Saad", "The Letter Saad", 88, "Meccan"],
+            [39, "Az-Zumar", "The Groups", 75, "Meccan"],
+            [40, "Ghafir", "The Forgiver", 85, "Meccan"],
+            [41, "Fussilat", "Explained in Detail", 54, "Meccan"],
+            [42, "Ash-Shura", "Consultation", 53, "Meccan"],
+            [43, "Az-Zukhruf", "Ornaments of Gold", 89, "Meccan"],
+            [44, "Ad-Dukhaan", "The Smoke", 59, "Meccan"],
+            [45, "Al-Jaathiya", "Crouching", 37, "Meccan"],
+            [46, "Al-Ahqaaf", "The Dunes", 35, "Meccan"],
+            [47, "Muhammad", "Muhammad", 38, "Medinan"],
+            [48, "Al-Fath", "The Victory", 29, "Medinan"],
+            [49, "Al-Hujuraat", "The Inner Apartments", 18, "Medinan"],
+            [50, "Qaaf", "The Letter Qaaf", 45, "Meccan"],
+            [51, "Adh-Dhaariyaat", "The Winnowing Winds", 60, "Meccan"],
+            [52, "At-Tur", "The Mount", 49, "Meccan"],
+            [53, "An-Najm", "The Star", 62, "Meccan"],
+            [54, "Al-Qamar", "The Moon", 55, "Meccan"],
+            [55, "Ar-Rahmaan", "The Beneficent", 78, "Medinan"],
+            [56, "Al-Waaqia", "The Inevitable", 96, "Meccan"],
+            [57, "Al-Hadid", "The Iron", 29, "Medinan"],
+            [58, "Al-Mujaadila", "The Pleading Woman", 22, "Medinan"],
+            [59, "Al-Hashr", "The Exile", 24, "Medinan"],
+            [60, "Al-Mumtahana", "She That Is to Be Examined", 13, "Medinan"],
+            [61, "As-Saff", "The Ranks", 14, "Medinan"],
+            [62, "Al-Jumu'a", "Friday", 11, "Medinan"],
+            [63, "Al-Munaafiqoon", "The Hypocrites", 11, "Medinan"],
+            [64, "At-Taghaabun", "Mutual Disillusion", 18, "Medinan"],
+            [65, "At-Talaaq", "Divorce", 12, "Medinan"],
+            [66, "At-Tahrim", "The Prohibition", 12, "Medinan"],
+            [67, "Al-Mulk", "The Sovereignty", 30, "Meccan"],
+            [68, "Al-Qalam", "The Pen", 52, "Meccan"],
+            [69, "Al-Haaqqa", "The Reality", 52, "Meccan"],
+            [70, "Al-Ma'aarij", "The Ascending Stairways", 44, "Meccan"],
+            [71, "Nooh", "Noah", 28, "Meccan"],
+            [72, "Al-Jinn", "The Jinn", 28, "Meccan"],
+            [73, "Al-Muzzammil", "The Enshrouded One", 20, "Meccan"],
+            [74, "Al-Muddaththir", "The Cloaked One", 56, "Meccan"],
+            [75, "Al-Qiyaama", "The Resurrection", 40, "Meccan"],
+            [76, "Al-Insaan", "Man", 31, "Medinan"],
+            [77, "Al-Mursalaat", "The Emissaries", 50, "Meccan"],
+            [78, "An-Naba", "The Announcement", 40, "Meccan"],
+            [79, "An-Naazi'aat", "Those Who Drag Forth", 46, "Meccan"],
+            [80, "Abasa", "He Frowned", 42, "Meccan"],
+            [81, "At-Takwir", "The Overthrowing", 29, "Meccan"],
+            [82, "Al-Infitaar", "The Cleaving", 19, "Meccan"],
+            [83, "Al-Mutaffifin", "Defrauding", 36, "Meccan"],
+            [84, "Al-Inshiqaaq", "The Splitting Open", 25, "Meccan"],
+            [85, "Al-Burooj", "The Constellations", 22, "Meccan"],
+            [86, "At-Taariq", "The Morning Star", 17, "Meccan"],
+            [87, "Al-A'laa", "The Most High", 19, "Meccan"],
+            [88, "Al-Ghaashiya", "The Overwhelming", 26, "Meccan"],
+            [89, "Al-Fajr", "The Dawn", 30, "Meccan"],
+            [90, "Al-Balad", "The City", 20, "Meccan"],
+            [91, "Ash-Shams", "The Sun", 15, "Meccan"],
+            [92, "Al-Lail", "The Night", 21, "Meccan"],
+            [93, "Ad-Dhuhaa", "The Morning Hours", 11, "Meccan"],
+            [94, "Ash-Sharh", "The Consolation", 8, "Meccan"],
+            [95, "At-Tin", "The Fig", 8, "Meccan"],
+            [96, "Al-Alaq", "The Clot", 19, "Meccan"],
+            [97, "Al-Qadr", "The Power, Fate", 5, "Meccan"],
+            [98, "Al-Bayyina", "The Evidence", 8, "Medinan"],
+            [99, "Az-Zalzala", "The Earthquake", 8, "Medinan"],
+            [100, "Al-Aadiyaat", "The Chargers", 11, "Meccan"],
+            [101, "Al-Qaari'a", "The Calamity", 11, "Meccan"],
+            [102, "At-Takaathur", "Competition", 8, "Meccan"],
+            [103, "Al-Asr", "The Declining Day", 3, "Meccan"],
+            [104, "Al-Humaza", "The Traducer", 9, "Meccan"],
+            [105, "Al-Fil", "The Elephant", 5, "Meccan"],
+            [106, "Quraish", "Quraish", 4, "Meccan"],
+            [107, "Al-Maa'oon", "Almsgiving", 7, "Meccan"],
+            [108, "Al-Kawthar", "Abundance", 3, "Meccan"],
+            [109, "Al-Kaafiroon", "The Disbelievers", 6, "Meccan"],
+            [110, "An-Nasr", "Divine Support", 3, "Medinan"],
+            [111, "Al-Masad", "The Palm Fibre", 5, "Meccan"],
+            [112, "Al-Ikhlaas", "Sincerity", 4, "Meccan"],
+            [113, "Al-Falaq", "The Daybreak", 5, "Meccan"],
+            [114, "An-Naas", "Mankind", 6, "Meccan"]
+        ];
+
+        /**
+         * Complete 556 Ruku start-ayah boundaries per Surah (1 to 114).
+         * Key = surahNumber, Value = array of starting Ayah numbers for each Ruku in that Surah.
+         */
+        const BUILTIN_RUKU_STARTS_BY_SURAH = {
+            1: [1],
+            2: [1,8,21,30,40,47,60,62,72,83,87,97,104,113,122,130,142,148,153,164,168,177,183,189,197,211,217,222,229,232,236,243,249,254,258,261,267,274,282,284],
+            3: [1,10,21,31,42,55,64,72,81,92,102,110,121,130,144,149,156,172,181,190],
+            4: [1,11,15,23,26,34,43,51,60,71,77,88,92,97,101,105,113,116,127,135,142,153,163,172],
+            5: [1,6,12,20,27,35,44,51,57,67,78,87,94,101,109,116],
+            6: [1,11,21,31,42,51,56,61,71,83,91,95,101,111,122,130,141,145,151,155],
+            7: [1,11,26,32,40,48,54,59,65,73,85,94,100,109,127,130,142,148,152,158,163,172,182,189],
+            8: [1,11,20,29,38,45,49,59,65,70],
+            9: [1,7,17,25,30,38,43,60,67,73,81,90,100,111,119,122],
+            10: [1,11,21,31,41,54,61,71,83,93,104],
+            11: [1,9,25,36,50,61,69,84,96,110],
+            12: [1,7,21,30,36,43,50,58,69,80,94,105],
+            13: [1,8,19,27,32,38],
+            14: [1,7,13,22,28,35,42],
+            15: [1,16,26,45,61,80],
+            16: [1,10,22,26,35,41,51,61,66,71,77,84,90,101,111,120],
+            17: [1,11,23,31,41,53,61,71,78,85,94,101],
+            18: [1,13,18,23,32,45,50,54,60,71,83,102],
+            19: [1,16,41,51,66,83],
+            20: [1,25,55,77,90,105,116,129],
+            21: [1,11,30,42,51,76,94],
+            22: [1,11,23,26,34,39,49,58,65,73],
+            23: [1,23,33,51,78,93],
+            24: [1,11,21,27,35,41,51,58,62],
+            25: [1,10,21,35,45,61],
+            26: [1,10,34,52,70,105,123,141,160,176,192],
+            27: [1,15,32,45,59,67,83],
+            28: [1,14,22,29,43,51,61,76,83],
+            29: [1,14,23,31,45,52,64],
+            30: [1,11,20,28,41,54],
+            31: [1,12,20,31],
+            32: [1,12,23],
+            33: [1,9,21,28,35,41,53,59,69],
+            34: [1,10,22,31,37,46],
+            35: [1,8,15,27,38],
+            36: [1,13,33,51,68],
+            37: [1,22,75,114,139],
+            38: [1,15,27,41,65],
+            39: [1,10,22,32,42,53,64,71],
+            40: [1,10,21,28,38,51,61,69,78],
+            41: [1,9,19,26,33,45],
+            42: [1,10,20,30,44],
+            43: [1,16,26,36,46,57,68],
+            44: [1,17,43],
+            45: [1,12,22,27],
+            46: [1,11,21,29],
+            47: [1,12,20,29],
+            48: [1,11,18,27],
+            49: [1,11],
+            50: [1,16,30],
+            51: [1,24,47],
+            52: [1,29],
+            53: [1,26,33],
+            54: [1,23,41],
+            55: [1,26,46],
+            56: [1,39,75],
+            57: [1,11,20,26],
+            58: [1,7,14],
+            59: [1,11,18],
+            60: [1,7],
+            61: [1,10],
+            62: [1,9],
+            63: [1,9],
+            64: [1,11],
+            65: [1,8],
+            66: [1,8],
+            67: [1,15],
+            68: [1,34],
+            69: [1,38],
+            70: [1,36],
+            71: [1,21],
+            72: [1,20],
+            73: [1,20],
+            74: [1,32],
+            75: [1,31],
+            76: [1,23],
+            77: [1,41],
+            78: [1,31],
+            79: [1,27],
+            80: [1],
+            81: [1],
+            82: [1],
+            83: [1],
+            84: [1],
+            85: [1],
+            86: [1],
+            87: [1],
+            88: [1],
+            89: [1],
+            90: [1],
+            91: [1],
+            92: [1],
+            93: [1],
+            94: [1],
+            95: [1],
+            96: [1],
+            97: [1],
+            98: [1],
+            99: [1],
+            100: [1],
+            101: [1],
+            102: [1],
+            103: [1],
+            104: [1],
+            105: [1],
+            106: [1],
+            107: [1],
+            108: [1],
+            109: [1],
+            110: [1],
+            111: [1],
+            112: [1],
+            113: [1],
+            114: [1]
+        };
+
+        /**
+         * ====================================================================
+         * 2. APPLICATION STATE & STORAGE KEYS
+         * ====================================================================
+         */
+        const STORAGE_KEYS = {
+            SETTINGS: 'qtr_settings_v1',
+            LAST_READ: 'qtr_last_read_v1',
+            BOOKMARKS: 'qtr_bookmarks_v1',
+            META_CACHE: 'quran_meta_cache'
+        };
+
+        const DEFAULT_SETTINGS = {
+            showArabic: true,
+            teluguFontSize: 18,
+            arabicFontSize: 26
+        };
+
+        const appState = {
+            activeTab: 'ruku',           // 'ruku' | 'bookmarks'
+            selectedSurah: 1,            // 1 to 114
+            selectedRuku: 1,             // 1-based Ruku index inside the selected Surah
+            settings: { ...DEFAULT_SETTINGS },
+            bookmarks: [],               // Array of saved Ayah bookmark objects
+            surahList: [],               // Array of 114 Surah metadata objects with computed rukus[]
+            globalRukuList: [],          // Flat array of all 556 Rukus across the Quran
+            surahDataCache: {},          // In-memory cache of normalized Surah verses: { [surahNumber]: Array<Verse> }
+            pendingHighlightAyah: null   // If jumping from bookmark, highlights that Ayah card
+        };
+
+        /**
+         * ====================================================================
+         * 3. MASTER RUKU INDEX BUILDER & METADATA SYNC
+         * ====================================================================
+         */
+        function buildMasterRukuIndexFromBuiltin() {
+            const surahList = [];
+            const globalRukuList = [];
+            let globalCounter = 1;
+
+            for (let i = 0; i < BUILTIN_SURAHS.length; i++) {
+                const [number, englishName, englishNameTranslation, numberOfAyahs, revelationType] = BUILTIN_SURAHS[i];
+                const starts = BUILTIN_RUKU_STARTS_BY_SURAH[number] || [1];
+                const rukus = [];
+
+                for (let rIdx = 0; rIdx < starts.length; rIdx++) {
+                    const startAyah = starts[rIdx];
+                    const endAyah = (rIdx + 1 < starts.length)
+                        ? (starts[rIdx + 1] - 1)
+                        : numberOfAyahs;
+
+                    const rukuEntry = {
+                        surahNumber: number,
+                        surahEnglishName: englishName,
+                        surahEnglishTranslation: englishNameTranslation,
+                        revelationType: revelationType,
+                        surahRukuNumber: rIdx + 1,
+                        totalSurahRukus: starts.length,
+                        globalRukuNumber: globalCounter,
+                        startAyah: startAyah,
+                        endAyah: endAyah,
+                        ayahCount: (endAyah - startAyah + 1)
+                    };
+
+                    rukus.push(rukuEntry);
+                    globalRukuList.push(rukuEntry);
+                    globalCounter++;
+                }
+
+                surahList.push({
+                    number,
+                    englishName,
+                    englishNameTranslation,
+                    numberOfAyahs,
+                    revelationType,
+                    rukus
+                });
+            }
+
+            appState.surahList = surahList;
+            appState.globalRukuList = globalRukuList;
+        }
+
+        /**
+         * Optionally syncs with https://api.alquran.cloud/v1/meta and caches in localStorage
+         * under `quran_meta_cache` as specified.
+         */
+        async function syncExternalMetaIfNeeded() {
+            try {
+                const cachedRaw = localStorage.getItem(STORAGE_KEYS.META_CACHE);
+                if (cachedRaw) {
+                    const parsed = JSON.parse(cachedRaw);
+                    if (parsed && Array.isArray(parsed.surahs) && Array.isArray(parsed.rukus) && parsed.rukus.length >= 550) {
+                        applyExternalMetaReferences(parsed.surahs, parsed.rukus);
+                        return;
+                    }
+                }
+
+                const response = await fetch('https://api.alquran.cloud/v1/meta');
+                if (!response.ok) return;
+                const json = await response.json();
+                const surahRefs = json?.data?.surahs?.references;
+                const rukuRefs = json?.data?.rukus?.references;
+
+                if (Array.isArray(surahRefs) && surahRefs.length === 114 && Array.isArray(rukuRefs) && rukuRefs.length >= 550) {
+                    localStorage.setItem(STORAGE_KEYS.META_CACHE, JSON.stringify({
+                        surahs: surahRefs,
+                        rukus: rukuRefs
+                    }));
+                    applyExternalMetaReferences(surahRefs, rukuRefs);
+                }
+            } catch (err) {
+                // Built-in 556 Ruku index is already active, so ignore network errors silently
+            }
+        }
+
+        function applyExternalMetaReferences(surahRefs, rukuRefs) {
+            try {
+                const surahMap = {};
+                surahRefs.forEach(s => {
+                    surahMap[s.number] = {
+                        number: s.number,
+                        englishName: s.englishName,
+                        englishNameTranslation: s.englishNameTranslation,
+                        numberOfAyahs: s.numberOfAyahs,
+                        revelationType: s.revelationType,
+                        rukus: []
+                    };
+                });
+
+                const globalRukuList = [];
+                for (let i = 0; i < rukuRefs.length; i++) {
+                    const current = rukuRefs[i];
+                    const next = rukuRefs[i + 1];
+                    const sObj = surahMap[current.surah];
+                    if (!sObj) continue;
+
+                    const startAyah = current.ayah;
+                    const endAyah = (next && next.surah === current.surah)
+                        ? (next.ayah - 1)
+                        : sObj.numberOfAyahs;
+
+                    const rukuEntry = {
+                        surahNumber: sObj.number,
+                        surahEnglishName: sObj.englishName,
+                        surahEnglishTranslation: sObj.englishNameTranslation,
+                        revelationType: sObj.revelationType,
+                        surahRukuNumber: sObj.rukus.length + 1,
+                        totalSurahRukus: 0, // updated below
+                        globalRukuNumber: i + 1,
+                        startAyah,
+                        endAyah,
+                        ayahCount: (endAyah - startAyah + 1)
+                    };
+
+                    sObj.rukus.push(rukuEntry);
+                    globalRukuList.push(rukuEntry);
+                }
+
+                const updatedSurahList = [];
+                for (let num = 1; num <= 114; num++) {
+                    const sObj = surahMap[num];
+                    if (sObj) {
+                        const totalR = sObj.rukus.length;
+                        sObj.rukus.forEach(r => { r.totalSurahRukus = totalR; });
+                        updatedSurahList.push(sObj);
+                    }
+                }
+
+                if (updatedSurahList.length === 114 && globalRukuList.length >= 550) {
+                    appState.surahList = updatedSurahList;
+                    appState.globalRukuList = globalRukuList;
+                    populateSurahDropdown();
+                    populateRukuDropdown();
+                }
+            } catch (e) {
+                // Keep built-in index if parsing fails
+            }
+        }
+
+        /**
+         * ====================================================================
+         * 4. LOCALSTORAGE PERSISTENCE (SETTINGS, POSITION, BOOKMARKS)
+         * ====================================================================
+         */
+        function loadPersistedState() {
+            // 1. Settings
+            try {
+                const rawSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+                if (rawSettings) {
+                    const parsed = JSON.parse(rawSettings);
+                    if (typeof parsed.showArabic === 'boolean') {
+                        appState.settings.showArabic = parsed.showArabic;
+                    }
+                    if (typeof parsed.teluguFontSize === 'number') {
+                        appState.settings.teluguFontSize = clampNumber(parsed.teluguFontSize, 14, 34);
+                    }
+                    if (typeof parsed.arabicFontSize === 'number') {
+                        appState.settings.arabicFontSize = clampNumber(parsed.arabicFontSize, 18, 44);
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not parse saved settings:', e);
+            }
+
+            // 2. Last Read Position (Surah & Ruku)
+            try {
+                const rawLastRead = localStorage.getItem(STORAGE_KEYS.LAST_READ);
+                if (rawLastRead) {
+                    const parsed = JSON.parse(rawLastRead);
+                    const sNum = parseInt(parsed.selectedSurah, 10);
+                    const rNum = parseInt(parsed.selectedRuku, 10);
+                    if (sNum >= 1 && sNum <= 114) {
+                        appState.selectedSurah = sNum;
+                        const surahMeta = getSurahMeta(sNum);
+                        const maxRuku = surahMeta ? surahMeta.rukus.length : 1;
+                        appState.selectedRuku = (rNum >= 1 && rNum <= maxRuku) ? rNum : 1;
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not parse last read state:', e);
+            }
+
+            // 3. Bookmarks
+            try {
+                const rawBookmarks = localStorage.getItem(STORAGE_KEYS.BOOKMARKS);
+                if (rawBookmarks) {
+                    const parsed = JSON.parse(rawBookmarks);
+                    if (Array.isArray(parsed)) {
+                        appState.bookmarks = parsed;
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not parse saved bookmarks:', e);
+            }
+        }
+
+        function saveSettingsToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(appState.settings));
+            } catch (e) {
+                console.warn('Unable to save settings to localStorage:', e);
+            }
+        }
+
+        function saveLastReadToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.LAST_READ, JSON.stringify({
+                    selectedSurah: appState.selectedSurah,
+                    selectedRuku: appState.selectedRuku
+                }));
+            } catch (e) {
+                console.warn('Unable to save last read position:', e);
+            }
+        }
+
+        function saveBookmarksToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(appState.bookmarks));
+            } catch (e) {
+                console.warn('Unable to save bookmarks:', e);
+            }
+            updateBookmarkBadges();
+        }
+
+        function clampNumber(val, min, max) {
+            return Math.max(min, Math.min(max, val));
+        }
+
+        /**
+         * ====================================================================
+         * 5. RESILIENT GITHUB JSON FETCHER & UNICODE NORMALIZER
+         * ====================================================================
+         * Primary Source:
+         * https://raw.githubusercontent.com/iliyas77/data.github.io/main/telugu_quran/telugu_surah_${String(surahNumber).padStart(3, '0')}.json
+         */
+        const TELUGU_REGEX = /[\u0C00-\u0C7F]/;
+        const ARABIC_REGEX = /[\u0600-\u06FF]/;
+
+        async function fetchAndNormalizeSurahData(surahNumber, forceRefresh = false) {
+            if (!forceRefresh && appState.surahDataCache[surahNumber]) {
+                return appState.surahDataCache[surahNumber];
+            }
+
+            const padded = String(surahNumber).padStart(3, '0');
+            const githubUrl = `https://raw.githubusercontent.com/iliyas77/data.github.io/main/telugu_quran/telugu_surah_${padded}.json`;
+
+            let rawJson = null;
+            let fetchError = null;
+
+            try {
+                const res = await fetch(githubUrl, { cache: 'default' });
+                if (!res.ok) {
+                    throw new Error(`GitHub HTTP ${res.status} for surah ${padded}`);
+                }
+                rawJson = await res.json();
+            } catch (err) {
+                fetchError = err;
+            }
+
+            const surahMeta = getSurahMeta(surahNumber);
+            const expectedAyahCount = surahMeta ? surahMeta.numberOfAyahs : 0;
+
+            let normalizedVerses = [];
+            if (rawJson) {
+                normalizedVerses = normalizeSurahJsonPayload(rawJson, surahNumber, expectedAyahCount);
+            }
+
+            // Check if Arabic text is missing in any verse or if Telugu fallback is needed
+            const hasTelugu = normalizedVerses.some(v => v.teluguText && v.teluguText.trim().length > 0);
+            const hasArabic = normalizedVerses.some(v => v.arabicText && v.arabicText.trim().length > 0);
+
+            // If Arabic script is absent in the GitHub JSON, fetch Uthmani Arabic from AlQuran Cloud API in parallel
+            if (!hasArabic || !hasTelugu) {
+                const tasks = [];
+                if (!hasArabic) {
+                    tasks.push(
+                        fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/quran-uthmani`)
+                            .then(r => r.ok ? r.json() : null)
+                            .catch(() => null)
+                    );
+                } else {
+                    tasks.push(Promise.resolve(null));
+                }
+
+                // Fallback for Telugu only if GitHub request failed completely
+                if (!hasTelugu) {
+                    tasks.push(
+                        fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/tel-muhammadazizurr/${surahNumber}.json`)
+                            .then(r => r.ok ? r.json() : null)
+                            .catch(() => null)
+                    );
+                } else {
+                    tasks.push(Promise.resolve(null));
+                }
+
+                const [arabicPayload, fallbackTeluguPayload] = await Promise.all(tasks);
+
+                // If normalizedVerses is empty because GitHub failed, initialize from expectedAyahCount
+                if (normalizedVerses.length === 0 && (arabicPayload || fallbackTeluguPayload)) {
+                    for (let i = 1; i <= expectedAyahCount; i++) {
+                        normalizedVerses.push({
+                            ayahNumber: i,
+                            teluguText: '',
+                            arabicText: '',
+                            rukuNumber: null
+                        });
+                    }
+                }
+
+                // Merge Arabic Uthmani text by ayahNumber
+                const arabicAyahs = arabicPayload?.data?.ayahs;
+                if (Array.isArray(arabicAyahs)) {
+                    const arabicByNum = {};
+                    arabicAyahs.forEach(a => {
+                        const num = a.numberInSurah || a.number;
+                        let txt = a.text || '';
+                        // Strip leading Bismillah on Ayah 1 for Surahs other than 1 and 9 if attached
+                        if (surahNumber !== 1 && surahNumber !== 9 && num === 1) {
+                            txt = stripLeadingBismillah(txt);
+                        }
+                        arabicByNum[num] = txt;
+                    });
+
+                    normalizedVerses.forEach(v => {
+                        if (!v.arabicText && arabicByNum[v.ayahNumber]) {
+                            v.arabicText = arabicByNum[v.ayahNumber];
+                        }
+                    });
+                }
+
+                // Merge fallback Telugu if GitHub failed
+                const fallbackChapter = fallbackTeluguPayload?.chapter;
+                if (!hasTelugu && Array.isArray(fallbackChapter)) {
+                    const teByNum = {};
+                    fallbackChapter.forEach(item => {
+                        teByNum[item.verse] = item.text || '';
+                    });
+                    normalizedVerses.forEach(v => {
+                        if (!v.teluguText && teByNum[v.ayahNumber]) {
+                            v.teluguText = teByNum[v.ayahNumber];
+                        }
+                    });
+                }
+            }
+
+            if (normalizedVerses.length === 0) {
+                throw fetchError || new Error('Could not parse verses from the Surah JSON data.');
+            }
+
+            // Sort by ayahNumber ascending
+            normalizedVerses.sort((a, b) => a.ayahNumber - b.ayahNumber);
+            appState.surahDataCache[surahNumber] = normalizedVerses;
+            return normalizedVerses;
+        }
+
+        /**
+         * Strips the leading Bismillah from Ayah 1 in Uthmani script for Surahs != 1 and != 9
+         * since our UI already displays a dedicated Bismillah banner at the top of Ruku 1.
+         */
+        function stripLeadingBismillah(arabicStr) {
+            if (!arabicStr) return '';
+            const prefixes = [
+                'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ',
+                'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ',
+                'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ '
+            ];
+            for (const p of prefixes) {
+                if (arabicStr.startsWith(p)) {
+                    return arabicStr.slice(p.length).trim();
+                }
+            }
+            return arabicStr;
+        }
+
+        /**
+         * Smart JSON Normalizer & Unicode Detector:
+         * Inspects any JSON shape from `telugu_surah_XXX.json` and extracts
+         * `{ ayahNumber, teluguText, arabicText, rukuNumber }` for every verse.
+         */
+        function normalizeSurahJsonPayload(rootData, surahNumber, expectedAyahCount) {
+            let rawList = extractVerseArrayFromRoot(rootData, surahNumber);
+            if (!Array.isArray(rawList) || rawList.length === 0) {
+                return [];
+            }
+
+            const results = [];
+            for (let idx = 0; idx < rawList.length; idx++) {
+                const item = rawList[idx];
+                if (item === null || item === undefined) continue;
+
+                // If the array item is a plain string
+                if (typeof item === 'string') {
+                    const isTe = TELUGU_REGEX.test(item);
+                    const isAr = ARABIC_REGEX.test(item);
+                    results.push({
+                        ayahNumber: idx + 1,
+                        teluguText: isTe ? item.trim() : (!isAr ? item.trim() : ''),
+                        arabicText: isAr ? item.trim() : '',
+                        rukuNumber: null
+                    });
+                    continue;
+                }
+
+                if (typeof item !== 'object') continue;
+
+                // 1. Extract Ayah Number
+                let ayahNum = extractAyahNumber(item, idx, expectedAyahCount);
+
+                // 2. Extract Telugu Translation Text
+                let teluguText = extractTeluguText(item);
+
+                // 3. Extract Arabic Script Text
+                let arabicText = extractArabicText(item);
+
+                // 4. Extract Ruku Number if present
+                let rukuNumber = extractRukuNumber(item);
+
+                results.push({
+                    ayahNumber: ayahNum,
+                    teluguText: teluguText,
+                    arabicText: arabicText,
+                    rukuNumber: rukuNumber
+                });
+            }
+
+            // If extracted ayahNumbers are global Quran IDs (e.g., Surah 2 starting at 8 instead of 1),
+            // normalize sequential numbering 1..N if they are monotonic and length matches
+            if (results.length > 0 && results[0].ayahNumber > 1 && results.length === expectedAyahCount) {
+                const firstNum = results[0].ayahNumber;
+                const isContiguousOffset = results.every((r, i) => r.ayahNumber === firstNum + i);
+                if (isContiguousOffset) {
+                    results.forEach((r, i) => { r.ayahNumber = i + 1; });
+                }
+            }
+
+            return results;
+        }
+
+        function extractVerseArrayFromRoot(root, surahNumber) {
+            if (!root) return [];
+            if (Array.isArray(root)) {
+                // Check if root is an array of Surahs or an array of Rukus or direct array of Verses
+                if (root.length > 0 && typeof root[0] === 'object') {
+                    if (Array.isArray(root[0].ayahs) || Array.isArray(root[0].verses)) {
+                        // Flatten rukus/sections
+                        const flattened = [];
+                        root.forEach(sec => {
+                            const arr = sec.ayahs || sec.verses || [];
+                            const rNum = sec.ruku || sec.ruku_number || sec.rukuNumber || null;
+                            arr.forEach(v => {
+                                if (typeof v === 'object' && v !== null) {
+                                    flattened.push({ ...v, _inheritedRuku: rNum });
+                                } else {
+                                    flattened.push(v);
+                                }
+                            });
+                        });
+                        if (flattened.length > 0) return flattened;
+                    }
+                }
+                return root;
+            }
+
+            if (typeof root === 'object') {
+                // Priority candidate array properties
+                const candidateKeys = [
+                    'verses', 'ayahs', 'ayat', 'data', 'chapter', 'surah',
+                    'telugu_quran', 'items', 'results', 'translations', 'text'
+                ];
+                for (const key of candidateKeys) {
+                    if (Array.isArray(root[key]) && root[key].length > 0) {
+                        return extractVerseArrayFromRoot(root[key], surahNumber);
+                    }
+                }
+
+                // Check if root has `rukus` array
+                if (Array.isArray(root.rukus) && root.rukus.length > 0) {
+                    return extractVerseArrayFromRoot(root.rukus, surahNumber);
+                }
+
+                // Check if keyed by surahNumber e.g. root["1"] or root["001"]
+                const padded = String(surahNumber).padStart(3, '0');
+                if (root[surahNumber] && typeof root[surahNumber] === 'object') {
+                    const sub = extractVerseArrayFromRoot(root[surahNumber], surahNumber);
+                    if (sub.length > 0) return sub;
+                }
+                if (root[padded] && typeof root[padded] === 'object') {
+                    const sub = extractVerseArrayFromRoot(root[padded], surahNumber);
+                    if (sub.length > 0) return sub;
+                }
+
+                // Check if any property on root is an Array of objects/strings
+                for (const [k, val] of Object.entries(root)) {
+                    if (Array.isArray(val) && val.length > 0) {
+                        return extractVerseArrayFromRoot(val, surahNumber);
+                    }
+                }
+
+                // Check if root is an object whose keys are verse numbers ("1", "2", "3"...)
+                const numericKeys = Object.keys(root).filter(k => /^\d+$/.test(k)).sort((a, b) => Number(a) - Number(b));
+                if (numericKeys.length > 0) {
+                    return numericKeys.map(k => {
+                        const val = root[k];
+                        if (typeof val === 'string') {
+                            return { ayah: Number(k), text: val };
+                        }
+                        if (typeof val === 'object' && val !== null) {
+                            return { ayah: Number(k), ...val };
+                        }
+                        return null;
+                    }).filter(Boolean);
+                }
+
+                // Deep search one more level for nested objects
+                for (const val of Object.values(root)) {
+                    if (val && typeof val === 'object' && !Array.isArray(val)) {
+                        const sub = extractVerseArrayFromRoot(val, surahNumber);
+                        if (sub.length > 0) return sub;
+                    }
+                }
+            }
+
+            return [];
+        }
+
+        function extractAyahNumber(item, fallbackIdx, expectedAyahCount) {
+            const priorityKeys = [
+                'ayah', 'ayah_number', 'ayahNumber', 'verse', 'verse_number',
+                'verseNumber', 'numberInSurah', 'aya', 'ayah_no', 'verse_no',
+                'sura_ayah', 'number', 'id'
+            ];
+
+            for (const key of priorityKeys) {
+                if (item[key] !== undefined && item[key] !== null) {
+                    const rawVal = String(item[key]).trim();
+                    // Handle "1:7" or "2:255" verse_key style
+                    if (/^\d+:\d+$/.test(rawVal)) {
+                        const parts = rawVal.split(':');
+                        const parsed = parseInt(parts[1], 10);
+                        if (!isNaN(parsed) && parsed >= 1) return parsed;
+                    }
+                    const parsed = parseInt(rawVal, 10);
+                    if (!isNaN(parsed) && parsed >= 1) {
+                        // If key is 'id' or 'number' and exceeds expectedAyahCount, check if another key has local ayah number
+                        if ((key === 'id' || key === 'number') && expectedAyahCount > 0 && parsed > expectedAyahCount) {
+                            continue;
+                        }
+                        return parsed;
+                    }
+                }
+            }
+
+            // Check `verse_key` e.g., "1:1"
+            if (typeof item.verse_key === 'string' && item.verse_key.includes(':')) {
+                const p = parseInt(item.verse_key.split(':')[1], 10);
+                if (!isNaN(p) && p >= 1) return p;
+            }
+
+            return fallbackIdx + 1;
+        }
+
+        function extractTeluguText(item) {
+            const candidateKeys = [
+                'telugu', 'telugu_text', 'teluguText', 'translation', 'text_te',
+                'te', 'meaning', 'telugu_meaning', 'ayah_telugu', 'verse_telugu',
+                'tarjuma', 'anuvadam', 'text', 'content'
+            ];
+
+            // First pass: check known keys that explicitly contain Telugu Unicode characters
+            for (const key of candidateKeys) {
+                const val = item[key];
+                if (typeof val === 'string' && TELUGU_REGEX.test(val)) {
+                    return cleanVerseText(val);
+                }
+            }
+
+            // Second pass: scan ALL string properties (and nested objects) for Telugu Unicode characters [\u0C00-\u0C7F]
+            const foundTeluguStrings = [];
+            collectMatchingStrings(item, TELUGU_REGEX, foundTeluguStrings);
+            if (foundTeluguStrings.length > 0) {
+                // Pick the longest Telugu string (usually the full verse translation rather than a short label)
+                foundTeluguStrings.sort((a, b) => b.length - a.length);
+                return cleanVerseText(foundTeluguStrings[0]);
+            }
+
+            // Third pass: if no Telugu Unicode matched, fallback to non-Arabic translation/text field
+            for (const key of ['telugu', 'translation', 'meaning', 'text']) {
+                const val = item[key];
+                if (typeof val === 'string' && val.trim().length > 0 && !ARABIC_REGEX.test(val)) {
+                    return cleanVerseText(val);
+                }
+            }
+
+            return '';
+        }
+
+        function extractArabicText(item) {
+            const candidateKeys = [
+                'arabic', 'arabic_text', 'arabicText', 'text_ar', 'ar',
+                'uthmani', 'text_uthmani', 'ayah_arabic', 'verse_arabic',
+                'qurani', 'arabic_ayah', 'text'
+            ];
+
+            for (const key of candidateKeys) {
+                const val = item[key];
+                if (typeof val === 'string' && ARABIC_REGEX.test(val) && !TELUGU_REGEX.test(val)) {
+                    return val.trim();
+                }
+            }
+
+            const foundArabicStrings = [];
+            collectMatchingStrings(item, ARABIC_REGEX, foundArabicStrings);
+            const pureArabic = foundArabicStrings.filter(s => !TELUGU_REGEX.test(s));
+            if (pureArabic.length > 0) {
+                pureArabic.sort((a, b) => b.length - a.length);
+                return pureArabic[0].trim();
+            }
+
+            return '';
+        }
+
+        function extractRukuNumber(item) {
+            const keys = ['ruku', 'ruku_number', 'rukuNumber', 'rukuh', '_inheritedRuku'];
+            for (const k of keys) {
+                if (item[k] !== undefined && item[k] !== null) {
+                    const n = parseInt(item[k], 10);
+                    if (!isNaN(n) && n >= 1) return n;
+                }
+            }
+            return null;
+        }
+
+        function collectMatchingStrings(obj, regex, outArray, depth = 0) {
+            if (!obj || depth > 3) return;
+            if (typeof obj === 'string') {
+                if (regex.test(obj)) outArray.push(obj);
+                return;
+            }
+            if (Array.isArray(obj)) {
+                obj.forEach(el => collectMatchingStrings(el, regex, outArray, depth + 1));
+                return;
+            }
+            if (typeof obj === 'object') {
+                for (const val of Object.values(obj)) {
+                    collectMatchingStrings(val, regex, outArray, depth + 1);
+                }
+            }
+        }
+
+        function cleanVerseText(str) {
+            if (!str) return '';
+            // Remove leading duplicate verse numbers like "1. " or "(1) " if embedded in translation string
+            return str.replace(/^\s*[\(\[]?\d+[\)\]\.]?\s*[-:–]?\s*/, '').trim() || str.trim();
+        }
+
+        /**
+         * ====================================================================
+         * 6. UI HELPERS & DROPDOWN POPULATORS
+         * ====================================================================
+         */
+        function getSurahMeta(surahNumber) {
+            return appState.surahList.find(s => s.number === Number(surahNumber)) || appState.surahList[0];
+        }
+
+        function getActiveRukuMeta() {
+            const surahMeta = getSurahMeta(appState.selectedSurah);
+            if (!surahMeta || !surahMeta.rukus.length) return null;
+            const rIdx = clampNumber(appState.selectedRuku, 1, surahMeta.rukus.length) - 1;
+            return surahMeta.rukus[rIdx];
+        }
+
+        function populateSurahDropdown() {
+            const selectEl = document.getElementById('surah-select');
+            if (!selectEl) return;
+
+            let html = '';
+            for (const s of appState.surahList) {
+                const rukuCount = s.rukus.length;
+                const rukuWord = rukuCount === 1 ? '1 Ruku' : `${rukuCount} Rukus`;
+                const selectedAttr = (s.number === appState.selectedSurah) ? 'selected' : '';
+                html += `<option value="${s.number}" ${selectedAttr}>${s.number}. ${s.englishName} — ${s.englishNameTranslation} (${rukuWord})</option>`;
+            }
+            selectEl.innerHTML = html;
+        }
+
+        function populateRukuDropdown() {
+            const selectEl = document.getElementById('ruku-select');
+            if (!selectEl) return;
+
+            const surahMeta = getSurahMeta(appState.selectedSurah);
+            if (!surahMeta) return;
+
+            // Clamp selectedRuku
+            if (appState.selectedRuku < 1 || appState.selectedRuku > surahMeta.rukus.length) {
+                appState.selectedRuku = 1;
+            }
+
+            let html = '';
+            for (const r of surahMeta.rukus) {
+                const selectedAttr = (r.surahRukuNumber === appState.selectedRuku) ? 'selected' : '';
+                html += `<option value="${r.surahRukuNumber}" ${selectedAttr}>Ruku ${r.surahRukuNumber} of ${surahMeta.rukus.length} (Ayahs ${r.startAyah} - ${r.endAyah})</option>`;
+            }
+            selectEl.innerHTML = html;
+        }
+
+        /**
+         * ====================================================================
+         * 7. RUKU VIEW RENDERER & NAVIGATION LOGIC
+         * ====================================================================
+         */
+        async function loadCurrentRuku(forceRefresh = false) {
+            const surahMeta = getSurahMeta(appState.selectedSurah);
+            const rukuMeta = getActiveRukuMeta();
+            if (!surahMeta || !rukuMeta) return;
+
+            // Persist current selection
+            saveLastReadToStorage();
+
+            // Sync Dropdowns & Header Badges
+            const surahSelect = document.getElementById('surah-select');
+            if (surahSelect && Number(surahSelect.value) !== appState.selectedSurah) {
+                surahSelect.value = String(appState.selectedSurah);
+            }
+            populateRukuDropdown();
+
+            // Update Banner & Pagination Buttons immediately
+            updateRukuBannerAndPaginationUI(surahMeta, rukuMeta);
+
+            // Show Loading Skeleton if not cached
+            const loadingEl = document.getElementById('ruku-loading-state');
+            const errorEl = document.getElementById('ruku-error-state');
+            const ayahsContainer = document.getElementById('ruku-ayahs-container');
+            const bismillahCard = document.getElementById('bismillah-card');
+
+            errorEl.classList.add('hidden');
+
+            const isCached = !forceRefresh && Boolean(appState.surahDataCache[surahMeta.number]);
+            if (!isCached) {
+                loadingEl.classList.remove('hidden');
+                ayahsContainer.innerHTML = '';
+                bismillahCard.classList.add('hidden');
+            }
+
+            try {
+                const allSurahVerses = await fetchAndNormalizeSurahData(surahMeta.number, forceRefresh);
+                loadingEl.classList.add('hidden');
+
+                // Extract only the Ayahs belonging to this Ruku range (startAyah .. endAyah)
+                let rukuVerses = allSurahVerses.filter(
+                    v => v.ayahNumber >= rukuMeta.startAyah && v.ayahNumber <= rukuMeta.endAyah
+                );
+
+                // Fallback: if the JSON had explicit rukuNumber tags that match and range filter was empty
+                if (rukuVerses.length === 0) {
+                    rukuVerses = allSurahVerses.filter(v => v.rukuNumber === rukuMeta.surahRukuNumber);
+                }
+
+                // Toggle Bismillah Card (Show on Ruku 1 of every Surah except Surah 1 where it's Ayah 1, and Surah 9 At-Tawba)
+                if (rukuMeta.surahRukuNumber === 1 && surahMeta.number !== 1 && surahMeta.number !== 9) {
+                    bismillahCard.classList.remove('hidden');
+                    const bismillahAr = document.getElementById('bismillah-arabic');
+                    if (bismillahAr) {
+                        bismillahAr.classList.toggle('hidden', !appState.settings.showArabic);
+                    }
+                } else {
+                    bismillahCard.classList.add('hidden');
+                }
+
+                renderRukuAyahCards(rukuVerses, surahMeta, rukuMeta);
+
+                // If jumping to a specific Ayah from Bookmarks, scroll to it and highlight
+                if (appState.pendingHighlightAyah) {
+                    const targetAyah = appState.pendingHighlightAyah;
+                    appState.pendingHighlightAyah = null;
+                    setTimeout(() => {
+                        const cardEl = document.getElementById(`ayah-card-${surahMeta.number}-${targetAyah}`);
+                        if (cardEl) {
+                            cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            cardEl.classList.add('ayah-highlight-flash');
+                            setTimeout(() => cardEl.classList.remove('ayah-highlight-flash'), 2500);
+                        }
+                    }, 100);
+                }
+            } catch (err) {
+                loadingEl.classList.add('hidden');
+                ayahsContainer.innerHTML = '';
+                bismillahCard.classList.add('hidden');
+                errorEl.classList.remove('hidden');
+                const msgEl = document.getElementById('ruku-error-message');
+                if (msgEl) {
+                    msgEl.textContent = `Could not load Surah ${surahMeta.number} (${surahMeta.englishName}) from GitHub. Please check your connection and retry.`;
+                }
+            }
+        }
+
+        function updateRukuBannerAndPaginationUI(surahMeta, rukuMeta) {
+            const totalGlobalRukus = appState.globalRukuList.length || 556;
+
+            // Header Global Ruku Badge
+            const headerBadge = document.getElementById('header-global-ruku-badge');
+            if (headerBadge) {
+                headerBadge.textContent = `Ruku #${rukuMeta.globalRukuNumber} / ${totalGlobalRukus}`;
+            }
+
+            // Banner Badges & Titles
+            document.getElementById('banner-surah-badge').textContent = `Surah ${surahMeta.number}`;
+            document.getElementById('banner-revelation-badge').textContent = surahMeta.revelationType;
+            document.getElementById('banner-global-ruku-pill').textContent = `Global Ruku #${rukuMeta.globalRukuNumber} of ${totalGlobalRukus}`;
+            document.getElementById('banner-surah-title').textContent = `${surahMeta.number}. ${surahMeta.englishName} (${surahMeta.englishNameTranslation})`;
+
+            const ayahWord = rukuMeta.ayahCount === 1 ? '1 Ayah' : `${rukuMeta.ayahCount} Ayahs`;
+            document.getElementById('banner-ruku-subtitle').textContent =
+                `Ruku ${rukuMeta.surahRukuNumber} of ${surahMeta.rukus.length} • Ayahs ${rukuMeta.startAyah} - ${rukuMeta.endAyah} (${ayahWord})`;
+
+            // Compute Previous & Next Global Ruku references
+            const currentGlobalIdx = rukuMeta.globalRukuNumber - 1;
+            const prevRukuObj = currentGlobalIdx > 0 ? appState.globalRukuList[currentGlobalIdx - 1] : null;
+            const nextRukuObj = currentGlobalIdx + 1 < appState.globalRukuList.length ? appState.globalRukuList[currentGlobalIdx + 1] : null;
+
+            const bannerPrevBtn = document.getElementById('banner-prev-ruku-btn');
+            const bannerNextBtn = document.getElementById('banner-next-ruku-btn');
+            const bottomPrevBtn = document.getElementById('bottom-prev-ruku-btn');
+            const bottomNextBtn = document.getElementById('bottom-next-ruku-btn');
+            const bottomPrevLabel = document.getElementById('bottom-prev-ruku-label');
+            const bottomNextLabel = document.getElementById('bottom-next-ruku-label');
+
+            bannerPrevBtn.disabled = !prevRukuObj;
+            bottomPrevBtn.disabled = !prevRukuObj;
+            if (prevRukuObj) {
+                bottomPrevLabel.textContent = `Surah ${prevRukuObj.surahNumber}: ${prevRukuObj.surahEnglishName} • Ruku ${prevRukuObj.surahRukuNumber}`;
+            } else {
+                bottomPrevLabel.textContent = 'First Ruku of the Quran';
+            }
+
+            bannerNextBtn.disabled = !nextRukuObj;
+            bottomNextBtn.disabled = !nextRukuObj;
+            if (nextRukuObj) {
+                bottomNextLabel.textContent = `Surah ${nextRukuObj.surahNumber}: ${nextRukuObj.surahEnglishName} • Ruku ${nextRukuObj.surahRukuNumber}`;
+            } else {
+                bottomNextLabel.textContent = 'Final Ruku of the Quran';
+            }
+        }
+
+        function renderRukuAyahCards(verses, surahMeta, rukuMeta) {
+            const container = document.getElementById('ruku-ayahs-container');
+            if (!container) return;
+
+            if (!verses || verses.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center text-sm text-slate-500">
+                        No Ayahs found in this Ruku range (Ayahs ${rukuMeta.startAyah} - ${rukuMeta.endAyah}).
+                    </div>
+                `;
+                return;
+            }
+
+            const { showArabic, teluguFontSize, arabicFontSize } = appState.settings;
+            const fragment = document.createDocumentFragment();
+
+            verses.forEach(verse => {
+                const isSaved = isAyahBookmarked(surahMeta.number, verse.ayahNumber);
+
+                const card = document.createElement('article');
+                card.id = `ayah-card-${surahMeta.number}-${verse.ayahNumber}`;
+                card.className = 'bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-4 sm:p-5 shadow-xs transition duration-200 space-y-3.5';
+
+                // Top Row: Badges & Action Buttons (Strictly English)
+                const headerRow = document.createElement('div');
+                headerRow.className = 'flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100';
+
+                headerRow.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-xs font-bold">
+                            ${surahMeta.number}:${verse.ayahNumber}
+                        </span>
+                        <span class="text-xs font-semibold text-slate-500">
+                            Ayah #${verse.ayahNumber}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button
+                            type="button"
+                            data-copy-btn="${surahMeta.number}:${verse.ayahNumber}"
+                            title="Copy Ayah Text"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 text-xs font-semibold transition active:scale-95"
+                        >
+                            <i class="fa-regular fa-copy text-xs"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-bookmark-btn="${surahMeta.number}:${verse.ayahNumber}"
+                            title="${isSaved ? 'Remove Bookmark' : 'Bookmark this Ayah'}"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 ${
+                                isSaved
+                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
+                                    : 'bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border-slate-200/80'
+                            }"
+                        >
+                            <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark text-xs"></i>
+                            <span>${isSaved ? 'Bookmarked' : 'Bookmark'}</span>
+                        </button>
+                    </div>
+                `;
+
+                card.appendChild(headerRow);
+
+                // Arabic Script Block (Conditional on showArabic setting)
+                if (showArabic && verse.arabicText) {
+                    const arabicDiv = document.createElement('div');
+                    arabicDiv.className = 'font-arabic-script text-slate-900 text-right bg-slate-50/70 rounded-xl px-3.5 py-3 border border-slate-100 select-text';
+                    arabicDiv.style.fontSize = `${arabicFontSize}px`;
+                    arabicDiv.textContent = verse.arabicText;
+                    card.appendChild(arabicDiv);
+                }
+
+                // Telugu Translation Block (Primary Focus)
+                const teluguDiv = document.createElement('div');
+                teluguDiv.className = 'font-telugu-script text-slate-800 text-left pt-0.5 select-text';
+                teluguDiv.style.fontSize = `${teluguFontSize}px`;
+                teluguDiv.textContent = verse.teluguText || 'Telugu translation not available for this Ayah.';
+                card.appendChild(teluguDiv);
+
+                // Attach Copy & Bookmark Event Listeners cleanly
+                const copyBtn = headerRow.querySelector('[data-copy-btn]');
+                copyBtn.addEventListener('click', () => {
+                    copyAyahToClipboard(surahMeta, rukuMeta, verse, copyBtn);
+                });
+
+                const bookmarkBtn = headerRow.querySelector('[data-bookmark-btn]');
+                bookmarkBtn.addEventListener('click', () => {
+                    toggleAyahBookmark(surahMeta, rukuMeta, verse);
+                });
+
+                fragment.appendChild(card);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(fragment);
+        }
+
+        /**
+         * ====================================================================
+         * 8. NAVIGATION EVENT HANDLERS (SURAH, RUKU, STEP, GLOBAL JUMP)
+         * ====================================================================
+         */
+        function handleSurahChange(newSurahVal) {
+            const sNum = parseInt(newSurahVal, 10);
+            if (isNaN(sNum) || sNum < 1 || sNum > 114) return;
+            appState.selectedSurah = sNum;
+            appState.selectedRuku = 1;
+            populateRukuDropdown();
+            loadCurrentRuku();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleRukuChange(newRukuVal) {
+            const rNum = parseInt(newRukuVal, 10);
+            const surahMeta = getSurahMeta(appState.selectedSurah);
+            if (!surahMeta || isNaN(rNum)) return;
+            appState.selectedRuku = clampNumber(rNum, 1, surahMeta.rukus.length);
+            loadCurrentRuku();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function navigateRukuStep(delta) {
+            const rukuMeta = getActiveRukuMeta();
+            if (!rukuMeta) return;
+
+            const targetGlobalIdx = (rukuMeta.globalRukuNumber - 1) + delta;
+            if (targetGlobalIdx < 0 || targetGlobalIdx >= appState.globalRukuList.length) {
+                return;
+            }
+
+            const targetRuku = appState.globalRukuList[targetGlobalIdx];
+            appState.selectedSurah = targetRuku.surahNumber;
+            appState.selectedRuku = targetRuku.surahRukuNumber;
+
+            populateSurahDropdown();
+            populateRukuDropdown();
+            loadCurrentRuku();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchBottomTab(tabName) {
+            appState.activeTab = tabName;
+
+            const rukuSection = document.getElementById('view-ruku');
+            const bookmarksSection = document.getElementById('view-bookmarks');
+            const headerRukuControls = document.getElementById('header-ruku-controls');
+            const tabRukuBtn = document.getElementById('nav-tab-ruku');
+            const tabBookmarksBtn = document.getElementById('nav-tab-bookmarks');
+            const navBadge = document.getElementById('nav-bookmarks-badge');
+
+            if (tabName === 'ruku') {
+                rukuSection.classList.remove('hidden');
+                bookmarksSection.classList.add('hidden');
+                headerRukuControls.classList.remove('hidden');
+
+                tabRukuBtn.className = 'flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+                tabBookmarksBtn.className = 'flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition text-slate-600 hover:bg-slate-100 border border-transparent';
+                navBadge.className = 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700';
+            } else {
+                rukuSection.classList.add('hidden');
+                bookmarksSection.classList.remove('hidden');
+                headerRukuControls.classList.add('hidden');
+
+                tabBookmarksBtn.className = 'flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+                tabRukuBtn.className = 'flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm transition text-slate-600 hover:bg-slate-100 border border-transparent';
+                navBadge.className = 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-emerald-600 text-white';
+
+                renderBookmarksTab();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /**
+         * Global Ruku Quick Jump Modal (1 - 556)
+         */
+        function openGlobalRukuJumpModal() {
+            const modal = document.getElementById('global-ruku-modal');
+            const input = document.getElementById('global-ruku-input');
+            const rukuMeta = getActiveRukuMeta();
+            const currentGlobal = rukuMeta ? rukuMeta.globalRukuNumber : 1;
+
+            input.max = String(appState.globalRukuList.length || 556);
+            input.value = String(currentGlobal);
+            updateGlobalRukuPreview(currentGlobal);
+            modal.classList.remove('hidden');
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closeGlobalRukuJumpModal() {
+            document.getElementById('global-ruku-modal').classList.add('hidden');
+        }
+
+        function updateGlobalRukuPreview(val) {
+            const previewEl = document.getElementById('global-ruku-preview-box');
+            const num = parseInt(val, 10);
+            const max = appState.globalRukuList.length || 556;
+
+            if (isNaN(num) || num < 1 || num > max) {
+                previewEl.textContent = `Please enter a valid Global Ruku number between 1 and ${max}.`;
+                previewEl.className = 'bg-red-50 border border-red-200 rounded-xl p-3.5 text-xs sm:text-sm text-red-800 font-medium';
+                return;
+            }
+
+            const target = appState.globalRukuList[num - 1];
+            previewEl.className = 'bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 text-xs sm:text-sm text-emerald-950 font-medium';
+            previewEl.textContent = `Global Ruku #${num}: Surah ${target.surahNumber}. ${target.surahEnglishName} — Ruku ${target.surahRukuNumber} (Ayahs ${target.startAyah} - ${target.endAyah})`;
+        }
+
+        function confirmGlobalRukuJump() {
+            const input = document.getElementById('global-ruku-input');
+            const max = appState.globalRukuList.length || 556;
+            const num = clampNumber(parseInt(input.value, 10) || 1, 1, max);
+            const target = appState.globalRukuList[num - 1];
+
+            if (target) {
+                appState.selectedSurah = target.surahNumber;
+                appState.selectedRuku = target.surahRukuNumber;
+                closeGlobalRukuJumpModal();
+                if (appState.activeTab !== 'ruku') {
+                    switchBottomTab('ruku');
+                }
+                populateSurahDropdown();
+                populateRukuDropdown();
+                loadCurrentRuku();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast(`Jumped to Global Ruku #${num}`);
+            }
+        }
+
+        /**
+         * ====================================================================
+         * 9. BOOKMARKING ENGINE (ADD, REMOVE, JUMP, CLEAR ALL)
+         * ====================================================================
+         */
+        function getBookmarkKey(surahNumber, ayahNumber) {
+            return `${surahNumber}:${ayahNumber}`;
+        }
+
+        function isAyahBookmarked(surahNumber, ayahNumber) {
+            const key = getBookmarkKey(surahNumber, ayahNumber);
+            return appState.bookmarks.some(b => b.id === key);
+        }
+
+        function toggleAyahBookmark(surahMeta, rukuMeta, verse) {
+            const key = getBookmarkKey(surahMeta.number, verse.ayahNumber);
+            const existingIdx = appState.bookmarks.findIndex(b => b.id === key);
+
+            if (existingIdx !== -1) {
+                appState.bookmarks.splice(existingIdx, 1);
+                saveBookmarksToStorage();
+                showToast(`Removed Ayah ${key} from Bookmarks`);
+            } else {
+                const bookmarkEntry = {
+                    id: key,
+                    surahNumber: surahMeta.number,
+                    surahEnglishName: surahMeta.englishName,
+                    surahEnglishTranslation: surahMeta.englishNameTranslation,
+                    surahRukuNumber: rukuMeta.surahRukuNumber,
+                    globalRukuNumber: rukuMeta.globalRukuNumber,
+                    ayahNumber: verse.ayahNumber,
+                    arabicText: verse.arabicText || '',
+                    teluguText: verse.teluguText || '',
+                    savedAt: new Date().toISOString()
+                };
+                // Add newest bookmark to top of list
+                appState.bookmarks.unshift(bookmarkEntry);
+                saveBookmarksToStorage();
+                showToast(`Bookmarked Surah ${surahMeta.number}, Ayah ${verse.ayahNumber}`);
+            }
+
+            // Re-render current view button state without losing scroll position
+            updateSingleAyahBookmarkButtonDOM(surahMeta.number, verse.ayahNumber);
+            if (appState.activeTab === 'bookmarks') {
+                renderBookmarksTab();
+            }
+        }
+
+        function updateSingleAyahBookmarkButtonDOM(surahNumber, ayahNumber) {
+            const btn = document.querySelector(`[data-bookmark-btn="${surahNumber}:${ayahNumber}"]`);
+            if (!btn) return;
+            const isSaved = isAyahBookmarked(surahNumber, ayahNumber);
+            btn.title = isSaved ? 'Remove Bookmark' : 'Bookmark this Ayah';
+            btn.className = `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 ${
+                isSaved
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
+                    : 'bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border-slate-200/80'
+            }`;
+            btn.innerHTML = `
+                <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark text-xs"></i>
+                <span>${isSaved ? 'Bookmarked' : 'Bookmark'}</span>
+            `;
+        }
+
+        function updateBookmarkBadges() {
+            const count = appState.bookmarks.length;
+            const navBadge = document.getElementById('nav-bookmarks-badge');
+            if (navBadge) {
+                navBadge.textContent = String(count);
+            }
+
+            const subtitleEl = document.getElementById('bookmarks-subtitle-count');
+            if (subtitleEl) {
+                subtitleEl.textContent = count === 1
+                    ? '1 Ayah saved in local storage'
+                    : `${count} Ayahs saved in local storage`;
+            }
+
+            const clearAllBtn = document.getElementById('clear-all-bookmarks-btn');
+            if (clearAllBtn) {
+                clearAllBtn.classList.toggle('hidden', count === 0);
+            }
+        }
+
+        function renderBookmarksTab() {
+            updateBookmarkBadges();
+            const emptyState = document.getElementById('bookmarks-empty-state');
+            const listContainer = document.getElementById('bookmarks-list-container');
+
+            if (appState.bookmarks.length === 0) {
+                emptyState.classList.remove('hidden');
+                listContainer.innerHTML = '';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            const { showArabic, teluguFontSize, arabicFontSize } = appState.settings;
+            const fragment = document.createDocumentFragment();
+
+            appState.bookmarks.forEach(item => {
+                const card = document.createElement('article');
+                card.className = 'bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5 transition hover:border-emerald-300';
+
+                const topBar = document.createElement('div');
+                topBar.className = 'flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100';
+
+                topBar.innerHTML = `
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-xs font-bold">
+                            Surah ${item.surahNumber}: ${escapeHtml(item.surahEnglishName)} • Ruku ${item.surahRukuNumber} • Ayah ${item.ayahNumber}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button
+                            type="button"
+                            data-goto-bookmark="${item.id}"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-2xs transition active:scale-95"
+                        >
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                            <span>Go to Ruku</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-remove-bookmark="${item.id}"
+                            title="Remove Bookmark"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold transition active:scale-95"
+                        >
+                            <i class="fa-regular fa-trash-can text-xs"></i>
+                            <span>Remove</span>
+                        </button>
+                    </div>
+                `;
+
+                card.appendChild(topBar);
+
+                if (showArabic && item.arabicText) {
+                    const arDiv = document.createElement('div');
+                    arDiv.className = 'font-arabic-script text-slate-900 text-right bg-slate-50/70 rounded-xl px-3.5 py-3 border border-slate-100 select-text';
+                    arDiv.style.fontSize = `${arabicFontSize}px`;
+                    arDiv.textContent = item.arabicText;
+                    card.appendChild(arDiv);
+                }
+
+                const teDiv = document.createElement('div');
+                teDiv.className = 'font-telugu-script text-slate-800 text-left select-text';
+                teDiv.style.fontSize = `${teluguFontSize}px`;
+                teDiv.textContent = item.teluguText || '';
+                card.appendChild(teDiv);
+
+                // Event listeners for Go to Ruku and Remove
+                topBar.querySelector('[data-goto-bookmark]').addEventListener('click', () => {
+                    jumpToBookmarkedAyah(item);
+                });
+
+                topBar.querySelector('[data-remove-bookmark]').addEventListener('click', () => {
+                    removeBookmarkById(item.id);
+                });
+
+                fragment.appendChild(card);
+            });
+
+            listContainer.innerHTML = '';
+            listContainer.appendChild(fragment);
+        }
+
+        function jumpToBookmarkedAyah(bookmarkItem) {
+            appState.selectedSurah = bookmarkItem.surahNumber;
+            appState.selectedRuku = bookmarkItem.surahRukuNumber;
+            appState.pendingHighlightAyah = bookmarkItem.ayahNumber;
+
+            populateSurahDropdown();
+            populateRukuDropdown();
+            switchBottomTab('ruku');
+            loadCurrentRuku();
+        }
+
+        function removeBookmarkById(id) {
+            const idx = appState.bookmarks.findIndex(b => b.id === id);
+            if (idx !== -1) {
+                const removed = appState.bookmarks[idx];
+                appState.bookmarks.splice(idx, 1);
+                saveBookmarksToStorage();
+                renderBookmarksTab();
+                updateSingleAyahBookmarkButtonDOM(removed.surahNumber, removed.ayahNumber);
+                showToast(`Removed Ayah ${id} from Bookmarks`);
+            }
+        }
+
+        function openClearBookmarksModal() {
+            if (appState.bookmarks.length === 0) return;
+            document.getElementById('clear-bookmarks-modal').classList.remove('hidden');
+        }
+
+        function closeClearBookmarksModal() {
+            document.getElementById('clear-bookmarks-modal').classList.add('hidden');
+        }
+
+        function confirmClearAllBookmarks() {
+            appState.bookmarks = [];
+            saveBookmarksToStorage();
+            closeClearBookmarksModal();
+            renderBookmarksTab();
+            // Refresh bookmark buttons in Ruku View if loaded
+            loadCurrentRuku();
+            showToast('Cleared all saved bookmarks');
+        }
+
+        /**
+         * ====================================================================
+         * 10. SETTINGS MODAL CONTROLS & REAL-TIME TYPOGRAPHY SCALING
+         * ====================================================================
+         */
+        function syncSettingsModalControls() {
+            const { showArabic, teluguFontSize, arabicFontSize } = appState.settings;
+
+            const arabicCheckbox = document.getElementById('toggle-show-arabic');
+            if (arabicCheckbox) arabicCheckbox.checked = showArabic;
+
+            const teBadge = document.getElementById('setting-telugu-size-badge');
+            if (teBadge) teBadge.textContent = `${teluguFontSize}px`;
+
+            const arBadge = document.getElementById('setting-arabic-size-badge');
+            if (arBadge) arBadge.textContent = `${arabicFontSize}px`;
+
+            const tePreview = document.getElementById('preview-telugu-text');
+            if (tePreview) tePreview.style.fontSize = `${teluguFontSize}px`;
+
+            const arPreview = document.getElementById('preview-arabic-text');
+            if (arPreview) arPreview.style.fontSize = `${arabicFontSize}px`;
+        }
+
+        function openSettingsModal() {
+            syncSettingsModalControls();
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function handleToggleArabic(isChecked) {
+            appState.settings.showArabic = Boolean(isChecked);
+            saveSettingsToStorage();
+            syncSettingsModalControls();
+            loadCurrentRuku();
+            if (appState.activeTab === 'bookmarks') {
+                renderBookmarksTab();
+            }
+            showToast(appState.settings.showArabic ? 'Arabic text enabled' : 'Arabic text hidden');
+        }
+
+        function adjustFontSize(scriptType, delta) {
+            if (scriptType === 'telugu') {
+                appState.settings.teluguFontSize = clampNumber(appState.settings.teluguFontSize + delta, 14, 34);
+            } else if (scriptType === 'arabic') {
+                appState.settings.arabicFontSize = clampNumber(appState.settings.arabicFontSize + delta, 18, 44);
+            }
+
+            saveSettingsToStorage();
+            syncSettingsModalControls();
+
+            // Apply updated font sizes immediately to rendered cards
+            document.querySelectorAll('#ruku-ayahs-container .font-telugu-script, #bookmarks-list-container .font-telugu-script').forEach(el => {
+                el.style.fontSize = `${appState.settings.teluguFontSize}px`;
+            });
+            document.querySelectorAll('#ruku-ayahs-container .font-arabic-script, #bookmarks-list-container .font-arabic-script').forEach(el => {
+                el.style.fontSize = `${appState.settings.arabicFontSize}px`;
+            });
+        }
+
+        function resetSettingsToDefault() {
+            appState.settings = { ...DEFAULT_SETTINGS };
+            saveSettingsToStorage();
+            syncSettingsModalControls();
+            loadCurrentRuku();
+            if (appState.activeTab === 'bookmarks') {
+                renderBookmarksTab();
+            }
+            showToast('Settings reset to defaults');
+        }
+
+        /**
+         * ====================================================================
+         * 11. CLIPBOARD COPY & TOAST UTILITIES
+         * ====================================================================
+         */
+        function copyAyahToClipboard(surahMeta, rukuMeta, verse, btnEl) {
+            const lines = [];
+            lines.push(`Surah ${surahMeta.number}: ${surahMeta.englishName} (Ruku ${rukuMeta.surahRukuNumber}, Ayah ${verse.ayahNumber})`);
+            if (appState.settings.showArabic && verse.arabicText) {
+                lines.push(verse.arabicText);
+            }
+            if (verse.teluguText) {
+                lines.push(verse.teluguText);
+            }
+            const textToCopy = lines.join('\n\n');
+
+            // Use document.execCommand('copy') for reliable iframe clipboard support
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Copied Ayah ${surahMeta.number}:${verse.ayahNumber} to clipboard`);
+                if (btnEl) {
+                    const originalHTML = btnEl.innerHTML;
+                    btnEl.innerHTML = `<i class="fa-solid fa-check text-emerald-600 text-xs"></i><span class="text-emerald-700">Copied</span>`;
+                    setTimeout(() => { btnEl.innerHTML = originalHTML; }, 1600);
+                }
+            } catch (err) {
+                showToast('Unable to copy text');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        let toastTimeout = null;
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const msgEl = document.getElementById('toast-message');
+            if (!container || !msgEl) return;
+
+            msgEl.textContent = message;
+            container.classList.remove('opacity-0', 'translate-y-2');
+            container.classList.add('opacity-100', 'translate-y-0');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                container.classList.remove('opacity-100', 'translate-y-0');
+                container.classList.add('opacity-0', 'translate-y-2');
+            }, 2400);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /**
+         * ====================================================================
+         * 12. INITIALIZATION ON WINDOW LOAD
+         * ====================================================================
+         */
+        window.onload = function () {
+            // 1. Build complete 114-Surah / 556-Ruku index immediately
+            buildMasterRukuIndexFromBuiltin();
+
+            // 2. Restore Settings, Last Read Surah/Ruku, and Bookmarks from localStorage
+            loadPersistedState();
+
+            // 3. Populate Header Dropdowns & Badges
+            populateSurahDropdown();
+            populateRukuDropdown();
+            updateBookmarkBadges();
+            syncSettingsModalControls();
+
+            // 4. Load the active Ruku from GitHub JSON
+            loadCurrentRuku();
+
+            // 5. Sync metadata cache in background
+            syncExternalMetaIfNeeded();
+        };
+    </script>
+</body>
+</html>
