@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12302b">
+<title>Namaz Tracker</title>
+<style>
+:root{--bg:#f2f5f4;--surface:#fff;--ink:#12302b;--muted:#5d7570;--done:#1f7a63;--miss:#e3e9e7;--line:#d5dedb;--head:#12302b;--headink:#fff;--danger:#b3372f;--str:#a8322b;--num:#0b6b8a}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1a18;--surface:#15262a;--ink:#e6f0ed;--muted:#8ea8a2;--done:#3fb38f;--miss:#22363a;--line:#2a4045;--head:#0a1413;--danger:#e0675e;--str:#f0968f;--num:#6cc4e0}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI",system-ui,sans-serif}
+#app{max-width:480px;height:100%;margin:0 auto;display:flex;flex-direction:column;background:var(--bg)}
+header{background:var(--head);color:var(--headink);padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#refreshTimes{flex-shrink:0;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
+#refreshTimes svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#refreshTimes.spin{opacity:.7}
+#refreshTimes.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#refreshTimes.spin svg{animation:none}}
+.wait{text-align:center;padding:32px 20px}
+.wait .ico{color:var(--done)}
+.wait .ico svg{width:56px;height:56px}
+.wait h2{font:600 24px Georgia,serif;margin:12px 0 6px}
+header h1{font:600 22px/1.2 Georgia,serif;margin:0}
+header p{margin:2px 0 0;opacity:.8;font-size:14px}
+main{flex:1;overflow-y:auto;padding:16px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{background:none;border:0;color:var(--muted);padding:9px 0 8px;font:inherit;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+nav button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-selected=true]{color:var(--done);font-weight:600}
+button:focus-visible,input:focus-visible{outline:3px solid var(--done);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.progress{height:8px;background:var(--miss);border-radius:4px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:var(--done);transition:width .25s}
+.big{font:600 34px/1 Georgia,serif}
+.muted{color:var(--muted);font-size:14px}
+.prayer{width:100%;display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+.ico{display:grid;place-items:center;color:var(--muted);flex-shrink:0}
+.ico svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.prayer.on .ico{color:var(--done)}
+.pn{flex:1;display:flex;flex-direction:column;min-width:0}
+.pn .nm{font-size:18px;line-height:1.25}
+.pn .tm{color:var(--muted);font-size:14px}
+.chip .ico svg{width:18px;height:18px}
+.prayer.now{border-color:var(--done);box-shadow:0 0 0 1px var(--done)}
+.prayer.soon{opacity:.6;cursor:not-allowed}
+.prayer.missed{border-color:var(--danger)}
+.prayer.missed .nm,.prayer.missed .tm,.prayer.missed .ico{color:var(--danger)}
+.prayer.missed .tick{background:transparent;box-shadow:inset 0 0 0 2px var(--danger)}
+.pill{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:10px;background:var(--done);color:#fff;font-size:12px;vertical-align:middle}
+.badge{color:var(--muted);font-size:13px;flex-shrink:0}
+.prayer .tick{width:32px;height:32px;border-radius:50%;background:var(--miss);display:grid;place-items:center;color:transparent;font-size:18px}
+.prayer.on{border-color:var(--done)}
+.prayer.on .tick{background:var(--done);color:#fff}
+.day .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px}
+.day.locked{opacity:.55}
+.day .del{background:none;border:0;color:var(--danger);font:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:0;flex-shrink:0}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:10px;padding:8px 0;background:var(--miss);color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.chip.on{background:var(--done);color:#fff;font-weight:600}
+.chip.on .ico{color:#fff}
+.chip:disabled{cursor:not-allowed}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.item{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;border-bottom:1px solid var(--line);padding:16px;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+.item:last-child{border-bottom:0}
+.item .val{color:var(--muted);font-size:14px}
+.logrow{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.logrow:last-child{border-bottom:0}
+.logrow .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex-shrink:0;background:var(--muted)}
+.dot.mark{background:var(--done)}.dot.del{background:var(--danger)}.dot.cfg{background:var(--num)}
+label{display:block;font-weight:600;margin-bottom:6px}
+.field{margin-bottom:12px}
+input[type=date],input[type=text],select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.btn{width:100%;margin-top:12px;padding:13px;border:0;border-radius:10px;background:var(--done);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.danger{background:var(--danger)}
+.btn.ghost{background:var(--miss);color:var(--ink)}
+dialog{border:0;border-radius:16px;padding:20px;max-width:340px;width:calc(100% - 40px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h2{margin:0 0 8px;font:600 20px Georgia,serif}
+dialog p{margin:0}
+#sheet{padding:0;max-width:480px;width:100%;margin:auto auto 0;border-radius:20px 20px 0 0;height:90%;max-height:90%;height:90dvh;max-height:90dvh}
+#sheet[open]{display:flex;flex-direction:column;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#sheet[open]{animation:none}}
+.panel{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+.panel>*{flex-shrink:0}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.panel h2{margin:0 0 4px}
+.panel .muted{margin:0 0 14px}
+#json{flex:1 1 auto;min-height:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto}
+#json textarea{width:100%;height:100%;border:0;background:transparent;color:var(--ink);font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:none}
+pre.renderjson{margin:0;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre;color:var(--ink)}
+.renderjson a{text-decoration:none}
+.renderjson .disclosure{color:var(--done);font-size:120%}
+.renderjson .syntax{color:var(--muted)}
+.renderjson .string{color:var(--str)}
+.renderjson .number{color:var(--num)}
+.renderjson .boolean{color:var(--done);font-weight:600}
+.renderjson .key{color:var(--ink);font-weight:600}
+.renderjson .keyword{color:var(--muted)}
+#intro{display:none;flex:1;flex-direction:column;justify-content:space-between;padding:calc(32px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));background:var(--head);color:var(--headink)}
+.onboarding header,.onboarding main,.onboarding nav{display:none}
+.onboarding #intro{display:flex}
+#intro h1{font:600 32px/1.15 Georgia,serif;margin:0 0 12px}
+#intro p{margin:0;font-size:18px;opacity:.88}
+#intro input{margin-top:20px;background:#fff;color:#12302b;border:0}
+#intro input[type=text],#intro select{margin-top:0;background:#fff;color:#12302b;border:0}
+#intro label{font-weight:500;font-size:14px;opacity:.85}
+#intro .fields{margin-top:18px}
+#intro{overflow-y:auto}
+.dots{display:flex;gap:8px;margin-bottom:18px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.3}
+.dots i.on{opacity:1;width:24px;border-radius:4px}
+#intro .btn{background:#fff;color:#12302b}
+#intro .btn.ghost{background:transparent;color:#fff;opacity:.8}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="intro" aria-live="polite"></section>
+  <header>
+    <div><h1 id="title">Today</h1><p id="dateline"></p></div>
+    <button id="refreshTimes" aria-label="Refresh prayer times" title="Refresh prayer times"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg></button>
+  </header>
+  <main id="view"></main>
+  <nav role="tablist">
+    <button role="tab" data-tab="today"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Today</button>
+    <button role="tab" data-tab="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
+    <button role="tab" data-tab="activity"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Activity</button>
+    <button role="tab" data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Settings</button>
+  </nav>
+</div>
+
+<dialog id="sheet"><div class="panel" id="panel"></div></dialog>
+<dialog id="confirm">
+  <h2 id="cTitle"></h2>
+  <p id="cText"></p>
+  <button class="btn danger" id="yes"></button>
+  <button class="btn ghost" id="no"></button>
+</dialog>
+<div id="toast" role="status"></div>
+
+<!-- Third-party JSON viewer (renderjson) used in Settings > Database -->
+<script src="https://cdn.jsdelivr.net/npm/renderjson@1.4.0/renderjson.js"></script>
+<script>
+const PRAYERS = [["fajr","Fajr"],["zohar","Zohar"],["asar","Asar"],["maghrib","Maghrib"],["isha","Isha"]];
+const KEY = "namazData", TKEY = "namazTimes", TD = "namazTestDays", PAGE = 20;
+const DEFAULT_LOC = {city:"Guntur", state:"Andhra Pradesh", country:"India", school:1, lat:16.3067, lng:80.4365, tz:"Asia/Kolkata"};   // school 1 = Hanafi
+const ICONS = {
+  fajr:`<svg viewBox="0 0 24 24"><path d="M3 19h18M7 19a5 5 0 0 1 10 0M12 4v4M10 6l2-2 2 2M4.5 12.5L6 14M19.5 12.5L18 14"/></svg>`,
+  zohar:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
+  asar:`<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M9 2.5v1.2M2.5 9h1.2M4.4 4.4l.9.9M13.6 4.4l-.9.9M7.5 20h10a3.5 3.5 0 0 0 .2-7 4.7 4.7 0 0 0-9 1.2A3 3 0 0 0 7.5 20z"/></svg>`,
+  maghrib:`<svg viewBox="0 0 24 24"><path d="M3 19h18M7 19a5 5 0 0 1 10 0M12 4v4M10 6l2 2 2-2M4.5 12.5L6 14M19.5 12.5L18 14"/></svg>`,
+  isha:`<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5zM17 3v3M15.5 4.5h3"/></svg>`
+};
+const $ = id => document.getElementById(id);
+let data = null, tab = "today", lastToday = "", historyLimit = PAGE, logLimit = PAGE, introStep = 0, introDate = "", dbText = "", times = null, timesState = "idle", timesSource = "api", timesNote = "", introLoc = {...DEFAULT_LOC}, testDays = 0;
+try { testDays = Number(localStorage.getItem(TD)) || 0; } catch(e) {}   // test tools: days the app clock is moved forward
+
+// ---------- Dates (device's local date) ----------
+const pad = n => String(n).padStart(2, "0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const todayISO = () => { const d = new Date(); d.setDate(d.getDate() + testDays); return iso(d); };
+const fmt = s => parse(s).toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"});
+const wd  = s => parse(s).toLocaleDateString("en-GB", {weekday:"long"});
+const esc = x => String(x).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const count = d => PRAYERS.filter(([k]) => d[k]).length;
+const pname = k => (PRAYERS.find(p => p[0] === k) || [k, k])[1];
+// Worked out from today's date every time it is drawn
+function rel(s) {
+  const n = Math.round((parse(todayISO()) - parse(s)) / 864e5);
+  return n <= 0 ? "Today" : n === 1 ? "Yesterday" : n === 2 ? "Day before yesterday" : `${n} days ago`;
+}
+
+// ---------- Console trace: open DevTools > Console to follow every step ----------
+const STY = {a:"color:#0b6b8a;font-weight:700", s:"color:#1f7a63"};
+function flow(name, fn) {                       // groups one action: tap → change → database write → screen
+  console.group("%c▶ " + name, STY.a);
+  try { return fn(); } catch(e) { console.error("✖ failed:", e); throw e; } finally { console.groupEnd(); }
+}
+const step = (msg, obj) => obj === undefined ? console.log("%c" + msg, STY.s) : console.log("%c" + msg, STY.s, obj);
+
+// ---------- Storage: { namazStartDate, namazHistory, activityLog, location, lastAddedDate } ----------
+function load() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY));
+    if (o && typeof o.namazStartDate === "string" && Array.isArray(o.namazHistory)) {
+      if (!Array.isArray(o.activityLog)) o.activityLog = [];
+      if (!o.location || !o.location.city) o.location = {...DEFAULT_LOC};
+      else if (o.location.city === "Guntur" && o.location.lat == null) Object.assign(o.location, {lat:DEFAULT_LOC.lat, lng:DEFAULT_LOC.lng, tz:DEFAULT_LOC.tz});
+      data = o;
+      step(`📂 DATABASE READ ← localStorage["${KEY}"]`, {records: o.namazHistory.length, logEntries: o.activityLog.length, stored: JSON.parse(JSON.stringify(o))});
+      return true;
+    }
+  } catch(e) {}
+  step(`📂 DATABASE READ ← localStorage["${KEY}"]: nothing saved yet (first launch)`);
+  return false;
+}
+function save(why) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+    const raw = localStorage.getItem(KEY);
+    step(`💾 DATABASE WRITE → localStorage["${KEY}"]${why ? " (" + why + ")" : ""}`,
+      {records: data.namazHistory.length, logEntries: data.activityLog.length, bytes: raw.length, stored: JSON.parse(raw)});
+  } catch(e) { console.error("✖ DATABASE WRITE failed", e); }
+}
+
+// ---------- Activity log ----------
+function logAct(action, extra) {
+  const entry = Object.assign({at: new Date().toISOString(), action}, extra);
+  data.activityLog.unshift(entry);
+  step("📝 activity log entry added", entry);
+  save("activity log");
+}
+function logText(l) {
+  switch (l.action) {
+    case "mark":       return `${pname(l.prayer)} marked done for ${fmt(l.date)}`;
+    case "unmark":     return `${pname(l.prayer)} marked not done for ${fmt(l.date)}`;
+    case "delete-day": return `${fmt(l.date)} deleted from the database`;
+    case "start-date": return l.from ? `Start date changed from ${fmt(l.from)} to ${fmt(l.to)}, records reset` : `Started tracking from ${fmt(l.to)}`;
+    case "location":   return `Prayer times set to ${l.to}`;
+    default:           return l.action;
+  }
+}
+const logClass = a => a === "mark" ? "mark" : a === "delete-day" ? "del" : (a === "start-date" || a === "location") ? "cfg" : "";
+const logTime = at => new Date(at).toLocaleString("en-GB", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit", hour12:true});
+
+// ---------- Add missing days (one entry per day, up to today) ----------
+// lastAddedDate remembers how far days were added, so a day you deleted (even today) never comes back.
+function sync() {
+  const t = todayISO(), before = data.namazHistory.length;
+  data.namazHistory = data.namazHistory.filter(d => d.date <= t);
+  const removedFuture = before - data.namazHistory.length;
+  if (data.lastAddedDate && data.lastAddedDate > t) data.lastAddedDate = t;
+  let c;
+  if (data.lastAddedDate) { c = parse(data.lastAddedDate); c.setDate(c.getDate() + 1); }
+  else {
+    const newest = data.namazHistory.reduce((m, d) => d.date > m ? d.date : m, "");
+    c = parse(data.namazStartDate); if (newest) { c = parse(newest); c.setDate(c.getDate() + 1); }
+  }
+  const added = [];
+  for (const end = parse(t); c <= end; c.setDate(c.getDate() + 1)) {
+    data.namazHistory.push({date: iso(c), fajr:false, zohar:false, asar:false, maghrib:false, isha:false});
+    added.push(iso(c));
+  }
+  data.lastAddedDate = t;
+  data.namazHistory.sort((a, b) => b.date.localeCompare(a.date));   // newest first
+  step("📅 days synced up to " + t, {added, removedFutureDays: removedFuture});
+  save("days synced");
+  lastToday = t;
+}
+
+// ---------- Prayer times ----------
+// 1) Aladhan web service (free).  2) If it cannot be reached, the app calculates the times on the device.
+const locSig = () => { const l = data.location; return [l.city, l.state, l.country, l.school].join("|"); };
+const locName = l => [l.city, l.state, l.country].filter(Boolean).join(", ");
+const hm = str => { const m = /(\d{1,2}):(\d{2})/.exec(str || ""); if (!m) throw new Error("unexpected reply from the service"); return pad(+m[1]) + ":" + m[2]; };
+const fmt12 = t => { const [h, m] = t.split(":").map(Number); return `${h % 12 || 12}:${pad(m)} ${h < 12 ? "AM" : "PM"}`; };
+
+/*CALC_START*/
+// On-device calculation: Karachi method (Fajr 18°, Isha 18°), Maghrib at sunset, Asr shadow 2x (Hanafi) or 1x (standard)
+function tzOffset(tz, y, m, d) {
+  if (!tz) return -new Date(y, m - 1, d, 12).getTimezoneOffset() / 60;       // fall back to the device's time zone
+  try {
+    const dt = new Date(Date.UTC(y, m - 1, d, 12));
+    const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", {timeZone: tz, hourCycle: "h23", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"}).formatToParts(dt).map(x => [x.type, x.value]));
+    return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - dt.getTime()) / 36e5;
+  } catch(e) { return -new Date(y, m - 1, d, 12).getTimezoneOffset() / 60; }
+}
+function calcTimes(dateISO, l) {
+  if (!isFinite(l.lat) || !isFinite(l.lng) || l.lat == null || l.lng == null) return null;
+  const R = Math.PI / 180, D = 180 / Math.PI, lat = +l.lat, lng = +l.lng;
+  const sin = x => Math.sin(x * R), cos = x => Math.cos(x * R), tan = x => Math.tan(x * R);
+  const fix = (a, n) => a - n * Math.floor(a / n);
+  let [y, m, d] = dateISO.split("-").map(Number);
+  const tz = tzOffset(l.tz, y, m, d);
+  let yy = y, mm = m; if (mm <= 2) { yy -= 1; mm += 12; }
+  const A = Math.floor(yy / 100), B = 2 - A + Math.floor(A / 4);
+  const jdate = Math.floor(365.25 * (yy + 4716)) + Math.floor(30.6001 * (mm + 1)) + d + B - 1524.5 - lng / 360;
+  const sun = jd => {
+    const dd = jd - 2451545.0, g = fix(357.529 + 0.98560028 * dd, 360), q = fix(280.459 + 0.98564736 * dd, 360);
+    const L = fix(q + 1.915 * sin(g) + 0.020 * sin(2 * g), 360), e = 23.439 - 0.00000036 * dd;
+    const ra = fix(Math.atan2(cos(e) * sin(L), cos(L)) * D / 15, 24);
+    return {decl: Math.asin(sin(e) * sin(L)) * D, eq: q / 15 - ra};
+  };
+  const noon = t => fix(12 - sun(jdate + t).eq, 24);
+  const at = (angle, t, ccw) => {
+    const decl = sun(jdate + t).decl, h = Math.acos((-sin(angle) - sin(decl) * sin(lat)) / (cos(decl) * cos(lat))) * D / 15;
+    return noon(t) + (ccw ? -h : h);
+  };
+  const asr = (f, t) => at(-Math.atan(1 / (f + tan(Math.abs(lat - sun(jdate + t).decl)))) * D, t, false);
+  let t = {fajr:5/24, zohar:12/24, asar:13/24, maghrib:18/24, isha:18/24}, r;
+  for (let i = 0; i < 2; i++) {
+    r = {fajr:at(18, t.fajr, true), zohar:noon(t.zohar), asar:asr(l.school === 1 ? 2 : 1, t.asar), maghrib:at(0.833, t.maghrib, false), isha:at(18, t.isha, false)};
+    t = Object.fromEntries(Object.entries(r).map(([k, v]) => [k, v / 24]));
+  }
+  const out = {};
+  for (const k in r) {
+    const h = r[k] + tz - lng / 15;
+    if (!isFinite(h)) return null;
+    const mins = Math.round(fix(h, 24) * 60) % 1440;
+    out[k] = pad(Math.floor(mins / 60)) + ":" + pad(mins % 60);
+  }
+  return out;
+}
+/*CALC_END*/
+
+function loadCache() {
+  times = null;
+  try {
+    const c = JSON.parse(localStorage.getItem(TKEY));
+    if (c && c.date === todayISO() && c.sig === locSig()) { times = c.timings; timesSource = "api"; timesNote = ""; }
+  } catch(e) {}
+}
+const setSpin = () => $("refreshTimes").classList.toggle("spin", timesState === "loading");
+const paintToday = () => { setSpin(); if (data && tab === "today") rerender(); };
+async function fetchTimes(force) {
+  if (!data) return;
+  if (force) { times = null; try { localStorage.removeItem(TKEY); } catch(e) {} step("🔄 manual refresh: saved times cleared"); }
+  else loadCache();
+  if (times) { timesState = "idle"; step("🗄 prayer times read from saved copy (no request needed)", times); paintToday(); return; }
+  const date = todayISO(), sig = locSig(), l = data.location, [y, m, d] = date.split("-");
+  const same = () => data && date === todayISO() && sig === locSig();    // day or place changed while loading?
+  timesState = "loading"; paintToday();
+  try {
+    const q = new URLSearchParams({city: l.city, country: l.country, method: 1, school: l.school});   // method 1 = Karachi (common in India)
+    if (l.state) q.set("state", l.state);
+    const url = `https://api.aladhan.com/v1/timingsByCity/${d}-${m}-${y}?${q}`;
+    step("🌐 REQUEST → prayer time service", url);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`the service replied HTTP ${r.status}`);
+    const j = await r.json();
+    if (j.code !== 200) throw new Error("the service replied: " + (typeof j.data === "string" ? j.data : j.status));
+    const t = j.data.timings, out = {fajr:hm(t.Fajr), zohar:hm(t.Dhuhr), asar:hm(t.Asr), maghrib:hm(t.Maghrib), isha:hm(t.Isha)};
+    step("🌐 RESPONSE ← prayer time service", {http: r.status, timings: out, meta: j.data.meta});
+    if (!same()) { step("↩ ignored: day or place changed while waiting"); return; }
+    times = out; timesSource = "api"; timesState = "idle"; timesNote = "";
+    const mt = j.data.meta;                                              // remember coordinates for offline calculation
+    if (mt && isFinite(mt.latitude) && isFinite(mt.longitude)) { Object.assign(l, {lat:+mt.latitude, lng:+mt.longitude}); if (mt.timezone) l.tz = mt.timezone; save("coordinates from service"); }
+    try { localStorage.setItem(TKEY, JSON.stringify({date, sig, timings: out})); step(`💾 saved times → localStorage["${TKEY}"]`, out); } catch(e) {}
+  } catch(e) {
+    if (!same()) return;
+    const why = e instanceof TypeError ? "no internet, or this viewer blocks outside web requests" : e instanceof SyntaxError ? "unexpected reply from the service" : e.message;
+    step("⚠ service failed: " + why, e);
+    const local = calcTimes(date, l);
+    if (local) { times = local; timesSource = "device"; timesState = "idle"; timesNote = `Calculated on this device because ${why}.`; step("🧮 times calculated on this device", local); }
+    else { times = null; timesState = "error"; timesNote = why; step("✖ no prayer times available (no coordinates saved)"); }
+  }
+  if (force) toast(times ? (timesSource === "api" ? "Prayer times updated" : "Service not reachable, using device times") : "Prayer times unavailable");
+  paintToday();
+}
+const timeLabel = k => times ? fmt12(times[k]) : timesState === "error" ? "Time unavailable" : "Loading time…";
+
+// ---------- Today: which prayer is upcoming, current, or past (by the clock at the prayer location) ----------
+function nowMin() {
+  const n = new Date(), tz = data && data.location && data.location.tz;
+  if (tz) {
+    try {
+      const p = new Intl.DateTimeFormat("en-GB", {timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23"}).formatToParts(n);
+      return +p.find(x => x.type === "hour").value * 60 + +p.find(x => x.type === "minute").value;
+    } catch(e) {}
+  }
+  return n.getHours() * 60 + n.getMinutes();
+}
+function prayerStates() {                       // null when today's times are not known yet
+  if (!times) return null;
+  const start = PRAYERS.map(([k]) => { const [h, m] = times[k].split(":").map(Number); return h * 60 + m; });
+  const now = nowMin();
+  return PRAYERS.map((_, i) => now < start[i] ? "upcoming" : now < (i < 4 ? start[i + 1] : 1440) ? "current" : "past");
+}
+let lastSig = "";
+const statesSig = () => { const st = prayerStates(); return st ? st.join() : "none"; };
+
+// ---------- History lock: a day opens only after the day before it is complete ----------
+const pastDays = () => data.namazHistory.filter(d => d.date !== todayISO());
+function unlockedCount(past) { const i = past.findIndex(d => count(d) < 5); return i === -1 ? past.length : i + 1; }
+function isUnlocked(date) {
+  const past = pastDays(), i = past.findIndex(d => d.date === date);
+  return i >= 0 && i < unlockedCount(past);
+}
+
+// ---------- Walk-through ----------
+const STEPS = [
+  {h:"Track every prayer", p:"Mark Fajr, Zohar, Asar, Maghrib and Isha as done or not done, one day at a time."},
+  {h:"New days start by themselves", p:"Today shows the current date. After midnight it moves to History and a fresh day begins."},
+  {h:"Where do you pray?", p:"Prayer times are shown for this place. Hanafi Asr is selected by default.", loc:true},
+  {h:"When did you start?", p:"Choose your start date. Every day from then until today will be added."}
+];
+const locOk = () => introLoc.city.trim() && introLoc.country.trim();
+function renderIntro() {
+  const s = STEPS[introStep], last = introStep === STEPS.length - 1;
+  $("intro").innerHTML =
+    `<div><div class="dots">${STEPS.map((_,i) => `<i class="${i===introStep?"on":""}"></i>`).join("")}</div>
+       <h1>${s.h}</h1><p>${s.p}</p>
+       ${s.loc ? `<div class="fields">
+         <div class="field"><label for="iCity">City</label><input type="text" id="iCity" value="${esc(introLoc.city)}"></div>
+         <div class="field"><label for="iState">State (optional)</label><input type="text" id="iState" value="${esc(introLoc.state)}"></div>
+         <div class="field"><label for="iCountry">Country</label><input type="text" id="iCountry" value="${esc(introLoc.country)}"></div>
+         <div class="field"><label for="iSchool">Asr calculation</label><select id="iSchool">
+           <option value="1" ${introLoc.school === 1 ? "selected" : ""}>Hanafi (default)</option>
+           <option value="0" ${introLoc.school === 0 ? "selected" : ""}>Standard (Shafi, Maliki, Hanbali)</option></select></div></div>` : ""}
+       ${last ? `<input type="date" id="introDate" aria-label="Start date" max="${todayISO()}" value="${introDate}">` : ""}</div>
+     <div>
+       <button class="btn" id="introNext" ${(last && !introDate) || (s.loc && !locOk()) ? "disabled" : ""}>${last ? "Start tracking" : "Next"}</button>
+       ${introStep > 0 ? `<button class="btn ghost" id="introBack">Back</button>` : ""}
+     </div>`;
+}
+$("intro").addEventListener("click", e => {
+  if (e.target.id === "introBack") { introStep--; step("🧭 walk-through → step " + (introStep + 1)); renderIntro(); }
+  else if (e.target.id === "introNext") {
+    if (introStep < STEPS.length - 1) { introStep++; step("🧭 walk-through → step " + (introStep + 1)); renderIntro(); return; }
+    flow("WALK-THROUGH finished → start tracking", () => {
+      const loc = {...introLoc, city: introLoc.city.trim(), state: introLoc.state.trim(), country: introLoc.country.trim()};
+      data = {namazStartDate: introDate, namazHistory: [], activityLog: [], location: loc};
+      step("1. database object created in memory", JSON.parse(JSON.stringify(data)));
+      sync(); logAct("start-date", {from: null, to: introDate});
+      $("app").classList.remove("onboarding"); tab = "today"; loadCache(); render(); fetchTimes();
+      step("2. screen shown: Today");
+    });
+  }
+});
+$("intro").addEventListener("input", e => {
+  const id = e.target.id;
+  if (id === "introDate") {
+    const v = e.target.value;
+    introDate = v && v <= todayISO() ? v : "";
+    $("introNext").disabled = !introDate;
+  } else if (["iCity", "iState", "iCountry", "iSchool"].includes(id)) {
+    introLoc.city = $("iCity").value; introLoc.state = $("iState").value; introLoc.country = $("iCountry").value;
+    introLoc.school = Number($("iSchool").value);
+    const g = introLoc.city.trim().toLowerCase() === "guntur";            // built-in coordinates only for Guntur
+    introLoc.lat = g ? DEFAULT_LOC.lat : undefined; introLoc.lng = g ? DEFAULT_LOC.lng : undefined; introLoc.tz = g ? DEFAULT_LOC.tz : undefined;
+    $("introNext").disabled = !locOk();
+  }
+});
+
+// ---------- Views ----------
+function viewToday() {
+  const d = data.namazHistory.find(x => x.date === todayISO());
+  const states = prayerStates();
+  lastSig = states ? states.join() : "none";
+  if (!d) {                                                   // today's record was deleted after all five prayers
+    const nx = parse(todayISO()); nx.setDate(nx.getDate() + 1); const tm = iso(nx);
+    return `<div class="card wait"><span class="ico">${ICONS.isha}</span><h2>Wait for tomorrow</h2>
+      <p class="muted">All five prayers are done and today's record has been deleted from the database. A new day starts at midnight: ${wd(tm)}, ${fmt(tm)}.</p>
+      <button class="btn ghost" id="skipDay">Skip to tomorrow (test)</button></div>`;
+  }
+  const n = count(d), l = data.location;
+  return `<div class="card"><div class="big">${n}<span class="muted"> of 5 prayers</span></div>
+      <div class="progress"><i style="width:${n*20}%"></i></div>
+      <div class="muted" style="margin-top:10px">${locName(l)} · ${l.school === 1 ? "Hanafi" : "Standard Asr"}</div>
+      ${times && timesSource === "device" ? `<div class="muted" style="margin-top:4px">${esc(timesNote)} Tap the refresh button (top right) to try the service again.</div>` : ""}
+      ${timesState === "error" ? `<div class="muted" style="color:var(--danger);margin-top:4px">Prayer times could not load: ${esc(timesNote)}. Tap the refresh button (top right) to try again, or add latitude and longitude in Settings › Prayer times to calculate without internet.</div>` : ""}
+      ${n === 5 ? `<button class="btn ghost" id="delToday">Delete today's record</button>` : ""}</div>` +
+    PRAYERS.map(([k,name], i) => {
+      const st = states ? states[i] : "free";
+      const soon = st === "upcoming" && !d[k], missed = st === "past" && !d[k];
+      const cls = [d[k] ? "on" : "", st === "current" ? "now" : "", soon ? "soon" : "", missed ? "missed" : ""].join(" ");
+      return `<button class="prayer ${cls}" data-date="${d.date}" data-k="${k}" aria-pressed="${d[k]}" ${soon ? "disabled" : ""}><span class="ico">${ICONS[k]}</span><span class="pn"><span class="nm">${name}${st === "current" ? `<span class="pill">Now</span>` : ""}</span><span class="tm">${timeLabel(k)}${missed ? " · Not offered" : ""}</span></span>${soon ? `<span class="badge">Upcoming</span>` : `<span class="tick">✓</span>`}</button>`;
+    }).join("");
+}
+
+function viewHistory() {
+  const past = pastDays();
+  if (!past.length) return `<div class="card"><b>No earlier days yet</b><p class="muted">Today moves here after midnight.</p></div>`;
+  const open = unlockedCount(past), shown = past.slice(0, historyLimit), rest = past.length - shown.length;
+  return `<div class="card"><div class="big">${past.length}</div>
+      <div class="muted">${past.length === 1 ? "day" : "days"} in your record. Finish the first day to unlock the next. A fully done day can be deleted.</div></div>` +
+    shown.map((d, i) => {
+      const on = i < open;
+      return `<div class="card day ${on?"":"locked"}"><div class="top"><span><b>${fmt(d.date)}</b> <span class="muted">(${wd(d.date)}, ${rel(d.date)})</span></span>
+        ${on && count(d) === 5 ? `<button class="del" data-del="${d.date}">Delete</button>` : ""}${on ? "" : `<span class="muted">Locked</span>`}</div>
+      <div class="chips">${PRAYERS.map(([k,name]) =>
+        `<button class="chip ${d[k]?"on":""}" data-date="${d.date}" data-k="${k}" aria-pressed="${d[k]}" ${on?"":"disabled"}><span class="ico">${ICONS[k]}</span>${name}</button>`).join("")}</div></div>`;
+    }).join("") +
+    `<p class="muted" style="text-align:center">Showing ${shown.length} of ${past.length} days</p>` +
+    (rest > 0 ? `<button class="btn ghost" id="more" style="margin-bottom:8px">Load next ${Math.min(PAGE, rest)}</button>` : "");
+}
+
+function viewActivity() {
+  const log = data.activityLog;
+  if (!log.length) return `<div class="card"><b>No activity yet</b><p class="muted">Every tap on a prayer, delete or start date change is recorded here.</p></div>`;
+  const shown = log.slice(0, logLimit), rest = log.length - shown.length;
+  return `<div class="card"><div class="big">${log.length}</div>
+      <div class="muted">${log.length === 1 ? "entry" : "entries"} saved in the database. Use this to spot a tap you made by mistake.</div>
+      <button class="btn danger" id="clearLog">Delete all logs</button></div>
+    <div class="list">${shown.map(l => `<div class="logrow"><i class="dot ${logClass(l.action)}"></i>
+      <div><div>${logText(l)}</div><div class="muted">${logTime(l.at)}</div></div></div>`).join("")}</div>
+    <p class="muted" style="text-align:center">Showing ${shown.length} of ${log.length}</p>` +
+    (rest > 0 ? `<button class="btn ghost" id="moreLog" style="margin-bottom:8px">Load next ${Math.min(PAGE, rest)}</button>` : "");
+}
+
+function viewSettings() {
+  return `<div class="list">
+      <button class="item" data-open="start"><span>Start date</span><span class="val">${fmt(data.namazStartDate)} ›</span></button>
+      <button class="item" data-open="loc"><span>Prayer times</span><span class="val">${data.location.city} ›</span></button>
+      <button class="item" data-open="db"><span>Database</span><span class="val">${data.namazHistory.length} records ›</span></button>
+      <button class="item" data-open="test"><span>Test tools</span><span class="val">${testDays ? "+" + testDays + " day" + (testDays > 1 ? "s" : "") : "Off"} ›</span></button>
+    </div>
+    <p class="muted">A new day is added automatically at midnight.</p>`;
+}
+
+function render() {
+  if (!data) return;
+  $("title").textContent = {today:"Today", history:"History", activity:"Activity log", settings:"Settings"}[tab];
+  $("dateline").textContent = wd(todayISO()) + ", " + fmt(todayISO()) + (testDays ? " · test date" : "");
+  setSpin();
+  $("view").innerHTML = {today:viewToday, history:viewHistory, activity:viewActivity, settings:viewSettings}[tab]();
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+}
+function rerender() { const y = $("view").scrollTop; render(); $("view").scrollTop = y; }
+
+// ---------- Helpers: toast, confirmation, bottom sheet ----------
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+
+let onYes = null;
+function askConfirm(title, text, yes, no, cb) {
+  $("cTitle").textContent = title; $("cText").textContent = text;
+  $("yes").textContent = yes; $("no").textContent = no;
+  onYes = cb; $("confirm").showModal();
+  step("❓ confirmation asked: " + title);
+}
+$("yes").onclick = () => { step("👍 confirmed"); $("confirm").close(); const f = onYes; onYes = null; if (f) f(); };
+$("no").onclick = () => { step("↩ confirmation dismissed, nothing changed"); $("confirm").close(); };
+
+function openSheet(html) { $("panel").innerHTML = html; if (!$("sheet").open) $("sheet").showModal(); }
+$("sheet").addEventListener("click", e => {
+  if (e.target.id === "sheet" || e.target.closest("[data-close]")) $("sheet").close();
+});
+
+function openStartSheet() {
+  openSheet(`<div class="grab"></div><h2>Start date</h2>
+    <p class="muted">Tracking begins on this day. Every day up to today is added.</p>
+    <input type="date" id="start" aria-label="Start date" value="${data.namazStartDate}" max="${todayISO()}">
+    <button class="btn" id="saveStart" disabled>Save start date</button>
+    <button class="btn ghost" data-close>Close</button>`);
+}
+
+function openLocSheet() {
+  const l = data.location, v = x => String(x || "").replace(/"/g, "&quot;");
+  openSheet(`<div class="grab"></div><h2>Prayer times</h2>
+    <p class="muted">Times come from the free Aladhan service for today's date. Latitude and longitude let the app calculate them on your device when the service can't be reached.</p>
+    <div class="field"><label for="lcity">City</label><input type="text" id="lcity" value="${v(l.city)}"></div>
+    <div class="field"><label for="lstate">State (optional)</label><input type="text" id="lstate" value="${v(l.state)}"></div>
+    <div class="field"><label for="lcountry">Country</label><input type="text" id="lcountry" value="${v(l.country)}"></div>
+    <div class="field"><label for="llat">Latitude (optional)</label><input type="text" inputmode="decimal" id="llat" value="${l.lat ?? ""}"></div>
+    <div class="field"><label for="llng">Longitude (optional)</label><input type="text" inputmode="decimal" id="llng" value="${l.lng ?? ""}"></div>
+    <div class="field"><label for="lschool">Asr calculation</label><select id="lschool">
+      <option value="1" ${l.school === 1 ? "selected" : ""}>Hanafi (default)</option>
+      <option value="0" ${l.school === 0 ? "selected" : ""}>Standard (Shafi, Maliki, Hanbali)</option></select></div>
+    <p class="muted" id="locErr" style="color:var(--danger);margin:0"></p>
+    <button class="btn" id="saveLoc">Save and update times</button>
+    <button class="btn ghost" data-close>Close</button>`);
+}
+
+function openTestSheet() {
+  const real = new Date(); const realISO = iso(real);
+  openSheet(`<div class="grab"></div><h2>Test tools</h2>
+    <p class="muted">Move the app's date forward to test a new day without waiting for midnight. Real date: ${fmt(realISO)}. App date: <b>${wd(todayISO())}, ${fmt(todayISO())}</b>${testDays ? ` (+${testDays})` : ""}.</p>
+    <button class="btn" id="nextDay">Go to next day</button>
+    <button class="btn ghost" id="realDay" ${testDays ? "" : "disabled"}>Return to real date</button>
+    <p class="muted" style="margin-top:12px">Returning to the real date removes the days created while testing. Open the browser console (DevTools) to follow each step.</p>
+    <button class="btn ghost" data-close>Close</button>`);
+}
+
+function openDbSheet() {
+  let raw = "", obj = null;
+  try { raw = localStorage.getItem(KEY) || ""; obj = JSON.parse(raw); } catch(e) {}
+  const kb = (new Blob([raw]).size / 1024).toFixed(1);
+  const logs = obj && obj.activityLog ? obj.activityLog.length : 0;
+  openSheet(`<div class="grab"></div><h2>Database</h2>
+    <p class="muted">localStorage · ${KEY} · ${obj ? obj.namazHistory.length : 0} records · ${logs} log entries · ${kb} KB</p>
+    <div id="json"></div>
+    <button class="btn" id="copyJson">Copy JSON</button>
+    <button class="btn danger" id="resetApp">Reset application</button>
+    <button class="btn ghost" data-close>Close</button>`);
+  dbText = JSON.stringify(obj, null, 2);
+  step("📂 Database sheet opened, stored JSON:", obj);
+  const box = $("json");
+  if (typeof renderjson !== "undefined") {
+    renderjson.set_show_to_level(1);   // namazHistory and activityLog start collapsed; tap ⊕ to expand
+    box.appendChild(renderjson(obj));
+  } else {                                  // viewer script didn't load (offline)
+    box.innerHTML = `<p class="muted">JSON viewer could not load. Showing plain text.</p>`;
+    const pre = document.createElement("pre"); pre.className = "renderjson";
+    pre.textContent = dbText; box.appendChild(pre);
+  }
+}
+
+// ---------- Copy to clipboard ----------
+// 1) modern Clipboard API  2) older execCommand  3) show selectable text to copy by hand
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch(e) {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.readOnly = true; ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    $("panel").appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy"); ta.remove();
+    return ok;
+  } catch(e) { return false; }
+}
+
+// ---------- Reset ----------
+function resetApp() {
+  flow("RESET application", () => {
+    try { localStorage.removeItem(KEY); localStorage.removeItem(TKEY); localStorage.removeItem(TD); } catch(e) {}
+    step(`1. removed localStorage keys "${KEY}", "${TKEY}", "${TD}"`);
+    data = null; times = null; timesState = "idle"; timesSource = "api"; timesNote = ""; introLoc = {...DEFAULT_LOC}; testDays = 0;
+    tab = "today"; historyLimit = PAGE; logLimit = PAGE; introStep = 0; introDate = "";
+    $("sheet").close(); $("app").classList.add("onboarding"); renderIntro();
+    step("2. walk-through shown from step 1");
+  });
+}
+
+// ---------- Actions ----------
+function toggle(date, k) {
+  const isToday = date === todayISO(), d = data.namazHistory.find(x => x.date === date);
+  if (!d) return;
+  if (!isToday && !isUnlocked(date)) { step("⛔ blocked: this history day is still locked", {date}); return; }
+  if (isToday) {                                             // a prayer whose time has not come yet cannot be marked
+    const st = prayerStates(), i = PRAYERS.findIndex(p => p[0] === k);
+    if (st && st[i] === "upcoming" && !d[k]) { step("⛔ blocked: prayer time has not started yet", {prayer: k, starts: times[k]}); return; }
+  }
+  flow(`TAP ${pname(k)} · ${isToday ? "Today" : "History"} · ${date}`, () => {
+    step(`1. before: ${k} = ${d[k]}`, {...d});
+    d[k] = !d[k];
+    step(`2. in-memory record changed: ${k} = ${d[k]}`, {...d});
+    logAct(d[k] ? "mark" : "unmark", {date, prayer: k});
+    rerender();
+    step("3. screen refreshed");
+    if (d[k] && count(d) === 5) { step("4. all five prayers done → asking to delete this record"); askDelete(date); }
+  });
+}
+
+function askDelete(date) {
+  const isToday = date === todayISO();
+  askConfirm(isToday ? "All five prayers done" : "Delete this day?",
+    isToday ? "Today's record will be deleted from the database completely and the app will wait for tomorrow. It cannot be restored."
+            : `All five prayers are done on ${fmt(date)}. This card will be deleted from the database completely and cannot be restored.`,
+    isToday ? "Delete and wait for tomorrow" : "Delete", "Keep", () => flow(`DELETE record ${date}${isToday ? " (today)" : ""}`, () => {
+      const n = data.namazHistory.length;
+      data.namazHistory = data.namazHistory.filter(x => x.date !== date);
+      step(`1. record removed in memory (${n} → ${data.namazHistory.length} records)`);
+      logAct("delete-day", {date});
+      rerender(); step(isToday ? "2. screen refreshed: Wait for tomorrow" : "2. screen refreshed");
+      toast("Record deleted");
+    }));
+}
+
+function advanceDay() {
+  flow("TEST: go to next day", () => {
+    testDays++; try { localStorage.setItem(TD, testDays); } catch(e) {}
+    step(`1. app date moved forward by ${testDays} day(s) → ${todayISO()}`);
+    sync(); loadCache(); render(); fetchTimes();
+    step("2. new day added and screen refreshed");
+    if ($("sheet").open) openTestSheet();
+  });
+}
+function returnToRealDate() {
+  askConfirm("Return to real date?", "Days created while testing will be removed from the database.", "Return to real date", "Cancel", () => flow("TEST: return to real date", () => {
+    testDays = 0; try { localStorage.removeItem(TD); } catch(e) {}
+    step("1. app date set back to " + todayISO());
+    sync(); loadCache(); render(); fetchTimes();
+    step("2. test days removed and screen refreshed");
+    if ($("sheet").open) openTestSheet();
+  }));
+}
+
+// ---------- Events ----------
+$("refreshTimes").addEventListener("click", () => { step("🔄 refresh button tapped"); fetchTimes(true); });
+
+document.querySelector("nav").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  tab = b.dataset.tab; historyLimit = PAGE; logLimit = PAGE;
+  step("🗂 tab → " + tab);
+  render(); $("view").scrollTop = 0;
+});
+
+$("view").addEventListener("click", e => {
+  const t = e.target.closest("[data-k]");
+  if (t) { toggle(t.dataset.date, t.dataset.k); return; }
+  const id = e.target.id;
+  if (id === "skipDay") { advanceDay(); return; }
+  if (id === "delToday") { askDelete(todayISO()); return; }
+  if (id === "more") { historyLimit += PAGE; step("⬇ history: showing up to " + historyLimit); rerender(); return; }
+  if (id === "moreLog") { logLimit += PAGE; step("⬇ activity: showing up to " + logLimit); rerender(); return; }
+  if (id === "clearLog") {
+    askConfirm("Delete all activity logs?",
+      `${data.activityLog.length} entries will be deleted from the database completely and cannot be restored.`,
+      "Delete all", "Keep", () => flow("DELETE all activity logs", () => {
+        const n = data.activityLog.length; data.activityLog = [];
+        step(`1. ${n} log entries removed in memory`); save("activity log cleared"); rerender(); step("2. screen refreshed"); toast("Activity log deleted");
+      }));
+    return;
+  }
+  const del = e.target.closest("[data-del]"); if (del) { askDelete(del.dataset.del); return; }
+  const open = e.target.closest("[data-open]");
+  if (open) { const w = open.dataset.open; w === "start" ? openStartSheet() : w === "loc" ? openLocSheet() : w === "test" ? openTestSheet() : openDbSheet(); }
+});
+
+$("panel").addEventListener("input", e => {
+  if (e.target.id !== "start") return;
+  const v = e.target.value;
+  $("saveStart").disabled = !v || v === data.namazStartDate || v > todayISO();
+});
+$("panel").addEventListener("click", async e => {
+  const id = e.target.id;
+  if (id === "copyJson") {
+    const b = e.target;
+    if (await copyText(dbText)) { b.textContent = "Copied ✓"; step("📋 database JSON copied to clipboard"); }
+    else {                                                    // last resort: selected text to copy by hand
+      const ta = document.createElement("textarea"); ta.readOnly = true; ta.value = dbText;
+      $("json").textContent = ""; $("json").appendChild(ta); ta.focus(); ta.select();
+      b.textContent = "Select all, then copy"; step("⚠ clipboard blocked, text selected for manual copy");
+    }
+    setTimeout(() => { b.textContent = "Copy JSON"; }, 2500);
+  } else if (id === "resetApp") {
+    askConfirm("Reset application?",
+      "The start date, all records and the activity log will be erased from the database, and the app will restart from the walk-through. This cannot be undone.",
+      "Reset application", "Cancel", resetApp);
+  } else if (id === "nextDay") { advanceDay();
+  } else if (id === "realDay") { returnToRealDate();
+  } else if (id === "saveLoc") {
+    const old = data.location, err = t => { $("locErr").textContent = t; };
+    const city = $("lcity").value.trim(), state = $("lstate").value.trim(), country = $("lcountry").value.trim();
+    if (!city || !country) { err("Enter a city and a country."); return; }
+    const changed = city !== old.city || state !== (old.state || "") || country !== old.country;
+    let lat = parseFloat($("llat").value), lng = parseFloat($("llng").value);
+    if (changed && lat === old.lat && lng === old.lng) lat = lng = NaN;      // old coordinates belong to the old place
+    if (isNaN(lat) !== isNaN(lng)) { err("Enter both latitude and longitude, or leave both empty."); return; }
+    if (!isNaN(lat) && (Math.abs(lat) > 90 || Math.abs(lng) > 180)) { err("Latitude must be within ±90 and longitude within ±180."); return; }
+    const nl = {city, state, country, school: Number($("lschool").value)};
+    if (!isNaN(lat)) { nl.lat = lat; nl.lng = lng; if (!changed && old.tz) nl.tz = old.tz; }
+    flow("CHANGE prayer location", () => {
+      step("1. before", {...old}); data.location = nl; step("2. after (in memory)", {...nl});
+      logAct("location", {to: `${locName(nl)} (${nl.school === 1 ? "Hanafi" : "Standard Asr"})`});
+      $("sheet").close(); toast("Prayer location updated"); fetchTimes();
+      step("3. fetching prayer times for the new location");
+    });
+  } else if (id === "saveStart") {
+    const v = $("start").value, from = data.namazStartDate;
+    askConfirm("Change start date?",
+      `All records will be cleared and tracking will restart from ${fmt(v)} up to today. This cannot be undone.`,
+      "Reset and save", "Cancel", () => flow(`CHANGE start date ${from} → ${v}`, () => {
+        data = {namazStartDate: v, namazHistory: [], activityLog: data.activityLog, location: data.location};
+        step("1. records cleared in memory, activity log and location kept");
+        sync(); logAct("start-date", {from, to: v});
+        historyLimit = PAGE; $("sheet").close(); render(); step("2. screen refreshed"); toast("Start date updated");
+      }));
+  }
+});
+
+// ---------- Start, and roll over to a new day automatically ----------
+if (load()) { sync(); loadCache(); render(); fetchTimes(); } else { $("app").classList.add("onboarding"); renderIntro(); }
+const checkNewDay = () => {
+  if (!data) return;
+  if (todayISO() !== lastToday) {
+    flow("NEW DAY detected → " + todayISO(), () => { sync(); loadCache(); render(); fetchTimes(); step("screen refreshed"); });
+    return;
+  }
+  if (statesSig() !== lastSig) { step("⏰ prayer window changed", prayerStates()); paintToday(); }
+};
+setInterval(checkNewDay, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkNewDay(); });
+</script>
+</body>
+</html>
