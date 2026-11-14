@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasbeeh Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Amiri:wght@700&display=swap"
+        rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e2e8f0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-press {
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-press:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUpSheet {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.22s ease-out forwards;
+        }
+
+        .animate-sheet-up {
+            animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .strike-transition {
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .entry-struck {
+            opacity: 0.45;
+            transform: scale(0.98);
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased selection:bg-emerald-100 selection:text-emerald-900">
+
+    <!-- ===================================================================== -->
+    <!-- MANDATORY INITIAL SETUP WALK-THROUGH OVERLAY (START DATE ONLY)        -->
+    <!-- ===================================================================== -->
+    <div id="onboarding-overlay"
+        class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+        <div
+            class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden animate-fade-in my-auto">
+
+            <!-- Walk-Through Top Banner -->
+            <div
+                class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 pointer-events-none"></div>
+                <div class="absolute -left-6 -bottom-10 w-24 h-24 rounded-full bg-black/10 pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <div
+                            class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white shadow-inner">
+                            <i class="ph-fill ph-hands-praying text-2xl"></i>
+                        </div>
+                        <span id="setup-step-pill"
+                            class="text-[11px] font-mono font-bold uppercase tracking-wider bg-black/25 px-3 py-1 rounded-full border border-white/15">
+                            Step 1 of 2
+                        </span>
+                    </div>
+                    <h2 class="text-xl font-extrabold tracking-tight">Welcome to Tasbeeh Tracker</h2>
+                    <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
+                        Select your Start Date and first Tajbeename to generate daily entries up to today.
+                    </p>
+
+                    <!-- Step Progress Bar -->
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <div id="setup-bar-step1" class="h-1.5 rounded-full bg-white transition-all"></div>
+                        <div id="setup-bar-step2" class="h-1.5 rounded-full bg-white/30 transition-all"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 1: SELECT & SAVE START DATE ONLY -->
+            <div id="setup-step-1" class="p-6 space-y-5">
+                <div>
+                    <span
+                        class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/70">
+                        <i class="ph-bold ph-calendar-star"></i>
+                        Step 1: Start Date Configuration
+                    </span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-2">Select Your Start Date</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Choose your <strong>Start Date</strong>. Entries will be automatically generated from this Start
+                        Date up to Today (<span id="setup-current-date-label"
+                            class="font-mono font-bold text-emerald-700">—</span>), and future days will be
+                        auto-pushed one by one.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="setup-start-date-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Start Date <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="date" id="setup-start-date-input" oninput="updateSetupStep1Preview()"
+                        class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-4 py-3 text-sm font-mono font-bold text-slate-900 focus:outline-none transition-colors" />
+                </div>
+                <p id="setup-step1-error" class="text-xs font-semibold text-rose-600 hidden"></p>
+
+                <!-- Quick Start Date Helpers -->
+                <div class="space-y-1.5">
+                    <span class="text-[11px] font-semibold text-slate-400 block">Quick Start Date Presets:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="setSetupQuickDate(0)"
+                            class="btn-press text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">
+                            Start Today (1d)
+                        </button>
+                        <button type="button" onclick="setSetupQuickDate(6)"
+                            class="btn-press text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">
+                            7 Days Ago
+                        </button>
+                        <button type="button" onclick="setSetupQuickDate(14)"
+                            class="btn-press text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">
+                            15 Days Ago
+                        </button>
+                        <button type="button" onclick="setSetupQuickDate(29)"
+                            class="btn-press text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">
+                            30 Days Ago
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Span Calculation Card -->
+                <div id="setup-step1-preview-box"
+                    class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <i class="ph-fill ph-calendar-check text-emerald-600 text-lg"></i>
+                        <div>
+                            <p id="setup-step1-days-text" class="text-xs font-extrabold text-emerald-950">1 inclusive
+                                day selected</p>
+                            <p id="setup-step1-range-subtext" class="text-[11px] text-emerald-700 font-mono"></p>
+                        </div>
+                    </div>
+                    <span
+                        class="text-[10px] font-mono font-bold uppercase bg-white text-emerald-800 px-2 py-1 rounded-lg border border-emerald-200">Step
+                        1</span>
+                </div>
+
+                <button type="button" onclick="saveSetupStep1()"
+                    class="btn-press w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                    <span>Save Start Date & Continue</span>
+                    <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- STEP 2: ENTER FIRST TAJBEENAME & COUNT NUMBER -->
+            <div id="setup-step-2" class="p-6 space-y-5 hidden">
+                <div class="flex items-center justify-between">
+                    <span
+                        class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/70">
+                        <i class="ph-bold ph-list-plus"></i>
+                        Step 2: First Tajbeename & Count
+                    </span>
+                    <button type="button" onclick="backToSetupStep1()"
+                        class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                        <i class="ph-bold ph-arrow-left"></i>
+                        <span>Change Start Date</span>
+                    </button>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-900">Create Your First Tajbeename</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Enter a <strong>Tajbeename</strong> and daily <strong>Count Number</strong>. Entries will be
+                        generated from <span id="setup-step2-start-badge"
+                            class="font-mono font-bold text-emerald-700"></span> up to Today (<span
+                            id="setup-step2-today-badge" class="font-mono font-bold text-emerald-700"></span>).
+                    </p>
+                </div>
+
+                <div class="space-y-3.5">
+                    <div>
+                        <label for="setup-tajbeename-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Tajbeename (Tab / Item Name) <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="setup-tajbeename-input"
+                            placeholder="e.g., SubhanAllah, Alhamdulillah, Istighfar"
+                            oninput="updateSetupStep2Preview()"
+                            class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900 focus:outline-none transition-colors" />
+                    </div>
+
+                    <div>
+                        <label for="setup-count-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Count Number (Daily Target) <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="number" id="setup-count-input" min="1" max="100000" placeholder="e.g., 100"
+                            value="100" oninput="updateSetupStep2Preview()"
+                            class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-4 py-3 text-sm font-mono font-bold text-slate-900 focus:outline-none transition-colors" />
+                        <div class="flex items-center gap-1.5 mt-2">
+                            <span class="text-[11px] text-slate-400 font-medium mr-1">Presets:</span>
+                            <button type="button" onclick="setSetupQuickCount(33)"
+                                class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">33</button>
+                            <button type="button" onclick="setSetupQuickCount(100)"
+                                class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">100</button>
+                            <button type="button" onclick="setSetupQuickCount(300)"
+                                class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">300</button>
+                            <button type="button" onclick="setSetupQuickCount(1000)"
+                                class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">1000</button>
+                        </div>
+                    </div>
+
+                    <p id="setup-step2-error" class="text-xs font-semibold text-rose-600 hidden"></p>
+                </div>
+
+                <!-- Step 3 Generation Preview Box -->
+                <div class="bg-slate-900 text-white rounded-2xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">Entry
+                            Generation Preview</span>
+                        <span class="text-[11px] font-mono text-slate-300" id="setup-preview-entries-badge">0 daily
+                            entries</span>
+                    </div>
+                    <p id="setup-preview-description" class="text-xs text-slate-200 leading-relaxed">
+                        Configure a Tajbeename and count above to preview the generated entries.
+                    </p>
+                </div>
+
+                <button type="button" onclick="completeInitialSetup()"
+                    class="btn-press w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-rocket-launch text-base"></i>
+                    <span>Generate Entries & Launch App</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN MOBILE APPLICATION SHELL                                         -->
+    <!-- ===================================================================== -->
+    <div
+        class="max-w-md mx-auto bg-slate-50 min-h-screen flex flex-col shadow-2xl relative border-x border-slate-200/80">
+
+        <!-- Clean Sticky Top Header -->
+        <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3.5">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div
+                        class="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-sm shadow-emerald-200 shrink-0">
+                        <i class="ph-fill ph-hands-praying text-xl"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-base font-extrabold text-slate-900 tracking-tight truncate">Tasbeeh Tracker
+                        </h1>
+                        <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                            Start: <span id="header-start-date" class="font-mono font-semibold text-slate-700">—</span>
+                            • Today: <span id="header-current-date"
+                                class="font-mono font-bold text-emerald-700">—</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Clean Remaining Badge -->
+                <div class="shrink-0 text-right">
+                    <span id="header-remaining-pill"
+                        class="inline-flex items-center gap-1 text-[11px] font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl border border-slate-200/80">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span id="header-remaining-text">0 Pending</span>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area (4 Tabs: Today, History, Activity, Settings) -->
+        <main class="flex-1 px-4 pt-4 pb-32">
+
+            <!-- ========================================================== -->
+            <!-- TAB 1: TODAY VIEW (Active Entries for Current Date)        -->
+            <!-- ========================================================== -->
+            <section id="view-today" class="space-y-3.5 animate-fade-in">
+                <div class="flex items-center justify-between px-1">
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900">Today's Tasbeeh</h2>
+                        <p id="today-readable-date" class="text-xs text-slate-500 font-medium">Tap an entry to strike
+                            out & remove from database</p>
+                    </div>
+                    <span id="today-remaining-badge"
+                        class="text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-2.5 py-1 rounded-xl">
+                        0 left
+                    </span>
+                </div>
+
+                <div id="today-entries-container" class="space-y-2.5">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- TAB 2: HISTORY VIEW (Active Entries Before Current Date)   -->
+            <!-- ========================================================== -->
+            <section id="view-history" class="space-y-3.5 hidden animate-fade-in">
+                <div class="flex items-center justify-between px-1">
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900">Pending History</h2>
+                        <p class="text-xs text-slate-500 font-medium">Newest missed day first • completing it unlocks
+                            the previous day below</p>
+                    </div>
+                    <span id="history-remaining-badge"
+                        class="text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/70 px-2.5 py-1 rounded-xl">
+                        0 pending
+                    </span>
+                </div>
+
+                <div id="history-entries-container" class="space-y-3">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- TAB 3: ACTIVITY VIEW (Stored in DB + Daily/Item Delete)    -->
+            <!-- ========================================================== -->
+            <section id="view-activity" class="space-y-4 hidden animate-fade-in">
+
+                <!-- Future Day Auto-Push Simulator Card -->
+                <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/90 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-amber-100/80 text-amber-700 flex items-center justify-center shrink-0">
+                                <i class="ph-bold ph-calendar-plus text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-extrabold text-slate-900">Daily Auto-Push Engine</h2>
+                                <p class="text-xs text-slate-500">Current Date: <span id="activity-current-date"
+                                        class="font-mono font-bold text-emerald-700"></span></p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="simulateNextDay()"
+                            class="btn-press py-2.5 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm">
+                            <i class="ph-bold ph-fast-forward text-amber-400"></i>
+                            <span>+1 Day (Tomorrow)</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        When a new real day starts (at midnight), 1 new daily entry per configured Tajbeename is
+                        automatically pushed into the database and any uncompleted entries from today move into
+                        <strong>History</strong>.
+                    </p>
+                </div>
+
+                <!-- Database Activity List Header & Daily Delete Controls -->
+                <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/90 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-extrabold text-slate-900">Recorded Activities List</h3>
+                            <p class="text-xs text-slate-500">Saved inside your database • Remove single items or by day
+                            </p>
+                        </div>
+                        <span id="activity-count-badge"
+                            class="text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-2.5 py-1 rounded-xl">
+                            0 items
+                        </span>
+                    </div>
+
+                    <!-- Daily Filter & Delete Bar -->
+                    <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
+                        <select id="activity-daily-select" onchange="renderActivityView()"
+                            class="flex-1 min-w-[140px] bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600">
+                            <option value="ALL">All Dates</option>
+                        </select>
+                        <button type="button" onclick="deleteActivitiesBySelectedDay()"
+                            class="btn-press py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl flex items-center gap-1">
+                            <i class="ph-bold ph-calendar-x"></i>
+                            <span id="activity-delete-day-btn-text">Delete All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activity List Items Container -->
+                <div id="activity-list-container" class="space-y-2.5">
+                    <!-- Populated from appData.activities -->
+                </div>
+
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- TAB 4: SETTINGS VIEW (Structured List -> Bottom Sheets)    -->
+            <!-- ========================================================== -->
+            <section id="view-settings" class="space-y-4 hidden animate-fade-in">
+
+                <!-- Settings Header Card -->
+                <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/90">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                            <i class="ph-fill ph-sliders-horizontal text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-extrabold text-slate-900">Application Settings</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Select any item below to open its configuration
+                                view.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structured Settings Menu List -->
+                <div
+                    class="bg-white rounded-3xl shadow-sm border border-slate-200/90 divide-y divide-slate-100 overflow-hidden">
+
+                    <!-- 1. Tasbeeh Names List Item -->
+                    <button type="button" onclick="openSettingsSheet('tasbeeh-list')"
+                        class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <i class="ph-bold ph-list-bullets text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-extrabold text-slate-900">Tasbeeh Names List</h3>
+                                <p class="text-xs text-slate-500 truncate mt-0.5">View, add, or remove configured
+                                    Tajbeenames & counts</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-2">
+                            <span id="settings-row-badge-tasbeehs"
+                                class="text-[11px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-xl border border-emerald-200/60">0
+                                Items</span>
+                            <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-slate-700"></i>
+                        </div>
+                    </button>
+
+                    <!-- 2. Date Configuration Item -->
+                    <button type="button" onclick="openSettingsSheet('date-config')"
+                        class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-blue-100/80 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <i class="ph-bold ph-calendar-blank text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-extrabold text-slate-900">Date Configuration</h3>
+                                <p id="settings-row-sub-dates" class="text-xs text-slate-500 truncate mt-0.5 font-mono">
+                                    Start Date: —</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-2">
+                            <span id="settings-row-badge-days"
+                                class="text-[11px] font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-xl border border-blue-200/60">0
+                                Days</span>
+                            <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-slate-700"></i>
+                        </div>
+                    </button>
+
+                    <!-- 3. Future Date Tester -->
+                    <button type="button" onclick="openSettingsSheet('future-date')"
+                        class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-amber-100/80 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <i class="ph-bold ph-calendar-plus text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-extrabold text-slate-900">Future Date Tester</h3>
+                                <p class="text-xs text-slate-500 truncate mt-0.5">Jump to a future date & verify the
+                                    daily auto-push</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-2">
+                            <span id="settings-row-badge-future"
+                                class="text-[11px] font-mono font-bold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-xl border border-amber-200/60">—</span>
+                            <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-slate-700"></i>
+                        </div>
+                    </button>
+
+                    <!-- 4. Database Viewer Item -->
+                    <button type="button" onclick="openSettingsSheet('database-viewer')"
+                        class="w-full p-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-purple-100/80 text-purple-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <i class="ph-bold ph-database text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-extrabold text-slate-900">Database Viewer</h3>
+                                <p class="text-xs text-slate-500 truncate mt-0.5">Inspect structured collections,
+                                    activities & JSON</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-2">
+                            <span id="settings-row-badge-db"
+                                class="text-[11px] font-mono font-bold bg-purple-50 text-purple-700 px-2.5 py-1 rounded-xl border border-purple-200/60">0
+                                KB</span>
+                            <i class="ph-bold ph-caret-right text-slate-400 group-hover:text-slate-700"></i>
+                        </div>
+                    </button>
+
+                    <!-- 5. Reset Application Data Item -->
+                    <button type="button" onclick="openSettingsSheet('reset-confirm')"
+                        class="w-full p-4 text-left flex items-center justify-between hover:bg-rose-50/50 transition-colors group">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div
+                                class="w-11 h-11 rounded-2xl bg-rose-100/80 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                <i class="ph-bold ph-trash text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-sm font-extrabold text-rose-700">Reset Application Data</h3>
+                                <p class="text-xs text-slate-500 truncate mt-0.5">Clear database & relaunch setup
+                                    walk-through</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-2">
+                            <i class="ph-bold ph-caret-right text-rose-400 group-hover:text-rose-600"></i>
+                        </div>
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- ============================================================== -->
+        <!-- BOTTOM-RIGHT FLOATING ACTION BUTTON (FAB)                      -->
+        <!-- ============================================================== -->
+        <div
+            class="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md pointer-events-none z-30 px-4 flex justify-end">
+            <button type="button" onclick="openAddTajbeehModal()" aria-label="Add New Tajbeename"
+                title="Add New Tajbeename & Count"
+                class="btn-press pointer-events-auto w-14 h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-900/25 border border-emerald-500 flex items-center justify-center group">
+                <i class="ph-bold ph-plus text-2xl group-hover:rotate-90 transition-transform duration-200"></i>
+            </button>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- FIXED BOTTOM NAVIGATION BAR (4 TABS)                           -->
+        <!-- ============================================================== -->
+        <nav
+            class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-2 z-30 shadow-lg">
+            <div class="grid grid-cols-4 gap-1.5">
+                <!-- Tab 1: Today -->
+                <button id="nav-tab-today" onclick="switchTab('today')"
+                    class="btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] transition-all relative">
+                    <div class="flex items-center gap-1">
+                        <i class="ph-fill ph-sun-horizon text-base"></i>
+                        <span id="nav-badge-today" class="text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                    </div>
+                    <span class="mt-0.5">Today</span>
+                </button>
+
+                <!-- Tab 2: History -->
+                <button id="nav-tab-history" onclick="switchTab('history')"
+                    class="btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] transition-all relative">
+                    <div class="flex items-center gap-1">
+                        <i class="ph-bold ph-clock-counter-clockwise text-base"></i>
+                        <span id="nav-badge-history"
+                            class="text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                    </div>
+                    <span class="mt-0.5">History</span>
+                </button>
+
+                <!-- Tab 3: Activity -->
+                <button id="nav-tab-activity" onclick="switchTab('activity')"
+                    class="btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] transition-all relative">
+                    <div class="flex items-center gap-1">
+                        <i class="ph-bold ph-pulse text-base"></i>
+                        <span id="nav-badge-activity"
+                            class="text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                    </div>
+                    <span class="mt-0.5">Activity</span>
+                </button>
+
+                <!-- Tab 4: Settings -->
+                <button id="nav-tab-settings" onclick="switchTab('settings')"
+                    class="btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] transition-all relative">
+                    <div class="flex items-center gap-1">
+                        <i class="ph-bold ph-gear-six text-base"></i>
+                    </div>
+                    <span class="mt-0.5">Settings</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Toast Feedback Banner -->
+        <div id="toast-notification"
+            class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-200 transform translate-y-2 w-max max-w-[90vw]">
+            <div
+                class="bg-slate-900/95 text-white text-xs font-semibold px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 border border-slate-700">
+                <i class="ph-fill ph-check-circle text-emerald-400 text-base shrink-0"></i>
+                <span id="toast-message" class="truncate">Saved</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- ADD NEW TAJBEENAME & COUNT MODAL (TRIGGERED BY FAB OR SETTINGS)       -->
+    <!-- ===================================================================== -->
+    <div id="add-tajbeeh-modal" onclick="if(event.target === this) closeAddTajbeehModal()"
+        class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-sheet-up flex flex-col h-[90vh] max-h-[90vh]">
+            <div class="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
+                <div class="w-10 h-1 rounded-full bg-slate-300"></div>
+            </div>
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i class="ph-bold ph-plus-circle text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Add New Tajbeename</h3>
+                        <p class="text-[11px] text-slate-500">Generates daily entries from Start Date to Today</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAddTajbeehModal()"
+                    class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAddTajbeehSubmit(event)"
+                class="p-5 space-y-4 overflow-y-auto custom-scroll flex-1">
+                <div>
+                    <label for="modal-tajbeename-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Tajbeename <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="modal-tajbeename-input" placeholder="e.g., Astaghfirullah, Durood Shareef"
+                        oninput="updateAddModalPreview()"
+                        class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label for="modal-count-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Daily Count Number <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="number" id="modal-count-input" min="1" max="100000" value="100"
+                        oninput="updateAddModalPreview()"
+                        class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-4 py-3 text-sm font-mono font-bold text-slate-900 focus:outline-none" />
+                    <div class="flex items-center gap-1.5 mt-2">
+                        <span class="text-[11px] text-slate-400 font-medium mr-1">Quick Count:</span>
+                        <button type="button" onclick="setModalQuickCount(33)"
+                            class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">33</button>
+                        <button type="button" onclick="setModalQuickCount(100)"
+                            class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">100</button>
+                        <button type="button" onclick="setModalQuickCount(300)"
+                            class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">300</button>
+                        <button type="button" onclick="setModalQuickCount(1000)"
+                            class="text-[11px] font-mono font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">1000</button>
+                    </div>
+                </div>
+
+                <p id="modal-add-error" class="text-xs font-semibold text-rose-600 hidden"></p>
+
+                <div class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-mono font-bold uppercase text-emerald-800">Auto-Generation
+                            Preview</span>
+                        <span id="modal-preview-days-badge"
+                            class="text-[10px] font-mono font-bold bg-white text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">0
+                            days</span>
+                    </div>
+                    <p id="modal-preview-text" class="text-xs text-emerald-950 leading-relaxed"></p>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="closeAddTajbeehModal()"
+                        class="btn-press py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="btn-press flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5">
+                        <i class="ph-bold ph-check-circle text-base"></i>
+                        <span>Save & Generate Entries</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS BOTTOM SHEET 1: TASBEEH NAMES LIST                           -->
+    <!-- ===================================================================== -->
+    <div id="sheet-tasbeeh-list" onclick="if(event.target === this) closeSettingsSheet('tasbeeh-list')"
+        class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col h-[90vh] max-h-[90vh] overflow-hidden animate-sheet-up">
+            <div class="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
+                <div class="w-10 h-1 rounded-full bg-slate-300"></div>
+            </div>
+            <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i class="ph-bold ph-list-bullets text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Configured Tasbeeh List</h3>
+                        <p class="text-[11px] text-slate-500">Manage your active Tajbeenames & daily targets</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSettingsSheet('tasbeeh-list')"
+                    class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div id="sheet-tasbeeh-items-container" class="p-4 overflow-y-auto custom-scroll space-y-2.5 flex-1">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="p-4 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                <button type="button" onclick="closeSettingsSheet('tasbeeh-list'); openAddTajbeehModal();"
+                    class="btn-press flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-plus-circle text-base"></i>
+                    <span>Add New Tajbeename</span>
+                </button>
+                <button type="button" onclick="closeSettingsSheet('tasbeeh-list')"
+                    class="btn-press py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS BOTTOM SHEET 2: DATE CONFIGURATION VIEW (START DATE ONLY)    -->
+    <!-- ===================================================================== -->
+    <div id="sheet-date-config" onclick="if(event.target === this) closeSettingsSheet('date-config')"
+        class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col h-[90vh] max-h-[90vh] overflow-hidden animate-sheet-up">
+            <div class="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
+                <div class="w-10 h-1 rounded-full bg-slate-300"></div>
+            </div>
+            <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                        <i class="ph-bold ph-calendar-blank text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Start Date Configuration</h3>
+                        <p class="text-[11px] text-slate-500">Modify your Start Date or test tomorrow's auto-push</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSettingsSheet('date-config')"
+                    class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto custom-scroll space-y-4 flex-1">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Your <strong>Start Date</strong> defines when tracking begins. Entries are generated from this Start
+                    Date up to Today (<span id="sheet-current-date-badge"
+                        class="font-mono font-bold text-emerald-700"></span>).
+                </p>
+
+                <div>
+                    <label for="sheet-input-start-date" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Start Date
+                    </label>
+                    <input type="date" id="sheet-input-start-date" oninput="updateDateConfigPreview()"
+                        class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none" />
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="space-y-1.5">
+                    <span class="text-[11px] font-semibold text-slate-400 block">Quick Start Date Presets:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="setSheetQuickRange(0)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">Today
+                            (1 Day)</button>
+                        <button type="button" onclick="setSheetQuickRange(6)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">7
+                            Days Ago</button>
+                        <button type="button" onclick="setSheetQuickRange(14)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">15
+                            Days Ago</button>
+                        <button type="button" onclick="setSheetQuickRange(29)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">30
+                            Days Ago</button>
+                    </div>
+                </div>
+
+                <!-- Live Calculation Box -->
+                <div id="sheet-date-preview-box"
+                    class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-fill ph-calculator text-emerald-600 text-base"></i>
+                        <span id="sheet-date-preview-text"
+                            class="text-xs font-semibold text-emerald-950">Calculating...</span>
+                    </div>
+                    <span id="sheet-date-tabs-badge"
+                        class="text-[10px] font-mono font-bold text-emerald-800 uppercase">0 Items</span>
+                </div>
+
+                <!-- Daily Auto-Push Simulator Section -->
+                <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
+                            <i class="ph-fill ph-fast-forward text-amber-600"></i>
+                            <span>Future Day Auto-Push</span>
+                        </span>
+                        <span
+                            class="text-[10px] font-mono font-bold bg-white text-amber-800 px-2 py-0.5 rounded-md border border-amber-200">+1
+                            Day</span>
+                    </div>
+                    <p class="text-[11px] text-amber-800 leading-relaxed">
+                        When tomorrow starts, 1 new entry is automatically pushed for each Tajbeename into the database.
+                    </p>
+                    <button type="button" onclick="simulateNextDay()"
+                        class="btn-press w-full py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                        <i class="ph-bold ph-calendar-plus text-amber-400"></i>
+                        <span>Simulate Tomorrow (+1 Day Auto-Push)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                <button type="button" onclick="closeSettingsSheet('date-config')"
+                    class="btn-press py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl">
+                    Cancel
+                </button>
+                <button type="button" onclick="saveDateConfigurationSheet()"
+                    class="btn-press flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-floppy-disk text-base"></i>
+                    <span>Save Start Date & Rebuild Range</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS BOTTOM SHEET 3: FUTURE DATE TESTER                           -->
+    <!-- ===================================================================== -->
+    <div id="sheet-future-date" onclick="if(event.target === this) closeSettingsSheet('future-date')"
+        class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col h-[90vh] max-h-[90vh] overflow-hidden animate-sheet-up">
+            <div class="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
+                <div class="w-10 h-1 rounded-full bg-slate-300"></div>
+            </div>
+            <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i class="ph-bold ph-calendar-plus text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Future Date Tester</h3>
+                        <p class="text-[11px] text-slate-500">Jump forward and verify the daily auto-push engine</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSettingsSheet('future-date')"
+                    class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto custom-scroll space-y-4 flex-1">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    The app automatically pushes <strong>1 new daily entry per Tajbeename</strong> whenever a real new
+                    day starts. Use this tester to jump forward and confirm that behaviour immediately.
+                </p>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-500 font-semibold">Real Today</span>
+                        <span class="font-mono font-bold text-slate-900" id="future-real-today">—</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-500 font-semibold">Active Date</span>
+                        <span class="font-mono font-bold text-emerald-700" id="future-active-date">—</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="sheet-input-future-date" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Jump to Date
+                    </label>
+                    <input type="date" id="sheet-input-future-date" oninput="updateFutureDatePreview()"
+                        class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 focus:bg-white rounded-2xl px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none" />
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="setFutureQuickDays(1)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">+1
+                            Day</button>
+                        <button type="button" onclick="setFutureQuickDays(3)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">+3
+                            Days</button>
+                        <button type="button" onclick="setFutureQuickDays(7)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">+7
+                            Days</button>
+                        <button type="button" onclick="setFutureQuickDays(30)"
+                            class="text-[11px] font-semibold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">+30
+                            Days</button>
+                    </div>
+                </div>
+
+                <div id="future-preview-box"
+                    class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5">
+                    <p id="future-preview-text" class="text-xs font-semibold text-emerald-950">Select a date to
+                        preview.</p>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                    <p class="text-[11px] text-slate-600 leading-relaxed">
+                        Already-pushed entries stay in the database even if you return to the real today.
+                    </p>
+                    <button type="button" onclick="resetToRealToday()"
+                        class="btn-press w-full py-2.5 px-3 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                        <i class="ph-bold ph-arrow-u-down-left text-base"></i>
+                        <span>Return to Real Today</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                <button type="button" onclick="closeSettingsSheet('future-date')"
+                    class="btn-press py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl">
+                    Cancel
+                </button>
+                <button type="button" onclick="applyFutureDate()"
+                    class="btn-press flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-fast-forward text-base"></i>
+                    <span>Jump & Push Entries</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS BOTTOM SHEET 4: DATABASE VISUALIZATION & INSPECTOR           -->
+    <!-- ===================================================================== -->
+    <div id="sheet-database-viewer" onclick="if(event.target === this) closeSettingsSheet('database-viewer')"
+        class="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col h-[90vh] max-h-[90vh] overflow-hidden animate-sheet-up">
+            <div class="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
+                <div class="w-10 h-1 rounded-full bg-slate-300"></div>
+            </div>
+            <!-- Header -->
+            <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                        <i class="ph-bold ph-database text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Database Explorer</h3>
+                        <p class="text-[11px] text-slate-500">Single unified database entry</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSettingsSheet('database-viewer')"
+                    class="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <!-- Summary Metrics Grid -->
+            <div class="p-3.5 bg-slate-100/70 border-b border-slate-200 grid grid-cols-4 gap-2 text-center shrink-0">
+                <div class="bg-white p-2 rounded-xl border border-slate-200/80">
+                    <p class="text-[10px] font-bold uppercase text-slate-400">Collections</p>
+                    <p id="db-metric-collections" class="text-sm font-extrabold text-slate-900 mt-0.5">0</p>
+                </div>
+                <div class="bg-white p-2 rounded-xl border border-slate-200/80">
+                    <p class="text-[10px] font-bold uppercase text-slate-400">Activities</p>
+                    <p id="db-metric-days" class="text-sm font-extrabold text-slate-900 mt-0.5">0</p>
+                </div>
+                <div class="bg-white p-2 rounded-xl border border-slate-200/80">
+                    <p class="text-[10px] font-bold uppercase text-slate-400">Entries</p>
+                    <p id="db-metric-entries" class="text-sm font-extrabold text-emerald-700 mt-0.5">0</p>
+                </div>
+                <div class="bg-white p-2 rounded-xl border border-slate-200/80">
+                    <p class="text-[10px] font-bold uppercase text-slate-400">Size</p>
+                    <p id="db-metric-size" class="text-sm font-mono font-extrabold text-purple-700 mt-0.5">0 KB</p>
+                </div>
+            </div>
+
+            <!-- View Mode Switcher -->
+            <div class="px-4 pt-3 pb-2 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+                <div class="inline-flex bg-slate-100 p-1 rounded-xl">
+                    <button type="button" id="db-tab-structured" onclick="switchDbInspectorMode('structured')"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                        <i class="ph-bold ph-tree-structure mr-1"></i>Structured View
+                    </button>
+                    <button type="button" id="db-tab-json" onclick="switchDbInspectorMode('json')"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                        <i class="ph-bold ph-brackets-curly mr-1"></i>JSON Payload
+                    </button>
+                </div>
+                <span id="db-completion-summary" class="text-[11px] font-semibold text-slate-500">0 Active
+                    Entries</span>
+            </div>
+
+            <!-- Tab Content 1: Structured Collections & Entries Table View -->
+            <div id="db-view-structured" class="p-4 overflow-y-auto custom-scroll flex-1 space-y-3 bg-slate-50/60">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Tab Content 2: Formatted JSON Viewer -->
+            <div id="db-view-json"
+                class="p-4 bg-slate-950 text-emerald-300 font-mono text-[11px] overflow-y-auto custom-scroll flex-1 leading-relaxed hidden">
+                <pre id="json-viewer-content" class="whitespace-pre-wrap break-all"></pre>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+                <button type="button" onclick="copyJsonToClipboard()"
+                    class="btn-press flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-copy"></i>
+                    <span id="copy-json-btn-text">Copy JSON</span>
+                </button>
+                <button type="button" onclick="downloadDatabaseJson()"
+                    class="btn-press py-2.5 px-3 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-download-simple"></i>
+                    <span>Download .json</span>
+                </button>
+                <button type="button" onclick="closeSettingsSheet('database-viewer')"
+                    class="btn-press py-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS BOTTOM SHEET 5: RESET CONFIRMATION MODAL                     -->
+    <!-- ===================================================================== -->
+    <div id="sheet-reset-confirm" onclick="if(event.target === this) closeSettingsSheet('reset-confirm')"
+        class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 p-5 space-y-4 animate-sheet-up">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                    <i class="ph-fill ph-warning-circle text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-900">Reset All Application Data?</h3>
+                    <p class="text-xs text-slate-500">Wipes database completely</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                This will delete all configured Tajbeenames, date ranges, activities, and daily entries from the
+                database and restart the Step 1 & Step 2 setup walk-through.
+            </p>
+            <div class="flex items-center gap-2 pt-1">
+                <button type="button" onclick="closeSettingsSheet('reset-confirm')"
+                    class="btn-press flex-1 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+                    Cancel
+                </button>
+                <button type="button" onclick="confirmClearLocalStorage()"
+                    class="btn-press flex-1 py-2.5 px-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-sm">
+                    Yes, Reset Everything
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // 1. CONSTANTS, LEGACY CLEANUP & SINGLE UNIFIED DATABASE STATE
+        // =====================================================================
+        const STORAGE_KEY = 'tasbeeh_production_db_v1';
+        const LEGACY_KEYS_TO_REMOVE = ['tasbeeh_tracker_db_v1'];
+
+        // Returns the real, local (device) calendar date as YYYY-MM-DD.
+        // This is the single source of truth for "today" — no hardcoded dates.
+        const getLocalTodayISO = () => {
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        };
+
+        // Purge any unwanted legacy keys (such as tasbeeh_tracker_db_v1)
+        const cleanupLegacyStorageKeys = () => {
+            LEGACY_KEYS_TO_REMOVE.forEach(legacyKey => {
+                if (localStorage.getItem(legacyKey) !== null) {
+                    localStorage.removeItem(legacyKey);
+                }
+            });
+        };
+
+        // Single database structure containing collections AND activities
+        const createEmptyAppData = () => ({
+            isInitialized: false,
+            startDate: "",
+            currentSystemDate: getLocalTodayISO(),
+            lastSyncedDate: "",
+            tasbeehCollections: {},
+            activities: []
+        });
+
+        let appData = createEmptyAppData();
+
+        let uiState = {
+            activeTab: 'today',             // 'today' | 'history' | 'activity' | 'settings'
+            dbInspectorMode: 'structured'   // 'structured' | 'json'
+        };
+
+        /**
+         * Pushes a user activity directly into the single database object (appData.activities)
+         * and persists it in localStorage so the user can view and delete activities.
+         */
+        const recordActivity = (category, message, persist = true, tasbeehId = null) => {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const activityDate = appData.currentSystemDate || getLocalTodayISO();
+
+            console.log(`[${timeStr}] [${category}] ${message}`);
+
+            if (!Array.isArray(appData.activities)) {
+                appData.activities = [];
+            }
+
+            const newActivity = {
+                id: `act_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+                date: activityDate,
+                timestamp: timeStr,
+                category: category,
+                message: message,
+                tasbeehId: tasbeehId
+            };
+
+            appData.activities.unshift(newActivity);
+
+            if (persist && appData.isInitialized) {
+                saveToLocalStorage();
+            }
+
+            if (uiState.activeTab === 'activity') {
+                renderActivityView();
+            }
+            renderHeaderAndNav();
+        };
+
+        // Delete a single activity item from the database
+        window.deleteActivityById = (activityId) => {
+            if (!Array.isArray(appData.activities)) return;
+            const idx = appData.activities.findIndex(a => a.id === activityId);
+            if (idx !== -1) {
+                appData.activities.splice(idx, 1);
+                saveToLocalStorage();
+                renderActivityView();
+                renderHeaderAndNav();
+                showToast("Activity removed from database");
+            }
+        };
+
+        // Delete activities for the selected day (or all activities if 'ALL' is selected)
+        window.deleteActivitiesBySelectedDay = () => {
+            const selectEl = document.getElementById('activity-daily-select');
+            const selectedDate = selectEl ? selectEl.value : 'ALL';
+
+            if (!Array.isArray(appData.activities) || appData.activities.length === 0) {
+                showToast("No activities to remove");
+                return;
+            }
+
+            if (selectedDate === 'ALL') {
+                appData.activities = [];
+                saveToLocalStorage();
+                renderActivityView();
+                renderHeaderAndNav();
+                showToast("Cleared all activities from database");
+            } else {
+                const beforeCount = appData.activities.length;
+                appData.activities = appData.activities.filter(a => a.date !== selectedDate);
+                const removedCount = beforeCount - appData.activities.length;
+                if (selectEl) selectEl.value = 'ALL';
+                saveToLocalStorage();
+                renderActivityView();
+                renderHeaderAndNav();
+                showToast(`Removed ${removedCount} ${removedCount === 1 ? 'activity' : 'activities'} for ${selectedDate}`);
+            }
+        };
+
+        // Load state strictly from localStorage
+        const loadFromLocalStorage = () => {
+            cleanupLegacyStorageKeys();
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    appData = createEmptyAppData();
+                    return false;
+                }
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') {
+                    appData = createEmptyAppData();
+                    return false;
+                }
+                const resolvedCurrentDate = parsed.currentSystemDate || parsed.endDate || getLocalTodayISO();
+                appData = {
+                    isInitialized: Boolean(parsed.isInitialized),
+                    startDate: parsed.startDate || "",
+                    currentSystemDate: resolvedCurrentDate,
+                    lastSyncedDate: parsed.lastSyncedDate || resolvedCurrentDate,
+                    tasbeehCollections: (parsed.tasbeehCollections && typeof parsed.tasbeehCollections === 'object')
+                        ? parsed.tasbeehCollections
+                        : {},
+                    activities: Array.isArray(parsed.activities) ? parsed.activities : []
+                };
+                const hasCollections = Object.keys(appData.tasbeehCollections).length > 0;
+                return Boolean(appData.isInitialized && appData.startDate && hasCollections);
+            } catch (err) {
+                console.error("Failed to parse localStorage database:", err);
+                appData = createEmptyAppData();
+                return false;
+            }
+        };
+
+        // Save state strictly to localStorage
+        const saveToLocalStorage = () => {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            } catch (err) {
+                console.error("Failed to save state to localStorage:", err);
+                showToast("Storage error: Could not write to localStorage");
+            }
+        };
+
+        const getPayloadSizeKB = () => {
+            const serialized = JSON.stringify(appData);
+            const bytes = new Blob([serialized]).size;
+            return (bytes / 1024).toFixed(2);
+        };
+
+        // =====================================================================
+        // 2. UTC-SAFE DATE CALCULATION, RELATIVE DAYS & AUTO-PUSH ENGINE
+        // =====================================================================
+        const parseUtcDate = (dateStr) => {
+            if (!dateStr || typeof dateStr !== 'string') return null;
+            const parts = dateStr.split('-').map(Number);
+            if (parts.length !== 3 || parts.some(isNaN)) return null;
+            return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+        };
+
+        const toIsoDateString = (utcDate) => {
+            const yyyy = utcDate.getUTCFullYear();
+            const mm = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+            const dd = String(utcDate.getUTCDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        };
+
+        const addDaysToIsoDate = (dateStr, daysToAdd) => {
+            const dt = parseUtcDate(dateStr);
+            if (!dt) return dateStr;
+            dt.setUTCDate(dt.getUTCDate() + daysToAdd);
+            return toIsoDateString(dt);
+        };
+
+        const calculateInclusiveDays = (startStr, endStr) => {
+            const start = parseUtcDate(startStr);
+            const end = parseUtcDate(endStr);
+            if (!start || !end || start > end) return 0;
+            const diffMs = end.getTime() - start.getTime();
+            return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+        };
+
+        /**
+         * Returns a relative label for a past date compared to the current date:
+         * 1 day -> "(Yesterday)", N days -> "(N days ago)"
+         */
+        const getRelativeHistoryBracketLabel = (targetDateStr, currentDateStr) => {
+            const targetUtc = parseUtcDate(targetDateStr);
+            const currentUtc = parseUtcDate(currentDateStr);
+            if (!targetUtc || !currentUtc) return "";
+            const diffDays = Math.round((currentUtc.getTime() - targetUtc.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) return "(Today)";
+            if (diffDays === 1) return "(Yesterday)";
+            return `(${diffDays} days ago)`;
+        };
+
+        const formatReadableDate = (dateStr, includeWeekday = true) => {
+            if (!dateStr) return "—";
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const parts = dateStr.split('-').map(Number);
+            if (parts.length !== 3 || parts.some(isNaN)) return dateStr;
+            const [y, m, d] = parts;
+            const dateObj = new Date(Date.UTC(y, m - 1, d));
+            const dayName = days[dateObj.getUTCDay()];
+            const monthName = months[m - 1];
+            return includeWeekday ? `${dayName}, ${monthName} ${d}, ${y}` : `${monthName} ${d}, ${y}`;
+        };
+
+        const generateEntriesFromStartToCurrent = (tasbeehId, targetCount, startStr, currentDateStr) => {
+            const entries = [];
+            const startObj = parseUtcDate(startStr);
+            const endObj = parseUtcDate(currentDateStr);
+            if (!startObj || !endObj || startObj > endObj) return entries;
+
+            const totalDays = calculateInclusiveDays(startStr, currentDateStr);
+            const cursor = new Date(startObj.getTime());
+
+            for (let i = 0; i < totalDays; i++) {
+                const dateStr = toIsoDateString(cursor);
+                const compactDate = dateStr.replace(/-/g, '');
+                entries.push({
+                    entryId: `${tasbeehId}_${compactDate}`,
+                    date: dateStr,
+                    target: targetCount
+                });
+                cursor.setUTCDate(cursor.getUTCDate() + 1);
+            }
+
+            return entries;
+        };
+
+        /**
+         * Ensures every collection has exactly one daily entry for every date
+         * between lastSyncedDate + 1 and currentSystemDate.
+         * This is what makes the "new day at midnight" auto-push work.
+         */
+        const autoPushFutureDaysIfNeeded = () => {
+            if (!appData.isInitialized || !appData.startDate) return 0;
+
+            if (!appData.lastSyncedDate) {
+                appData.lastSyncedDate = appData.currentSystemDate;
+                saveToLocalStorage();
+                return 0;
+            }
+
+            if (appData.currentSystemDate <= appData.lastSyncedDate) {
+                return 0;
+            }
+
+            const nextUnsyncedDate = addDaysToIsoDate(appData.lastSyncedDate, 1);
+            const newDaysCount = calculateInclusiveDays(nextUnsyncedDate, appData.currentSystemDate);
+            let totalEntriesPushed = 0;
+
+            const cursor = parseUtcDate(nextUnsyncedDate);
+            for (let d = 0; d < newDaysCount; d++) {
+                const dateStr = toIsoDateString(cursor);
+                const compactDate = dateStr.replace(/-/g, '');
+
+                Object.entries(appData.tasbeehCollections).forEach(([tasbeehId, col]) => {
+                    const targetCount = Number(col.targetCount) || 100;
+                    const entryId = `${tasbeehId}_${compactDate}`;
+                    const alreadyExists = col.entries.some(e => e.date === dateStr);
+                    if (!alreadyExists) {
+                        col.entries.push({
+                            entryId: entryId,
+                            date: dateStr,
+                            target: targetCount
+                        });
+                        totalEntriesPushed++;
+                    }
+                });
+
+                cursor.setUTCDate(cursor.getUTCDate() + 1);
+            }
+
+            appData.lastSyncedDate = appData.currentSystemDate;
+            recordActivity('AUTO-PUSH', `Auto-pushed ${totalEntriesPushed} new daily ${totalEntriesPushed === 1 ? 'entry' : 'entries'} for ${appData.currentSystemDate}`, false);
+            saveToLocalStorage();
+            return totalEntriesPushed;
+        };
+
+        const createNewTajbeenameCollection = (tajbeename, countNumber) => {
+            const cleanName = tajbeename.trim();
+            const cleanTarget = Math.max(1, Math.floor(Number(countNumber) || 100));
+            const tasbeehId = `tajbeeh_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
+            const generatedEntries = generateEntriesFromStartToCurrent(
+                tasbeehId,
+                cleanTarget,
+                appData.startDate,
+                appData.currentSystemDate
+            );
+
+            appData.tasbeehCollections[tasbeehId] = {
+                id: tasbeehId,
+                name: cleanName,
+                targetCount: cleanTarget,
+                createdAt: new Date().toISOString(),
+                entries: generatedEntries
+            };
+
+            appData.isInitialized = true;
+            appData.lastSyncedDate = appData.currentSystemDate;
+            recordActivity('ADDED TASBEEH', `Added "${cleanName}" (${cleanTarget}/day) with ${generatedEntries.length} daily entries`, false, tasbeehId);
+            saveToLocalStorage();
+            return { tasbeehId, entriesCount: generatedEntries.length };
+        };
+
+        // =====================================================================
+        // 3. MANDATORY INITIAL SETUP WALK-THROUGH LOGIC
+        // =====================================================================
+        const openOnboardingWalkthrough = () => {
+            const overlay = document.getElementById('onboarding-overlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+
+            const currDate = appData.currentSystemDate || getLocalTodayISO();
+            const defaultStart = appData.startDate || addDaysToIsoDate(currDate, -6);
+
+            document.getElementById('setup-current-date-label').textContent = currDate;
+            document.getElementById('setup-start-date-input').value = defaultStart;
+
+            if (appData.startDate && calculateInclusiveDays(appData.startDate, currDate) > 0) {
+                showSetupStep(2);
+            } else {
+                showSetupStep(1);
+            }
+            updateSetupStep1Preview();
+            updateSetupStep2Preview();
+        };
+
+        const showSetupStep = (stepNumber) => {
+            const step1El = document.getElementById('setup-step-1');
+            const step2El = document.getElementById('setup-step-2');
+            const pillEl = document.getElementById('setup-step-pill');
+            const bar2El = document.getElementById('setup-bar-step2');
+
+            if (stepNumber === 1) {
+                step1El.classList.remove('hidden');
+                step2El.classList.add('hidden');
+                pillEl.textContent = "Step 1 of 2";
+                bar2El.className = "h-1.5 rounded-full bg-white/30 transition-all";
+            } else {
+                step1El.classList.add('hidden');
+                step2El.classList.remove('hidden');
+                pillEl.textContent = "Step 2 of 2";
+                bar2El.className = "h-1.5 rounded-full bg-white transition-all";
+                document.getElementById('setup-step2-start-badge').textContent = appData.startDate;
+                document.getElementById('setup-step2-today-badge').textContent = appData.currentSystemDate;
+                updateSetupStep2Preview();
+                setTimeout(() => {
+                    document.getElementById('setup-tajbeename-input').focus();
+                }, 80);
+            }
+        };
+
+        window.setSetupQuickDate = (daysAgo) => {
+            const targetStart = addDaysToIsoDate(appData.currentSystemDate, -daysAgo);
+            document.getElementById('setup-start-date-input').value = targetStart;
+            updateSetupStep1Preview();
+        };
+
+        window.updateSetupStep1Preview = () => {
+            const startVal = document.getElementById('setup-start-date-input').value;
+            const endVal = appData.currentSystemDate;
+            const errorEl = document.getElementById('setup-step1-error');
+            const daysTextEl = document.getElementById('setup-step1-days-text');
+            const subtextEl = document.getElementById('setup-step1-range-subtext');
+            const boxEl = document.getElementById('setup-step1-preview-box');
+
+            errorEl.classList.add('hidden');
+            const days = calculateInclusiveDays(startVal, endVal);
+
+            if (!startVal || days <= 0) {
+                daysTextEl.textContent = "Invalid Start Date";
+                subtextEl.textContent = `Start Date must be on or before Today (${endVal})`;
+                boxEl.className = "bg-rose-50 border border-rose-200 rounded-2xl p-3.5 flex items-center justify-between";
+                return;
+            }
+
+            boxEl.className = "bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between";
+            daysTextEl.textContent = `${days.toLocaleString()} daily entry ${days === 1 ? 'slot' : 'slots'} (Start → Today)`;
+            subtextEl.textContent = `${startVal} → ${endVal}`;
+        };
+
+        window.saveSetupStep1 = () => {
+            const startVal = document.getElementById('setup-start-date-input').value;
+            const errorEl = document.getElementById('setup-step1-error');
+            const days = calculateInclusiveDays(startVal, appData.currentSystemDate);
+
+            if (!startVal || days <= 0) {
+                errorEl.textContent = `Please select a Start Date on or before Today (${appData.currentSystemDate}).`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            appData.startDate = startVal;
+            recordActivity('START DATE', `Configured Start Date as ${startVal}`, false);
+            saveToLocalStorage();
+
+            showSetupStep(2);
+            showToast(`Start Date (${startVal}) saved`);
+        };
+
+        window.backToSetupStep1 = () => {
+            showSetupStep(1);
+        };
+
+        window.setSetupQuickCount = (countVal) => {
+            document.getElementById('setup-count-input').value = countVal;
+            updateSetupStep2Preview();
+        };
+
+        window.updateSetupStep2Preview = () => {
+            const nameVal = document.getElementById('setup-tajbeename-input').value.trim();
+            const countVal = parseInt(document.getElementById('setup-count-input').value, 10);
+            const days = calculateInclusiveDays(appData.startDate, appData.currentSystemDate);
+
+            const badgeEl = document.getElementById('setup-preview-entries-badge');
+            const descEl = document.getElementById('setup-preview-description');
+
+            badgeEl.textContent = `${days.toLocaleString()} ${days === 1 ? 'entry' : 'entries'}`;
+
+            const displayPhrase = nameVal || "Your Tajbeename";
+            const displayCount = (!isNaN(countVal) && countVal > 0) ? countVal : 0;
+            const totalTarget = days * displayCount;
+
+            descEl.innerHTML = `Generating <strong>${days.toLocaleString()}</strong> daily entries for <strong class="text-emerald-300">"${escapeHtml(displayPhrase)}"</strong> (${displayCount.toLocaleString()}/day = <strong>${totalTarget.toLocaleString()}</strong> total count from ${appData.startDate} to ${appData.currentSystemDate}).`;
+        };
+
+        window.completeInitialSetup = () => {
+            const nameVal = document.getElementById('setup-tajbeename-input').value.trim();
+            const countVal = parseInt(document.getElementById('setup-count-input').value, 10);
+            const errorEl = document.getElementById('setup-step2-error');
+
+            errorEl.classList.add('hidden');
+
+            if (!nameVal) {
+                errorEl.textContent = "Please enter a Tajbeename (e.g., SubhanAllah).";
+                errorEl.classList.remove('hidden');
+                document.getElementById('setup-tajbeename-input').focus();
+                return;
+            }
+
+            if (isNaN(countVal) || countVal <= 0) {
+                errorEl.textContent = "Please enter a valid positive Count Number (e.g., 100).";
+                errorEl.classList.remove('hidden');
+                document.getElementById('setup-count-input').focus();
+                return;
+            }
+
+            const { entriesCount } = createNewTajbeenameCollection(nameVal, countVal);
+
+            const overlay = document.getElementById('onboarding-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+
+            renderApp();
+            showToast(`Created "${nameVal}" with ${entriesCount.toLocaleString()} daily entries!`);
+        };
+
+        // =====================================================================
+        // 4. BOTTOM-RIGHT FAB & ADD NEW TAJBEENAME MODAL WORKFLOW
+        // =====================================================================
+        window.openAddTajbeehModal = () => {
+            const modal = document.getElementById('add-tajbeeh-modal');
+            const nameInput = document.getElementById('modal-tajbeename-input');
+            const countInput = document.getElementById('modal-count-input');
+            const errEl = document.getElementById('modal-add-error');
+
+            if (!modal || !nameInput || !countInput || !errEl) return;
+
+            nameInput.value = '';
+            countInput.value = '100';
+            errEl.classList.add('hidden');
+
+            updateAddModalPreview();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => nameInput.focus(), 60);
+        };
+
+        window.closeAddTajbeehModal = () => {
+            const modal = document.getElementById('add-tajbeeh-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.setModalQuickCount = (val) => {
+            const countInput = document.getElementById('modal-count-input');
+            if (countInput) {
+                countInput.value = val;
+                updateAddModalPreview();
+            }
+        };
+
+        window.updateAddModalPreview = () => {
+            const nameInput = document.getElementById('modal-tajbeename-input');
+            const countInput = document.getElementById('modal-count-input');
+            const daysBadge = document.getElementById('modal-preview-days-badge');
+            const previewText = document.getElementById('modal-preview-text');
+
+            if (!nameInput || !countInput || !daysBadge || !previewText) return;
+
+            const nameVal = nameInput.value.trim() || "New Tajbeename";
+            const countVal = Math.max(0, parseInt(countInput.value, 10) || 0);
+            const days = calculateInclusiveDays(appData.startDate, appData.currentSystemDate);
+
+            daysBadge.textContent = `${days.toLocaleString()} days`;
+            previewText.innerHTML =
+                `Will generate <strong>${days.toLocaleString()}</strong> daily entries from <span class="font-mono font-semibold">${appData.startDate}</span> to <span class="font-mono font-semibold">${appData.currentSystemDate}</span> for <strong>"${escapeHtml(nameVal)}"</strong> (${countVal.toLocaleString()} count/day).`;
+        };
+
+        window.handleAddTajbeehSubmit = (event) => {
+            event.preventDefault();
+            const nameInput = document.getElementById('modal-tajbeename-input');
+            const countInput = document.getElementById('modal-count-input');
+            const errEl = document.getElementById('modal-add-error');
+
+            const nameVal = nameInput.value.trim();
+            const countVal = parseInt(countInput.value, 10);
+
+            errEl.classList.add('hidden');
+
+            if (!nameVal) {
+                errEl.textContent = "Please enter a Tajbeename.";
+                errEl.classList.remove('hidden');
+                nameInput.focus();
+                return;
+            }
+
+            if (isNaN(countVal) || countVal <= 0) {
+                errEl.textContent = "Please enter a Count Number greater than 0.";
+                errEl.classList.remove('hidden');
+                countInput.focus();
+                return;
+            }
+
+            const { entriesCount } = createNewTajbeenameCollection(nameVal, countVal);
+
+            closeAddTajbeehModal();
+            renderApp();
+            renderTasbeehListSheet();
+            showToast(`Added "${nameVal}" (${countVal}/day) • ${entriesCount.toLocaleString()} entries saved!`);
+        };
+
+        /**
+         * Deletes a Tajbeename AND every daily entry belonging to it from the
+         * database (the entries live inside the collection object), plus any
+         * activity records tied to that Tajbeename.
+         */
+        window.deleteTajbeename = (tasbeehId) => {
+            const col = appData.tasbeehCollections[tasbeehId];
+            if (!col) return;
+            const deletedName = col.name;
+            const removedEntries = col.entries.length;
+
+            // Remove the whole collection (all of its daily entries) from the database
+            delete appData.tasbeehCollections[tasbeehId];
+
+            // Purge activity records that belong to this Tajbeename
+            if (Array.isArray(appData.activities)) {
+                appData.activities = appData.activities.filter(a => a.tasbeehId !== tasbeehId);
+            }
+
+            recordActivity('REMOVED TASBEEH', `Deleted "${deletedName}" and removed its ${removedEntries.toLocaleString()} entries from the database`, false);
+
+            const remainingKeys = Object.keys(appData.tasbeehCollections);
+            if (remainingKeys.length === 0) {
+                appData.isInitialized = false;
+                saveToLocalStorage();
+                closeSettingsSheet('tasbeeh-list');
+                openOnboardingWalkthrough();
+                showToast(`Removed "${deletedName}". Please configure a Tajbeename.`);
+                return;
+            }
+
+            saveToLocalStorage();
+            renderApp();
+            renderTasbeehListSheet();
+            showToast(`Removed "${deletedName}" & its ${removedEntries.toLocaleString()} entries`);
+        };
+
+        // =====================================================================
+        // 5. STRIKE-OUT ON COMPLETION & REMOVE FROM DATABASE
+        // =====================================================================
+        window.strikeAndRemoveEntry = (tasbeehId, entryId, domElementId) => {
+            const col = appData.tasbeehCollections[tasbeehId];
+            if (!col) return;
+            const entryIndex = col.entries.findIndex(e => e.entryId === entryId);
+            if (entryIndex === -1) return;
+
+            const cardEl = document.getElementById(domElementId);
+            if (cardEl) {
+                cardEl.classList.add('entry-struck');
+                const titleEl = cardEl.querySelector('.entry-title-text');
+                const countEl = cardEl.querySelector('.entry-count-text');
+                if (titleEl) titleEl.classList.add('line-through', 'text-slate-400');
+                if (countEl) countEl.classList.add('line-through', 'text-slate-400');
+            }
+
+            setTimeout(() => {
+                const targetCol = appData.tasbeehCollections[tasbeehId];
+                if (!targetCol) return;
+                const idx = targetCol.entries.findIndex(e => e.entryId === entryId);
+                if (idx !== -1) {
+                    const removed = targetCol.entries.splice(idx, 1)[0];
+                    recordActivity('COMPLETED', `Completed & removed "${targetCol.name}" (${removed.target} count) for ${removed.date}`, false, tasbeehId);
+                    saveToLocalStorage();
+                    renderApp();
+                    showToast(`Completed & removed ${targetCol.name} (${removed.target}) for ${formatReadableDate(removed.date, false)}`);
+                }
+            }, 280);
+        };
+
+        window.simulateNextDay = () => {
+            const nextDateStr = addDaysToIsoDate(appData.currentSystemDate, 1);
+            appData.currentSystemDate = nextDateStr;
+            resetHistoryPagination();
+            const pushedCount = autoPushFutureDaysIfNeeded();
+
+            const sheetCurrBadge = document.getElementById('sheet-current-date-badge');
+            if (sheetCurrBadge) sheetCurrBadge.textContent = appData.currentSystemDate;
+            updateDateConfigPreview();
+            renderApp();
+            showToast(`New Day (${nextDateStr}): Auto-pushed ${pushedCount} new daily ${pushedCount === 1 ? 'entry' : 'entries'}!`);
+        };
+
+        // =====================================================================
+        // 6. SETTINGS LIST & BOTTOM-SHEET NAVIGATION
+        // =====================================================================
+        window.openSettingsSheet = (sheetName) => {
+            if (sheetName === 'tasbeeh-list') {
+                renderTasbeehListSheet();
+                const el = document.getElementById('sheet-tasbeeh-list');
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else if (sheetName === 'date-config') {
+                document.getElementById('sheet-input-start-date').value = appData.startDate;
+                document.getElementById('sheet-current-date-badge').textContent = appData.currentSystemDate;
+                updateDateConfigPreview();
+                const el = document.getElementById('sheet-date-config');
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else if (sheetName === 'future-date') {
+                document.getElementById('future-real-today').textContent = getLocalTodayISO();
+                document.getElementById('future-active-date').textContent = appData.currentSystemDate;
+                const input = document.getElementById('sheet-input-future-date');
+                input.min = addDaysToIsoDate(appData.currentSystemDate, 1);
+                input.value = addDaysToIsoDate(appData.currentSystemDate, 1);
+                updateFutureDatePreview();
+                const el = document.getElementById('sheet-future-date');
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else if (sheetName === 'database-viewer') {
+                renderDatabaseViewerSheet();
+                const el = document.getElementById('sheet-database-viewer');
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else if (sheetName === 'reset-confirm') {
+                const el = document.getElementById('sheet-reset-confirm');
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            }
+        };
+
+        window.closeSettingsSheet = (sheetName) => {
+            const map = {
+                'tasbeeh-list': 'sheet-tasbeeh-list',
+                'date-config': 'sheet-date-config',
+                'future-date': 'sheet-future-date',
+                'database-viewer': 'sheet-database-viewer',
+                'reset-confirm': 'sheet-reset-confirm'
+            };
+            const id = map[sheetName];
+            if (!id) return;
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        };
+
+        const renderTasbeehListSheet = () => {
+            const container = document.getElementById('sheet-tasbeeh-items-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const collections = Object.values(appData.tasbeehCollections);
+            if (collections.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No Tasbeeh items configured.</p>`;
+                return;
+            }
+
+            collections.forEach(col => {
+                const remainingEntries = col.entries.length;
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 flex items-center justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(col.name)}</h4>
+                                <span class="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md shrink-0">
+                                    ${col.targetCount.toLocaleString()} count/day
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1">
+                                <span class="font-semibold text-slate-700">${remainingEntries.toLocaleString()}</span> active daily ${remainingEntries === 1 ? 'entry' : 'entries'} in database
+                            </p>
+                        </div>
+                        <button 
+                            type="button"
+                            onclick="deleteTajbeename('${col.id}')"
+                            class="btn-press w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200 flex items-center justify-center shrink-0"
+                            title="Delete Tajbeename & all its entries"
+                        >
+                            <i class="ph-bold ph-trash text-base"></i>
+                        </button>
+                    </div>
+                `);
+            });
+        };
+
+        window.setSheetQuickRange = (daysBack) => {
+            const newStart = addDaysToIsoDate(appData.currentSystemDate, -daysBack);
+            document.getElementById('sheet-input-start-date').value = newStart;
+            updateDateConfigPreview();
+        };
+
+        window.updateDateConfigPreview = () => {
+            const startInput = document.getElementById('sheet-input-start-date');
+            if (!startInput) return;
+            const startVal = startInput.value;
+            const endVal = appData.currentSystemDate;
+            const previewEl = document.getElementById('sheet-date-preview-text');
+            const badgeEl = document.getElementById('sheet-date-tabs-badge');
+            const boxEl = document.getElementById('sheet-date-preview-box');
+
+            const tabCount = Object.keys(appData.tasbeehCollections).length;
+            badgeEl.textContent = `${tabCount} ${tabCount === 1 ? 'Item' : 'Items'}`;
+
+            const days = calculateInclusiveDays(startVal, endVal);
+            if (!startVal || days <= 0) {
+                previewEl.textContent = `Start Date must be on or before Today (${endVal})`;
+                boxEl.className = "bg-rose-50 border border-rose-200 rounded-2xl p-3.5 flex items-center justify-between";
+                return;
+            }
+
+            boxEl.className = "bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between";
+            const totalEntries = days * tabCount;
+            previewEl.textContent = `${days.toLocaleString()} days (${startVal} → ${endVal}) = ${totalEntries.toLocaleString()} entries`;
+        };
+
+        window.saveDateConfigurationSheet = () => {
+            const startVal = document.getElementById('sheet-input-start-date').value;
+            const days = calculateInclusiveDays(startVal, appData.currentSystemDate);
+
+            if (!startVal || days <= 0) {
+                showToast(`Invalid Start Date: Must be on or before ${appData.currentSystemDate}`);
+                return;
+            }
+
+            appData.startDate = startVal;
+            appData.lastSyncedDate = appData.currentSystemDate;
+
+            Object.keys(appData.tasbeehCollections).forEach(tasbeehId => {
+                const col = appData.tasbeehCollections[tasbeehId];
+                const targetCount = Number(col.targetCount) || 100;
+                col.entries = generateEntriesFromStartToCurrent(
+                    tasbeehId,
+                    targetCount,
+                    appData.startDate,
+                    appData.currentSystemDate
+                );
+            });
+
+            recordActivity('DATE UPDATED', `Updated Start Date to ${startVal} and rebuilt entries up to ${appData.currentSystemDate}`, false);
+            resetHistoryPagination();
+            saveToLocalStorage();
+            closeSettingsSheet('date-config');
+            renderApp();
+
+            const totalEntries = days * Object.keys(appData.tasbeehCollections).length;
+            showToast(`Saved Start Date (${startVal}) • ${totalEntries.toLocaleString()} entries generated`);
+        };
+
+        // ---------------------------------------------------------------
+        // FUTURE DATE TESTER
+        // ---------------------------------------------------------------
+        window.setFutureQuickDays = (daysAhead) => {
+            const input = document.getElementById('sheet-input-future-date');
+            if (!input) return;
+            input.value = addDaysToIsoDate(appData.currentSystemDate, daysAhead);
+            updateFutureDatePreview();
+        };
+
+        window.updateFutureDatePreview = () => {
+            const input = document.getElementById('sheet-input-future-date');
+            const previewEl = document.getElementById('future-preview-text');
+            const boxEl = document.getElementById('future-preview-box');
+            if (!input || !previewEl || !boxEl) return;
+
+            const val = input.value;
+            const collectionCount = Object.keys(appData.tasbeehCollections).length;
+
+            if (!val) {
+                boxEl.className = "bg-slate-50 border border-slate-200 rounded-2xl p-3.5";
+                previewEl.textContent = 'Select a future date to preview the auto-push.';
+                return;
+            }
+
+            const days = calculateInclusiveDays(addDaysToIsoDate(appData.currentSystemDate, 1), val);
+            if (days <= 0) {
+                boxEl.className = "bg-rose-50 border border-rose-200 rounded-2xl p-3.5";
+                previewEl.textContent = `Pick a date after the current date (${appData.currentSystemDate}).`;
+                return;
+            }
+
+            const totalEntries = days * collectionCount;
+            boxEl.className = "bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3.5";
+            previewEl.innerHTML = `Jumping to <strong>${val}</strong> will auto-push <strong>${days.toLocaleString()} day${days === 1 ? '' : 's'} × ${collectionCount} Tajbeeh${collectionCount === 1 ? '' : 's'}</strong> = <strong>${totalEntries.toLocaleString()} new entr${totalEntries === 1 ? 'y' : 'ies'}</strong> into the database.`;
+        };
+
+        window.applyFutureDate = () => {
+            const input = document.getElementById('sheet-input-future-date');
+            if (!input || !input.value) {
+                showToast('Please select a future date');
+                return;
+            }
+            const val = input.value;
+            if (val <= appData.currentSystemDate) {
+                showToast(`Choose a date after ${appData.currentSystemDate}`);
+                return;
+            }
+
+            appData.currentSystemDate = val;
+            const pushed = autoPushFutureDaysIfNeeded();
+            resetHistoryPagination();
+            saveToLocalStorage();
+            closeSettingsSheet('future-date');
+            renderApp();
+            showToast(`Jumped to ${val} • ${pushed.toLocaleString()} entries auto-pushed`);
+        };
+
+        window.resetToRealToday = () => {
+            const realToday = getLocalTodayISO();
+            if (appData.currentSystemDate === realToday) {
+                showToast('Already on the real today');
+                return;
+            }
+            appData.currentSystemDate = realToday;
+            appData.lastSyncedDate = realToday;
+            resetHistoryPagination();
+            saveToLocalStorage();
+            closeSettingsSheet('future-date');
+            renderApp();
+            showToast(`Returned to real today (${realToday})`);
+        };
+
+        window.confirmClearLocalStorage = () => {
+            localStorage.removeItem(STORAGE_KEY);
+            cleanupLegacyStorageKeys();
+            appData = createEmptyAppData();
+            historyVisibleDayCount = 20;
+            closeSettingsSheet('reset-confirm');
+            switchTab('today');
+            openOnboardingWalkthrough();
+            showToast("Database cleared. Ready for fresh setup!");
+        };
+
+        // =====================================================================
+        // 7. DATABASE VISUALIZATION & INSPECTOR VIEW
+        // =====================================================================
+        window.switchDbInspectorMode = (mode) => {
+            uiState.dbInspectorMode = mode;
+            renderDatabaseViewerSheet();
+        };
+
+        const renderDatabaseViewerSheet = () => {
+            const collections = Object.values(appData.tasbeehCollections);
+            const activitiesCount = Array.isArray(appData.activities) ? appData.activities.length : 0;
+            let totalEntries = 0;
+
+            collections.forEach(c => {
+                totalEntries += c.entries.length;
+            });
+
+            document.getElementById('db-metric-collections').textContent = collections.length.toLocaleString();
+            document.getElementById('db-metric-days').textContent = activitiesCount.toLocaleString();
+            document.getElementById('db-metric-entries').textContent = totalEntries.toLocaleString();
+            document.getElementById('db-metric-size').textContent = `${getPayloadSizeKB()} KB`;
+            document.getElementById('db-completion-summary').textContent = `${totalEntries.toLocaleString()} Active in DB`;
+
+            const btnStructured = document.getElementById('db-tab-structured');
+            const btnJson = document.getElementById('db-tab-json');
+            const viewStructured = document.getElementById('db-view-structured');
+            const viewJson = document.getElementById('db-view-json');
+
+            if (uiState.dbInspectorMode === 'structured') {
+                btnStructured.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs";
+                btnJson.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800";
+                viewStructured.classList.remove('hidden');
+                viewJson.classList.add('hidden');
+                renderStructuredDbCollections(collections, viewStructured);
+            } else {
+                btnJson.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs";
+                btnStructured.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800";
+                viewJson.classList.remove('hidden');
+                viewStructured.classList.add('hidden');
+                document.getElementById('json-viewer-content').textContent = JSON.stringify(appData, null, 2);
+            }
+        };
+
+        const renderStructuredDbCollections = (collections, container) => {
+            const activitiesCount = Array.isArray(appData.activities) ? appData.activities.length : 0;
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl p-3 border border-slate-200/90 text-xs space-y-1 font-mono">
+                    <div class="flex justify-between"><span class="text-slate-400">startDate:</span> <span class="font-bold text-slate-800">"${appData.startDate}"</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">currentSystemDate:</span> <span class="font-bold text-emerald-700">"${appData.currentSystemDate}"</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">activities Stored:</span> <span class="font-bold text-purple-700">${activitiesCount} items</span></div>
+                </div>
+            `;
+
+            collections.forEach(col => {
+                const rowsHtml = col.entries.length === 0
+                    ? `<tr><td colspan="2" class="py-3 px-2 text-center text-xs text-slate-400">All entries completed & removed from DB</td></tr>`
+                    : col.entries.slice().reverse().map(e => `
+                        <tr class="border-t border-slate-100">
+                            <td class="py-1.5 px-3 font-mono text-[11px] text-slate-700">${e.date}</td>
+                            <td class="py-1.5 px-3 font-mono text-[11px] text-right font-bold text-emerald-700">${e.target.toLocaleString()} count</td>
+                        </tr>
+                    `).join('');
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+                        <div class="p-3 bg-slate-50 border-b border-slate-200/70 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-extrabold text-slate-900">${escapeHtml(col.name)}</span>
+                                <span class="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">${col.targetCount}/day</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-lg border border-slate-200">
+                                ${col.entries.length} remaining
+                            </span>
+                        </div>
+                        <div class="max-h-44 overflow-y-auto custom-scroll">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50/50 text-[10px] font-bold uppercase text-slate-400 sticky top-0">
+                                    <tr>
+                                        <th class="py-1.5 px-3">Date</th>
+                                        <th class="py-1.5 px-3 text-right">Target Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `);
+            });
+        };
+
+        window.copyJsonToClipboard = () => {
+            const textArea = document.createElement('textarea');
+            textArea.value = JSON.stringify(appData, null, 2);
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const btnText = document.getElementById('copy-json-btn-text');
+                btnText.textContent = "Copied!";
+                setTimeout(() => { btnText.textContent = "Copy JSON"; }, 1800);
+                showToast("Database JSON copied to clipboard");
+            } catch (err) {
+                showToast("Unable to copy JSON");
+            }
+            document.body.removeChild(textArea);
+        };
+
+        window.downloadDatabaseJson = () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `tasbeeh_db_${appData.currentSystemDate}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast("Downloaded database .json file");
+        };
+
+        // =====================================================================
+        // 8. FOUR-TAB NAVIGATION & RENDERING ENGINE
+        // =====================================================================
+        window.switchTab = (tabName) => {
+            uiState.activeTab = tabName;
+            document.getElementById('view-today').classList.toggle('hidden', tabName !== 'today');
+            document.getElementById('view-history').classList.toggle('hidden', tabName !== 'history');
+            document.getElementById('view-activity').classList.toggle('hidden', tabName !== 'activity');
+            document.getElementById('view-settings').classList.toggle('hidden', tabName !== 'settings');
+            if (tabName === 'activity') {
+                renderActivityView();
+            }
+            renderHeaderAndNav();
+        };
+
+        const escapeHtml = (str) => {
+            if (typeof str !== 'string') return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        let toastTimeout = null;
+        const showToast = (message) => {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2400);
+        };
+
+        const renderHeaderAndNav = () => {
+            const collections = Object.values(appData.tasbeehCollections);
+            let todayRemaining = 0;
+            let historyRemaining = 0;
+
+            collections.forEach(c => {
+                c.entries.forEach(e => {
+                    if (e.date === appData.currentSystemDate) {
+                        todayRemaining++;
+                    } else if (e.date < appData.currentSystemDate) {
+                        historyRemaining++;
+                    }
+                });
+            });
+
+            const totalRemaining = todayRemaining + historyRemaining;
+            const activityCount = Array.isArray(appData.activities) ? appData.activities.length : 0;
+
+            document.getElementById('header-start-date').textContent = appData.startDate || '—';
+            document.getElementById('header-current-date').textContent = appData.currentSystemDate || '—';
+            document.getElementById('header-remaining-text').textContent = `${totalRemaining} Pending`;
+
+            const tabs = ['today', 'history', 'activity', 'settings'];
+            const activeClass = "btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] bg-emerald-600 text-white shadow-md shadow-emerald-600/20";
+            const inactiveClass = "btn-press flex flex-col items-center justify-center py-2 px-1 rounded-2xl font-bold text-[11px] text-slate-600 hover:bg-slate-100";
+
+            tabs.forEach(t => {
+                const btn = document.getElementById(`nav-tab-${t}`);
+                if (btn) btn.className = uiState.activeTab === t ? activeClass : inactiveClass;
+            });
+
+            const badgeToday = document.getElementById('nav-badge-today');
+            const badgeHistory = document.getElementById('nav-badge-history');
+            const badgeActivity = document.getElementById('nav-badge-activity');
+
+            badgeToday.textContent = todayRemaining;
+            badgeHistory.textContent = historyRemaining;
+            badgeActivity.textContent = activityCount;
+
+            badgeToday.className = uiState.activeTab === 'today'
+                ? "text-[9px] px-1.5 py-0.2 rounded-full font-extrabold bg-white/20 text-white"
+                : `text-[9px] px-1.5 py-0.2 rounded-full font-extrabold ${todayRemaining === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}`;
+
+            badgeHistory.className = uiState.activeTab === 'history'
+                ? "text-[9px] px-1.5 py-0.2 rounded-full font-extrabold bg-white/20 text-white"
+                : `text-[9px] px-1.5 py-0.2 rounded-full font-extrabold ${historyRemaining === 0 ? 'bg-slate-100 text-slate-500' : 'bg-rose-100 text-rose-700'}`;
+
+            badgeActivity.className = uiState.activeTab === 'activity'
+                ? "text-[9px] px-1.5 py-0.2 rounded-full font-extrabold bg-white/20 text-white"
+                : "text-[9px] px-1.5 py-0.2 rounded-full font-extrabold bg-slate-100 text-slate-600";
+        };
+
+        /**
+         * Renders TAB 1: TODAY VIEW
+         */
+        const renderTodayView = () => {
+            const container = document.getElementById('today-entries-container');
+            container.innerHTML = '';
+
+            document.getElementById('today-readable-date').textContent =
+                `${formatReadableDate(appData.currentSystemDate, true)} • Tap to strike out & remove`;
+
+            const todayItems = [];
+            Object.entries(appData.tasbeehCollections).forEach(([tasbeehId, col]) => {
+                col.entries.forEach(entry => {
+                    if (entry.date === appData.currentSystemDate) {
+                        todayItems.push({
+                            tasbeehId,
+                            name: col.name,
+                            entry
+                        });
+                    }
+                });
+            });
+
+            document.getElementById('today-remaining-badge').textContent =
+                todayItems.length === 0 ? 'All Done' : `${todayItems.length} remaining`;
+
+            if (todayItems.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl p-8 text-center border border-slate-200/80">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+                            <i class="ph-fill ph-check-circle text-2xl"></i>
+                        </div>
+                        <p class="text-sm font-extrabold text-slate-800">All Today's Tasbeeh Completed!</p>
+                        <p class="text-xs text-slate-500 mt-1">Completed entries have been struck out and removed from the database. Tomorrow's entries will be auto-pushed when the new day starts at midnight.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            todayItems.forEach(({ tasbeehId, name, entry }) => {
+                const domId = `today_card_${entry.entryId}`;
+                container.insertAdjacentHTML('beforeend', `
+                    <div 
+                        id="${domId}"
+                        onclick="strikeAndRemoveEntry('${tasbeehId}', '${entry.entryId}', '${domId}')"
+                        class="strike-transition cursor-pointer bg-white hover:bg-emerald-50/40 rounded-3xl p-4 shadow-xs border border-slate-200/90 flex items-center justify-between gap-3 group"
+                    >
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200/70 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                <i class="ph-bold ph-check text-lg"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="entry-title-text text-sm font-extrabold text-slate-900 truncate transition-all">${escapeHtml(name)}</p>
+                                <p class="entry-count-text text-xs font-semibold text-emerald-700 mt-0.5 transition-all">
+                                    ${entry.target.toLocaleString()} count • Today
+                                </p>
+                            </div>
+                        </div>
+
+                        <button 
+                            type="button"
+                            class="btn-press shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 group-hover:bg-emerald-700 text-white shadow-xs flex items-center gap-1.5"
+                        >
+                            <i class="ph-bold ph-check-circle text-sm"></i>
+                            <span>Complete ${entry.target.toLocaleString()}</span>
+                        </button>
+                    </div>
+                `);
+            });
+        };
+
+        /**
+         * HISTORY PAGINATION STATE
+         * Only 20 day-groups are rendered at a time, and only the FIRST
+         * (most recent missed) day is unlocked. Completing it unlocks
+         * the previous (earlier) day below.
+         */
+        let historyVisibleDayCount = 20;
+
+        const resetHistoryPagination = () => {
+            historyVisibleDayCount = 20;
+        };
+
+        window.loadMoreHistory = () => {
+            historyVisibleDayCount += 20;
+            renderHistoryView();
+        };
+
+        /**
+         * Renders TAB 2: HISTORY VIEW
+         * - Descending order: yesterday at top, then 2 days ago, 3 days ago, ...
+         * - Only the FIRST (most recent missed) day group is enabled; every
+         *   earlier day below is locked until the active day is cleared.
+         * - 20 day-groups at a time with a "load more" button below.
+         */
+        const renderHistoryView = () => {
+            const container = document.getElementById('history-entries-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const historyItems = [];
+            Object.entries(appData.tasbeehCollections).forEach(([tasbeehId, col]) => {
+                col.entries.forEach(entry => {
+                    if (entry.date < appData.currentSystemDate) {
+                        historyItems.push({
+                            tasbeehId,
+                            name: col.name,
+                            entry
+                        });
+                    }
+                });
+            });
+
+            const badge = document.getElementById('history-remaining-badge');
+            if (badge) {
+                badge.textContent = historyItems.length === 0 ? '0 pending' : `${historyItems.length} pending`;
+            }
+
+            if (historyItems.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl p-8 text-center border border-slate-200/80">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+                            <i class="ph-fill ph-sparkle text-2xl"></i>
+                        </div>
+                        <p class="text-sm font-extrabold text-slate-800">No Pending History Entries</p>
+                        <p class="text-xs text-slate-500 mt-1">All past entries from your Start Date (${appData.startDate}) have been completed and removed.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const dateGroups = {};
+            historyItems.forEach(item => {
+                if (!dateGroups[item.entry.date]) dateGroups[item.entry.date] = [];
+                dateGroups[item.entry.date].push(item);
+            });
+
+            // Descending order: most recent missed day at the top, going back in time.
+            const sortedDates = Object.keys(dateGroups).sort((a, b) => b.localeCompare(a));
+            const unlockedDate = sortedDates[0];
+
+            const visibleDates = sortedDates.slice(0, historyVisibleDayCount);
+            const remainingDays = sortedDates.length - visibleDates.length;
+
+            visibleDates.forEach(dateStr => {
+                const dayItems = dateGroups[dateStr];
+                const relativeBracket = getRelativeHistoryBracketLabel(dateStr, appData.currentSystemDate);
+                const isLocked = dateStr !== unlockedDate;
+
+                const rowsHtml = dayItems.map(({ tasbeehId, name, entry }) => {
+                    if (isLocked) {
+                        return `
+                            <div class="flex items-center justify-between py-3 px-3.5 rounded-2xl border bg-slate-50/70 border-slate-200/60">
+                                <div class="min-w-0 pr-2">
+                                    <p class="text-xs font-extrabold text-slate-500 truncate">${escapeHtml(name)}</p>
+                                    <p class="text-[11px] font-semibold text-slate-400 mt-0.5">${entry.target.toLocaleString()} count</p>
+                                </div>
+                                <span class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200/80 text-slate-500 flex items-center gap-1.5">
+                                    <i class="ph-bold ph-lock-simple text-xs"></i>
+                                    <span>Locked</span>
+                                </span>
+                            </div>
+                        `;
+                    }
+
+                    const domId = `history_card_${entry.entryId}`;
+                    return `
+                        <div 
+                            id="${domId}"
+                            onclick="strikeAndRemoveEntry('${tasbeehId}', '${entry.entryId}', '${domId}')"
+                            class="strike-transition cursor-pointer flex items-center justify-between py-3 px-3.5 rounded-2xl border bg-slate-50 hover:bg-emerald-50/40 border-slate-200/80 group"
+                        >
+                            <div class="min-w-0 pr-2">
+                                <p class="entry-title-text text-xs font-extrabold text-slate-900 truncate transition-all">${escapeHtml(name)}</p>
+                                <p class="entry-count-text text-[11px] font-semibold text-emerald-700 mt-0.5 transition-all">
+                                    ${entry.target.toLocaleString()} count
+                                </p>
+                            </div>
+
+                            <button 
+                                type="button"
+                                class="btn-press shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 group-hover:bg-emerald-600 text-white shadow-xs flex items-center gap-1.5 transition-colors"
+                            >
+                                <i class="ph-bold ph-check text-xs"></i>
+                                <span>Complete ${entry.target.toLocaleString()}</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white rounded-3xl p-4 shadow-xs border ${isLocked ? 'border-slate-200/70' : 'border-emerald-300/80 ring-1 ring-emerald-100'} space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs font-extrabold ${isLocked ? 'text-slate-500' : 'text-slate-900'}">${formatReadableDate(dateStr, true)}</span>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-lg border ${isLocked ? 'bg-slate-50 text-slate-500 border-slate-200/70' : 'bg-amber-50 text-amber-700 border-amber-200/70'}">${relativeBracket}</span>
+                                ${isLocked
+                        ? `<span class="text-[10px] font-bold text-slate-400 flex items-center gap-1"><i class="ph-bold ph-lock-simple"></i>Complete the active day above first</span>`
+                        : `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">Active</span>`}
+                            </div>
+                            <span class="text-[11px] font-mono text-slate-400">${dateStr}</span>
+                        </div>
+                        <div class="space-y-2">
+                            ${rowsHtml}
+                        </div>
+                    </div>
+                `);
+            });
+
+            if (remainingDays > 0) {
+                const nextBatch = Math.min(20, remainingDays);
+                container.insertAdjacentHTML('beforeend', `
+                    <button type="button" onclick="loadMoreHistory()"
+                        class="btn-press w-full py-3.5 px-4 bg-white hover:bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-xs font-bold text-slate-600 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-arrow-circle-down text-lg text-emerald-600"></i>
+                        <span>Load ${nextBatch} more ${nextBatch === 1 ? 'day' : 'days'} (${remainingDays} remaining)</span>
+                    </button>
+                `);
+            }
+        };
+
+        /**
+         * Activity category styling (icon + colors)
+         */
+        const ACTIVITY_STYLE_MAP = {
+            'ADDED TASBEEH': { icon: 'ph-plus-circle', iconBox: 'bg-emerald-50 text-emerald-600 border-emerald-100', label: 'text-emerald-700' },
+            'REMOVED TASBEEH': { icon: 'ph-trash', iconBox: 'bg-rose-50 text-rose-600 border-rose-100', label: 'text-rose-700' },
+            'COMPLETED': { icon: 'ph-check-circle', iconBox: 'bg-blue-50 text-blue-600 border-blue-100', label: 'text-blue-700' },
+            'AUTO-PUSH': { icon: 'ph-calendar-plus', iconBox: 'bg-amber-50 text-amber-600 border-amber-100', label: 'text-amber-700' },
+            'START DATE': { icon: 'ph-calendar-blank', iconBox: 'bg-indigo-50 text-indigo-600 border-indigo-100', label: 'text-indigo-700' },
+            'DATE UPDATED': { icon: 'ph-calendar-check', iconBox: 'bg-indigo-50 text-indigo-600 border-indigo-100', label: 'text-indigo-700' },
+            'DEFAULT': { icon: 'ph-pulse', iconBox: 'bg-slate-50 text-slate-600 border-slate-100', label: 'text-slate-700' }
+        };
+
+        /**
+         * Renders TAB 3: ACTIVITY VIEW
+         * Readable timeline-style cards with category icon, message, and meta.
+         */
+        const renderActivityView = () => {
+            const currEl = document.getElementById('activity-current-date');
+            if (currEl) currEl.textContent = appData.currentSystemDate;
+
+            const activities = Array.isArray(appData.activities) ? appData.activities : [];
+            const selectEl = document.getElementById('activity-daily-select');
+            const deleteBtnText = document.getElementById('activity-delete-day-btn-text');
+            const badgeEl = document.getElementById('activity-count-badge');
+            const listContainer = document.getElementById('activity-list-container');
+
+            if (!listContainer || !selectEl) return;
+
+            // Populate unique dates in the daily filter dropdown
+            const previousSelection = selectEl.value || 'ALL';
+            const uniqueDates = [...new Set(activities.map(a => a.date))].sort((a, b) => b.localeCompare(a));
+
+            selectEl.innerHTML = `<option value="ALL">All Dates (${activities.length})</option>`;
+            uniqueDates.forEach(d => {
+                const countForDay = activities.filter(a => a.date === d).length;
+                const rel = d === appData.currentSystemDate ? '(Today)' : getRelativeHistoryBracketLabel(d, appData.currentSystemDate);
+                selectEl.insertAdjacentHTML('beforeend', `
+                    <option value="${d}">${d} ${rel} (${countForDay})</option>
+                `);
+            });
+
+            if (uniqueDates.includes(previousSelection)) {
+                selectEl.value = previousSelection;
+            } else {
+                selectEl.value = 'ALL';
+            }
+
+            const activeFilterDate = selectEl.value;
+            if (deleteBtnText) {
+                deleteBtnText.textContent = activeFilterDate === 'ALL'
+                    ? 'Clear All Activities'
+                    : `Delete ${activeFilterDate} Activities`;
+            }
+
+            const filteredActivities = activeFilterDate === 'ALL'
+                ? activities
+                : activities.filter(a => a.date === activeFilterDate);
+
+            if (badgeEl) {
+                badgeEl.textContent = `${filteredActivities.length} ${filteredActivities.length === 1 ? 'activity' : 'activities'}`;
+            }
+
+            if (filteredActivities.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="bg-white rounded-3xl p-8 text-center border border-slate-200/80">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                            <i class="ph-bold ph-list-dashes text-2xl"></i>
+                        </div>
+                        <p class="text-sm font-extrabold text-slate-800">No Activities Recorded</p>
+                        <p class="text-xs text-slate-500 mt-1">All actions you perform (adding Tasbeehs, completing counts, advancing days) are saved in the database and listed here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = filteredActivities.map(item => {
+                const style = ACTIVITY_STYLE_MAP[item.category] || ACTIVITY_STYLE_MAP['DEFAULT'];
+                const relLabel = item.date === appData.currentSystemDate
+                    ? '(Today)'
+                    : getRelativeHistoryBracketLabel(item.date, appData.currentSystemDate);
+
+                return `
+                    <div class="bg-white rounded-2xl p-3.5 shadow-2xs border border-slate-200/90 flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${style.iconBox}">
+                            <i class="ph-bold ${style.icon} text-base"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wide ${style.label}">${escapeHtml(item.category)}</span>
+                                <span class="text-[10px] font-medium text-slate-400 shrink-0">${escapeHtml(item.timestamp)}</span>
+                            </div>
+                            <p class="text-[13px] font-semibold text-slate-800 leading-snug mt-1 break-words">${escapeHtml(item.message)}</p>
+                            <p class="text-[10px] font-mono text-slate-400 mt-1.5">${escapeHtml(item.date)} ${escapeHtml(relLabel)}</p>
+                        </div>
+                        <button 
+                            type="button"
+                            onclick="deleteActivityById('${item.id}')"
+                            class="btn-press w-8 h-8 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200/80 flex items-center justify-center shrink-0"
+                            title="Remove this activity"
+                        >
+                            <i class="ph-bold ph-trash text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        /**
+         * Renders TAB 4: SETTINGS VIEW
+         */
+        const renderSettingsView = () => {
+            const collections = Object.values(appData.tasbeehCollections);
+            const days = calculateInclusiveDays(appData.startDate, appData.currentSystemDate);
+
+            document.getElementById('settings-row-badge-tasbeehs').textContent =
+                `${collections.length} ${collections.length === 1 ? 'Item' : 'Items'}`;
+            document.getElementById('settings-row-sub-dates').textContent =
+                `Start Date: ${appData.startDate}`;
+            document.getElementById('settings-row-badge-days').textContent =
+                `${days.toLocaleString()} ${days === 1 ? 'Day' : 'Days'}`;
+            document.getElementById('settings-row-badge-db').textContent =
+                `${getPayloadSizeKB()} KB`;
+            const futureBadge = document.getElementById('settings-row-badge-future');
+            if (futureBadge) futureBadge.textContent = appData.currentSystemDate;
+        };
+
+        // Master Render Function
+        const renderApp = () => {
+            renderHeaderAndNav();
+            renderTodayView();
+            renderHistoryView();
+            renderActivityView();
+            renderSettingsView();
+        };
+
+        // =====================================================================
+        // 9. MIDNIGHT WATCHER (pushes new daily entries at 12 o'clock)
+        // =====================================================================
+        let dayWatcherInterval = null;
+
+        const startDayWatcher = () => {
+            if (dayWatcherInterval) clearInterval(dayWatcherInterval);
+            dayWatcherInterval = setInterval(() => {
+                if (!appData.isInitialized) return;
+
+                const realToday = getLocalTodayISO();
+                // Only advance when the real date has moved past the active date.
+                // (A simulated future date is always >= realToday, so it is preserved.)
+                if (appData.currentSystemDate >= realToday) return;
+
+                appData.currentSystemDate = realToday;
+                const pushed = autoPushFutureDaysIfNeeded();
+                resetHistoryPagination();
+                saveToLocalStorage();
+                renderApp();
+
+                if (pushed > 0) {
+                    showToast(`New day • ${pushed} ${pushed === 1 ? 'entry' : 'entries'} auto-pushed`);
+                }
+            }, 30000);
+        };
+
+        // =====================================================================
+        // 10. INITIALIZE APPLICATION ON WINDOW LOAD
+        // =====================================================================
+        window.onload = function () {
+            cleanupLegacyStorageKeys();
+            const isReady = loadFromLocalStorage();
+
+            // The real today is the single source of truth. If the stored date
+            // is behind the real date (app reopened on a new day), advance it.
+            const realToday = getLocalTodayISO();
+            const dateChanged = !appData.currentSystemDate || appData.currentSystemDate < realToday;
+            if (dateChanged) {
+                appData.currentSystemDate = realToday;
+            }
+
+            if (!isReady) {
+                openOnboardingWalkthrough();
+            } else {
+                const pushed = autoPushFutureDaysIfNeeded();
+                if (dateChanged) saveToLocalStorage();
+                renderApp();
+                if (pushed > 0) {
+                    showToast(`New day detected • ${pushed} ${pushed === 1 ? 'entry' : 'entries'} auto-pushed`);
+                }
+            }
+
+            startDayWatcher();
+        };
+    </script>
+</body>
+
+</html>
